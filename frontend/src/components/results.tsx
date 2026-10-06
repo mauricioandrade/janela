@@ -1,7 +1,8 @@
-import { CloudOffIcon, MapPinIcon, SearchXIcon, ServerCrashIcon, SunIcon } from "lucide-react"
+import { CloudOffIcon, SearchXIcon, ServerCrashIcon, SunIcon } from "lucide-react"
 
 import { DayStrip } from "@/components/day-strip"
 import { Narrative } from "@/components/narrative"
+import { PlaceFlags } from "@/components/place-flags"
 import { WindowList } from "@/components/window-list"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -10,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { ApiError, type Lang, type WindowsResponse } from "@/lib/api"
 import type { Messages } from "@/lib/i18n"
+import { placeLabel } from "@/lib/place"
 
 type ResultsProps = {
   t: Messages
@@ -57,9 +59,12 @@ export function Results({ t, lang, data, error, isFetching, hasSearched, onRetry
 
   return (
     <div className="flex flex-col gap-8">
-      <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <MapPinIcon className="size-4" aria-hidden />
-        {data.location.name}
+      <p className="flex items-center gap-2 text-sm text-muted-foreground">
+        <PlaceFlags place={data.location} />
+        <span>
+          <span className="font-medium text-foreground">{placeLabel(data.location)}</span>
+          {data.location.country && `, ${data.location.country}`}
+        </span>
       </p>
       <Narrative narrative={data.narrative} aiGenerated={data.aiGenerated} model={data.model} t={t} />
       {data.windows.length === 0 ? (

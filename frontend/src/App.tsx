@@ -29,7 +29,13 @@ export function App() {
   // A shared link with a full search runs it right away.
   const [search, setSearch] = useState<SearchValues | null>(() =>
     fromUrl.city && fromUrl.activity && fromUrl.durationMinutes && fromUrl.days
-      ? { city: fromUrl.city, activity: fromUrl.activity, durationMinutes: fromUrl.durationMinutes, days: fromUrl.days }
+      ? {
+          city: fromUrl.city,
+          cityId: fromUrl.cityId,
+          activity: fromUrl.activity,
+          durationMinutes: fromUrl.durationMinutes,
+          days: fromUrl.days,
+        }
       : null
   )
   const t = messages[lang]
@@ -96,6 +102,7 @@ export function App() {
       <main className="flex flex-col gap-12">
         <SearchForm
           t={t}
+          lang={lang}
           initialValues={fromUrl}
           isPending={query.isFetching}
           serverErrors={serverErrors}

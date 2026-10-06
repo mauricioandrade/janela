@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react"
-import { MapPinIcon, SearchIcon } from "lucide-react"
+import { SearchIcon } from "lucide-react"
 
 import { ACTIVITIES, ACTIVITY_ICONS } from "@/components/activity-icons"
+import { CityCombobox } from "@/components/city-combobox"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -13,11 +14,6 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group"
-import {
   Select,
   SelectContent,
   SelectGroup,
@@ -27,8 +23,9 @@ import {
 } from "@/components/ui/select"
 import { Spinner } from "@/components/ui/spinner"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import type { Activity, WindowsParams } from "@/lib/api"
+import type { Activity, Lang, Place, WindowsParams } from "@/lib/api"
 import type { Messages } from "@/lib/i18n"
+import { placeLabel } from "@/lib/place"
 
 const DURATIONS = [30, 45, 60, 90, 120, 180, 240]
 const DAY_OPTIONS = [1, 2, 3]
@@ -37,6 +34,7 @@ export type SearchValues = Omit<WindowsParams, "lang">
 
 type SearchFormProps = {
   t: Messages
+  lang: Lang
   initialValues: Partial<SearchValues>
   isPending: boolean
   /** Server-side errors keyed by request parameter name. */
@@ -46,12 +44,25 @@ type SearchFormProps = {
 
 export function SearchForm({
   t,
+  lang,
   initialValues,
   isPending,
   serverErrors,
   onSearch,
 }: SearchFormProps) {
   const [city, setCity] = useState(initialValues.city ?? "")
+  // A shared link pins its place by id; the name stands in for the label until a new search.
+  const [place, setPlace] = useState<Place | null>(() =>
+    initialValues.cityId && initialValues.city
+      ? {
+          id: initialValues.cityId,
+          name: initialValues.city,
+          admin1: null,
+          country: null,
+          countryCode: null,
+        }
+      : null
+  )
   const [activity, setActivity] = useState<Activity>(
     initialValues.activity ?? "WALK"
   )
@@ -77,7 +88,15 @@ export function SearchForm({
       cityInput.current?.focus()
       return
     }
-    onSearch({ city: trimmed, activity, durationMinutes, days })
+    // The picked place wins; text typed after picking it is a new, free-text search.
+    const picked = place?.id && trimmed === placeLabel(place) ? place : null
+    onSearch({
+      city: picked ? picked.name : trimmed,
+      cityId: picked?.id ?? undefined,
+      activity,
+      durationMinutes,
+      days,
+    })
   }
 
   const cityError = cityRequired ? t.cityRequired : serverErrors.city
@@ -89,21 +108,17 @@ export function SearchForm({
           <FieldGroup>
             <Field data-invalid={cityError ? true : undefined}>
               <FieldLabel htmlFor="city">{t.city}</FieldLabel>
-              <InputGroup className="h-9">
-                <InputGroupAddon>
-                  <MapPinIcon aria-hidden />
-                </InputGroupAddon>
-                <InputGroupInput
-                  ref={cityInput}
-                  id="city"
-                  name="city"
-                  autoComplete="address-level2"
-                  placeholder={t.cityPlaceholder}
-                  value={city}
-                  onChange={(event) => setCity(event.target.value)}
-                  aria-invalid={cityError ? true : undefined}
-                />
-              </InputGroup>
+              <CityCombobox
+                id="city"
+                t={t}
+                lang={lang}
+                inputRef={cityInput}
+                inputValue={city}
+                onInputValueChange={setCity}
+                selected={place}
+                onSelectedChange={setPlace}
+                invalid={Boolean(cityError)}
+              />
               {cityError && <FieldError>{cityError}</FieldError>}
             </Field>
 

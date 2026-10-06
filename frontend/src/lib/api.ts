@@ -1,8 +1,21 @@
 export type Activity = "RUN" | "WALK" | "BIKE" | "PICNIC" | "GARDENING"
 export type Lang = "pt" | "en"
 
+/** A geocoded place; `admin1` is the state or province. Only `name` and coordinates are always present. */
+export type Place = {
+  id: number | null
+  name: string
+  admin1: string | null
+  country: string | null
+  countryCode: string | null
+}
+
+export type City = Place & { latitude: number; longitude: number }
+
 export type WindowsParams = {
   city: string
+  /** Pins the exact place picked from the suggestions; without it the city name's best match is used. */
+  cityId?: number
   activity: Activity
   durationMinutes: number
   days: number
@@ -21,7 +34,7 @@ export type OutdoorWindow = {
 }
 
 export type WindowsResponse = {
-  location: { name: string; latitude: number; longitude: number; timezone: string }
+  location: City & { timezone: string }
   activity: Activity
   windows: OutdoorWindow[]
   narrative: string
@@ -50,7 +63,16 @@ export async function fetchWindows(params: WindowsParams, signal?: AbortSignal):
     days: String(params.days),
     lang: params.lang,
   })
-  const response = await fetch(`${API_URL}/api/windows?${query}`, { signal })
+  if (params.cityId) query.set("cityId", String(params.cityId))
+  return getJson(`/api/windows?${query}`, signal)
+}
+
+export async function fetchCities(q: string, lang: Lang, signal?: AbortSignal): Promise<City[]> {
+  return getJson(`/api/cities?${new URLSearchParams({ q, lang })}`, signal)
+}
+
+async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, { signal })
   if (!response.ok) {
     const problem = await response.json().catch(() => ({}))
     throw new ApiError(response.status, problem.detail ?? response.statusText, problem.fields ?? [])

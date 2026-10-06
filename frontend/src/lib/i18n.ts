@@ -6,6 +6,8 @@ export const messages = {
     city: "Cidade",
     cityPlaceholder: "Recife, Belo Horizonte, Lisboa…",
     cityRequired: "Digite uma cidade.",
+    citySearching: "Buscando cidades…",
+    cityNoMatches: "Nenhuma cidade com esse nome. Confira a grafia.",
     cityNotFound: "Não achamos essa cidade. Confira a grafia ou tente uma cidade próxima.",
     activity: "Atividade",
     activities: {
@@ -52,6 +54,8 @@ export const messages = {
     city: "City",
     cityPlaceholder: "Recife, Denver, Lisbon…",
     cityRequired: "Enter a city.",
+    citySearching: "Searching cities…",
+    cityNoMatches: "No city by that name. Check the spelling.",
     cityNotFound: "We couldn't find that city. Check the spelling or try a nearby one.",
     activity: "Activity",
     activities: {
