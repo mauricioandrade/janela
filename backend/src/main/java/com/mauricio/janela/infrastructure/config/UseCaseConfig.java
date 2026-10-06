@@ -1,7 +1,9 @@
 package com.mauricio.janela.infrastructure.config;
 
 import com.mauricio.janela.application.usecase.FindWindowsService;
+import com.mauricio.janela.application.usecase.SearchCitiesService;
 import com.mauricio.janela.domain.port.in.FindWindowsUseCase;
+import com.mauricio.janela.domain.port.in.SearchCitiesUseCase;
 import com.mauricio.janela.domain.port.out.GeocodingProvider;
 import com.mauricio.janela.domain.port.out.WeatherProvider;
 import com.mauricio.janela.domain.service.WindowScorer;
@@ -38,5 +40,10 @@ public class UseCaseConfig {
             Clock clock) {
         return new FindWindowsService(geocodingProvider, weatherProvider, windowScorer,
                 ollamaNarrativeGenerator, templateNarrativeGenerator, clock);
+    }
+
+    @Bean
+    SearchCitiesUseCase searchCitiesUseCase(GeocodingProvider geocodingProvider) {
+        return new SearchCitiesService(geocodingProvider);
     }
 }

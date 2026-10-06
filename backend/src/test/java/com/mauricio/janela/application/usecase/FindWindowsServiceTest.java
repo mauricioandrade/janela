@@ -31,12 +31,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class FindWindowsServiceTest {
 
     private static final Location CAMPINAS = new Location("Campinas", -22.9, -47.06, "America/Sao_Paulo");
+    private static final Location ITOBI = new Location(3460543L, "Itobi", "São Paulo", "Brasil", "BR",
+            -21.73694, -46.975, "America/Sao_Paulo");
     private static final LocalDate TODAY = LocalDate.of(2026, 10, 6);
     // 10:30 in São Paulo (UTC-3); the test JVM's default zone must not matter.
     private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-06T13:30:00Z"), ZoneOffset.UTC);
-    private static final FindWindowsQuery QUERY = new FindWindowsQuery("Campinas", Activity.WALK, 60, 1, Language.PT);
+    private static final FindWindowsQuery QUERY = new FindWindowsQuery("Campinas", null, Activity.WALK, 60, 1, Language.PT);
 
-    private final GeocodingProvider geocoding = city -> Optional.of(CAMPINAS);
+    private final GeocodingProvider geocoding = new FakeGeocoding(Optional.of(CAMPINAS), Optional.of(ITOBI));
     private final WeatherProvider weather = (location, days) -> pleasantDay();
     private final NarrativeGenerator template = request -> Narrative.fromTemplate("template");
 
@@ -79,10 +81,47 @@ class FindWindowsServiceTest {
 
     @Test
     void throwsWhenCityIsUnknown() {
-        FindWindowsService service = new FindWindowsService(city -> Optional.empty(), weather, new WindowScorer(),
-                template, template, CLOCK);
+        FindWindowsService service = new FindWindowsService(new FakeGeocoding(Optional.empty(), Optional.empty()),
+                weather, new WindowScorer(), template, template, CLOCK);
 
         assertThatThrownBy(() -> service.findWindows(QUERY)).isInstanceOf(LocationNotFoundException.class);
+    }
+
+    @Test
+    void usesTheChosenCityIdInsteadOfTheBestNameMatch() {
+        FindWindowsQuery query = new FindWindowsQuery("Itobi", 3460543L, Activity.WALK, 60, 1, Language.PT);
+
+        WindowsResult result = service(template).findWindows(query);
+
+        assertThat(result.location()).isEqualTo(ITOBI);
+    }
+
+    @Test
+    void throwsWhenCityIdIsUnknown() {
+        FindWindowsService service = new FindWindowsService(new FakeGeocoding(Optional.of(CAMPINAS), Optional.empty()),
+                weather, new WindowScorer(), template, template, CLOCK);
+        FindWindowsQuery query = new FindWindowsQuery("Campinas", 42L, Activity.WALK, 60, 1, Language.PT);
+
+        assertThatThrownBy(() -> service.findWindows(query)).isInstanceOf(LocationNotFoundException.class);
+    }
+
+    /** Answers every name lookup with {@code byName} and every id lookup with {@code byId}. */
+    private record FakeGeocoding(Optional<Location> byName, Optional<Location> byId) implements GeocodingProvider {
+
+        @Override
+        public Optional<Location> findByName(String city) {
+            return byName;
+        }
+
+        @Override
+        public Optional<Location> findById(long id) {
+            return byId;
+        }
+
+        @Override
+        public List<Location> search(String query, int limit, Language language) {
+            return byName.stream().toList();
+        }
     }
 
     private FindWindowsService service(NarrativeGenerator ai) {

@@ -66,7 +66,27 @@ class WindowsControllerTest {
                 .andExpect(jsonPath("$.aiGenerated").value(true))
                 .andExpect(jsonPath("$.model").value("gemma3:4b"));
 
-        verify(findWindowsUseCase).findWindows(new FindWindowsQuery("Campinas", Activity.RUN, 60, 2, Language.EN));
+        verify(findWindowsUseCase).findWindows(new FindWindowsQuery("Campinas", null, Activity.RUN, 60, 2, Language.EN));
+    }
+
+    @Test
+    void passesTheChosenCityIdAndReturnsStateAndCountry() throws Exception {
+        Location itobi = new Location(3460543L, "Itobi", "São Paulo", "Brasil", "BR", -21.73694, -46.975,
+                "America/Sao_Paulo");
+        when(findWindowsUseCase.findWindows(any())).thenReturn(new WindowsResult(
+                itobi, Activity.BIKE, List.of(), Narrative.fromTemplate("Sem janelas.")));
+
+        mockMvc.perform(get("/api/windows")
+                        .param("city", "Itobi")
+                        .param("cityId", "3460543")
+                        .param("activity", "BIKE")
+                        .param("durationMinutes", "120"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.location.admin1").value("São Paulo"))
+                .andExpect(jsonPath("$.location.countryCode").value("BR"));
+
+        verify(findWindowsUseCase).findWindows(
+                new FindWindowsQuery("Itobi", 3460543L, Activity.BIKE, 120, 1, Language.PT));
     }
 
     @Test
@@ -82,7 +102,7 @@ class WindowsControllerTest {
                 .andExpect(jsonPath("$.aiGenerated").value(false))
                 .andExpect(jsonPath("$.model").doesNotExist());
 
-        verify(findWindowsUseCase).findWindows(new FindWindowsQuery("Campinas", Activity.WALK, 30, 1, Language.PT));
+        verify(findWindowsUseCase).findWindows(new FindWindowsQuery("Campinas", null, Activity.WALK, 30, 1, Language.PT));
     }
 
     @Test
