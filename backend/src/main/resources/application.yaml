@@ -14,7 +14,7 @@ spring:
   # The Open-Meteo clients set their own timeouts (janela.open-meteo.*).
   http:
     clients:
-      connect-timeout: 5s
+      connect-timeout: 2s
       read-timeout: ${OLLAMA_TIMEOUT:30s}
 
 janela:
