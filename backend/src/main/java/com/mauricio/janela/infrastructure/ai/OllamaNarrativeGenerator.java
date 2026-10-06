@@ -1,5 +1,6 @@
 package com.mauricio.janela.infrastructure.ai;
 
+import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.NarrativeRequest;
 import com.mauricio.janela.domain.model.OutdoorWindow;
@@ -10,7 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -69,15 +70,19 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
                     request.activity().name(),
                     request.durationMinutes(),
                     IntStream.range(0, request.windows().size())
-                            .mapToObj(i -> WindowPayload.from(i + 1, request.windows().get(i)))
+                            .mapToObj(i -> WindowPayload.from(i + 1, request.windows().get(i), request.language()))
                             .toList());
         }
     }
 
+    /**
+     * Day and times are pre-formatted in the target language so the model copies them instead of parsing ISO dates.
+     */
     record WindowPayload(
             int rank,
-            LocalDateTime start,
-            LocalDateTime end,
+            String day,
+            String start,
+            String end,
             int score,
             Double apparentTempC,
             Double maxUv,
@@ -85,8 +90,13 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
             Double maxWindKmh
     ) {
 
-        static WindowPayload from(int rank, OutdoorWindow window) {
-            return new WindowPayload(rank, window.start(), window.end(), window.score(), window.apparentTempC(),
+        private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
+
+        static WindowPayload from(int rank, OutdoorWindow window, Language language) {
+            DateTimeFormatter day = DateTimeFormatter.ofPattern(
+                    language == Language.PT ? "EEEE, dd/MM" : "EEEE, MMM d", language.locale());
+            return new WindowPayload(rank, window.start().format(day), window.start().format(TIME),
+                    window.end().format(TIME), window.score(), window.apparentTempC(),
                     window.maxUv(), window.maxRainProbability(), window.maxWindKmh());
         }
     }

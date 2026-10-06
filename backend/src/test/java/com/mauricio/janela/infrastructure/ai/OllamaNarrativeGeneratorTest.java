@@ -65,7 +65,8 @@ class OllamaNarrativeGeneratorTest {
                 .doesNotContain("{language}");
         assertThat(prompt.getValue().getUserMessage().getText())
                 .contains("\"city\":\"Campinas\"", "\"activity\":\"RUN\"", "\"rank\":1",
-                        "\"start\":\"2026-10-06T06:00:00\"", "\"score\":91", "\"maxRainProbability\":5");
+                        "\"day\":\"Tuesday, Oct 6\"", "\"start\":\"06:00\"", "\"end\":\"07:00\"",
+                        "\"score\":91", "\"maxRainProbability\":5");
     }
 
     @Test
