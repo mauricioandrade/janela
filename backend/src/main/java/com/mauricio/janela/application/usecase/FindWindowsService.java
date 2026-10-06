@@ -71,7 +71,14 @@ public class FindWindowsService implements FindWindowsUseCase {
         return new WindowsResult(location, query.activity(), windows, narrate(narrativeRequest));
     }
 
+    /**
+     * With no windows there is nothing to explain, and a small model asked to say so tends to invent a time
+     * anyway; the template answers instead.
+     */
     private Narrative narrate(NarrativeRequest request) {
+        if (request.windows().isEmpty()) {
+            return fallbackNarrativeGenerator.generate(request);
+        }
         try {
             return aiNarrativeGenerator.generate(request);
         } catch (RuntimeException e) {

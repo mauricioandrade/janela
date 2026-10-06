@@ -8,4 +8,3 @@ Output: 2-3 short sentences recommending the window with rank 1 and why (mention
 optionally naming one alternative, then one line starting with "🌿" with a tiny, concrete "touch grass" challenge
 for that window (e.g. "notice three bird calls", "walk barefoot on grass for one minute").
 Start directly with the recommendation: no greeting, no preamble, no markdown.
-If the list is empty, kindly suggest a short indoor-to-outdoor alternative (balcony, window, 5-minute walk).

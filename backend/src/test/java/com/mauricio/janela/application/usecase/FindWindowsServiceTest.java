@@ -81,6 +81,22 @@ class FindWindowsServiceTest {
     }
 
     @Test
+    void usesTemplateWithoutAskingTheModelWhenThereAreNoWindows() {
+        WeatherProvider hotStormyDay = (location, days) -> pleasantDay().stream()
+                .map(hour -> new HourlyForecast(hour.time(), 40.0, 40.0, 100, 1.0, 5.0, hour.isDay()))
+                .toList();
+        NarrativeGenerator ai = request -> {
+            throw new AssertionError("the model must not be asked to narrate an empty list");
+        };
+
+        WindowsResult result = new FindWindowsService(geocoding, hotStormyDay, new WindowScorer(), ai, template, CLOCK)
+                .findWindows(QUERY);
+
+        assertThat(result.windows()).isEmpty();
+        assertThat(result.narrative()).isEqualTo(Narrative.fromTemplate("template"));
+    }
+
+    @Test
     void throwsWhenCityIsUnknown() {
         FindWindowsService service = new FindWindowsService(new FakeGeocoding(Optional.empty(), Optional.empty()),
                 weather, new WindowScorer(), template, template, CLOCK);
