@@ -104,7 +104,7 @@ The backend only accepts browser requests from `http://localhost:5173`
 
 ```bash
 cd backend && ./mvnw test          # scorer, use case, Open-Meteo clients, Gemma payload, controller
-cd frontend && pnpm lint && pnpm build
+cd frontend && pnpm test && pnpm lint && pnpm build
 ```
 
 ## API
