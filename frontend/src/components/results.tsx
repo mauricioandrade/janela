@@ -9,13 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
-import { ApiError, type Lang, type WindowsResponse } from "@/lib/api"
-import type { Messages } from "@/lib/i18n"
+import { useI18n } from "@/hooks/use-i18n"
+import { ApiError, type WindowsResponse } from "@/lib/api"
 import { placeLabel } from "@/lib/place"
 
 type ResultsProps = {
-  t: Messages
-  lang: Lang
   data: WindowsResponse | undefined
   error: Error | null
   isFetching: boolean
@@ -23,8 +21,9 @@ type ResultsProps = {
   onRetry: () => void
 }
 
-export function Results({ t, lang, data, error, isFetching, hasSearched, onRetry }: ResultsProps) {
-  if (isFetching) return <LoadingState t={t} />
+export function Results({ data, error, isFetching, hasSearched, onRetry }: ResultsProps) {
+  const { t } = useI18n()
+  if (isFetching) return <LoadingState />
 
   if (error && !isShownInForm(error)) {
     const weatherDown = error instanceof ApiError && error.status === 503
@@ -66,7 +65,7 @@ export function Results({ t, lang, data, error, isFetching, hasSearched, onRetry
           {data.location.country && `, ${data.location.country}`}
         </span>
       </p>
-      <Narrative narrative={data.narrative} aiGenerated={data.aiGenerated} model={data.model} t={t} />
+      <Narrative narrative={data.narrative} aiGenerated={data.aiGenerated} model={data.model} />
       {data.windows.length === 0 ? (
         <Empty className="border">
           <EmptyHeader>
@@ -79,8 +78,8 @@ export function Results({ t, lang, data, error, isFetching, hasSearched, onRetry
         </Empty>
       ) : (
         <>
-          <DayStrip windows={data.windows} lang={lang} label={t.dayStrip} />
-          <WindowList windows={data.windows} lang={lang} t={t} />
+          <DayStrip windows={data.windows} />
+          <WindowList windows={data.windows} />
         </>
       )}
     </div>
@@ -113,7 +112,8 @@ function isShownInForm(error: Error) {
   return error instanceof ApiError && (error.status === 404 || (error.status === 400 && error.fields.length > 0))
 }
 
-function LoadingState({ t }: { t: Messages }) {
+function LoadingState() {
+  const { t } = useI18n()
   return (
     <div className="flex flex-col gap-8">
       <p className="flex items-center gap-2 text-sm text-muted-foreground">

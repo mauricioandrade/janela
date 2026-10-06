@@ -36,6 +36,10 @@ export const messages = {
     networkDescription: "Confira se o backend está rodando em localhost:8080.",
     invalidTitle: "Algum campo está fora do intervalo aceito",
     retry: "Tentar de novo",
+    resultsReady: (place: string, count: number) =>
+      count === 0 ? `Nenhuma janela boa em ${place}.` : `${count === 1 ? "1 janela" : `${count} janelas`} para ${place}.`,
+    weatherBy: "Previsão do tempo:",
+    narrativeBy: "As recomendações são escritas por um modelo Gemma rodando no seu computador.",
     recommendation: "Recomendação",
     byGemma: "Escrito localmente pelo",
     windowsHeading: "Melhores janelas",
@@ -84,6 +88,10 @@ export const messages = {
     networkDescription: "Check that the backend is running on localhost:8080.",
     invalidTitle: "A field is outside the accepted range",
     retry: "Try again",
+    resultsReady: (place: string, count: number) =>
+      count === 0 ? `No good window in ${place}.` : `${count === 1 ? "1 window" : `${count} windows`} for ${place}.`,
+    weatherBy: "Weather data by",
+    narrativeBy: "Recommendations are written by a Gemma model running on your computer.",
     recommendation: "Recommendation",
     byGemma: "Written locally by",
     windowsHeading: "Best windows",

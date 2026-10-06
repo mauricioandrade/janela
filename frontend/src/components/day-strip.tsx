@@ -1,30 +1,25 @@
 import { cn } from "cn"
 
-import type { Lang, OutdoorWindow } from "@/lib/api"
-import { dayKey, formatDay, formatTime, minutesOfDay, scoreTier } from "@/lib/format"
+import { useI18n } from "@/hooks/use-i18n"
+import type { OutdoorWindow } from "@/lib/api"
+import { dayKey, formatDay, formatTime, minutesOfDay } from "@/lib/format"
+import { scoreFill } from "@/lib/score"
 
 /** Daylight hours shown by default; the range widens if a window falls outside it. */
 const DEFAULT_FIRST_HOUR = 5
 const DEFAULT_LAST_HOUR = 21
 const TICK_EVERY_HOURS = 3
 
-const TIER_FILL = {
-  high: "bg-score-high",
-  mid: "bg-score-mid",
-  low: "bg-score-low",
-} as const
-
 type DayStripProps = {
   windows: OutdoorWindow[]
-  lang: Lang
-  label: string
 }
 
 /**
  * Each day as a band of daylight hours, with the ranked windows cut out of it.
  * Purely visual: the window list below carries the same data for assistive tech.
  */
-export function DayStrip({ windows, lang, label }: DayStripProps) {
+export function DayStrip({ windows }: DayStripProps) {
+  const { t, lang } = useI18n()
   const days = [...new Set(windows.map((window) => dayKey(window.start)))].sort()
   const firstHour = Math.min(DEFAULT_FIRST_HOUR, ...windows.map((window) => Math.floor(minutesOfDay(window.start) / 60)))
   const lastHour = Math.max(DEFAULT_LAST_HOUR, ...windows.map((window) => Math.ceil(minutesOfDay(window.end, true) / 60)))
@@ -37,7 +32,7 @@ export function DayStrip({ windows, lang, label }: DayStripProps) {
 
   return (
     <figure className="flex flex-col gap-3" aria-hidden>
-      <figcaption className="text-sm text-muted-foreground">{label}</figcaption>
+      <figcaption className="text-sm text-muted-foreground">{t.dayStrip}</figcaption>
       <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3">
         {days.map((day) => (
           <DayRow
@@ -93,7 +88,7 @@ function DayRow({ label, windows, ranks, ticks, position }: DayRowProps) {
               title={`${formatTime(window.start)}–${formatTime(window.end)}`}
               className={cn(
                 "animate-window-open absolute inset-y-1.5 flex min-w-5 items-center justify-center rounded-sm text-xs font-semibold text-primary-foreground",
-                TIER_FILL[scoreTier(window.score)]
+                scoreFill(window.score)
               )}
               style={{
                 left: `calc(${start}% + 1px)`,

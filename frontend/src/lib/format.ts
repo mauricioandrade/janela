@@ -27,11 +27,3 @@ export function minutesOfDay(localDateTime: string, isEnd = false) {
   const total = hours * 60 + minutes
   return isEnd && total === 0 ? 24 * 60 : total
 }
-
-export type ScoreTier = "high" | "mid" | "low"
-
-export function scoreTier(score: number): ScoreTier {
-  if (score >= 70) return "high"
-  if (score >= 40) return "mid"
-  return "low"
-}

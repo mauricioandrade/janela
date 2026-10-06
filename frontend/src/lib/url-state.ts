@@ -1,10 +1,10 @@
-import type { Activity, Lang, WindowsParams } from "@/lib/api"
+import type { Activity, Lang, SearchValues, WindowsParams } from "@/lib/api"
 
 const ACTIVITY_VALUES: Activity[] = ["RUN", "WALK", "BIKE", "PICNIC", "GARDENING"]
 
 /** Reads a shareable search from the URL (`?city=Itobi&cityId=3460543&activity=RUN&duration=60&days=2&lang=pt`). */
-export function readSearchFromUrl(): Partial<WindowsParams> {
-  const query = new URLSearchParams(window.location.search)
+export function readSearchFromUrl(queryString = window.location.search): Partial<WindowsParams> {
+  const query = new URLSearchParams(queryString)
   const search: Partial<WindowsParams> = {}
   const city = query.get("city")?.trim()
   if (city) search.city = city
@@ -19,6 +19,12 @@ export function readSearchFromUrl(): Partial<WindowsParams> {
   const lang = query.get("lang")
   if (lang === "pt" || lang === "en") search.lang = lang
   return search
+}
+
+/** The search a link describes, when it describes a complete one. */
+export function completeSearch(fromUrl: Partial<WindowsParams>): SearchValues | null {
+  const { city, cityId, activity, durationMinutes, days } = fromUrl
+  return city && activity && durationMinutes && days ? { city, cityId, activity, durationMinutes, days } : null
 }
 
 export function writeSearchToUrl(params: WindowsParams) {

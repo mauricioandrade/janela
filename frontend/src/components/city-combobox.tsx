@@ -14,8 +14,8 @@ import {
 import { InputGroupAddon } from "@/components/ui/input-group"
 import { Spinner } from "@/components/ui/spinner"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import { fetchCities, type Lang, type Place } from "@/lib/api"
-import type { Messages } from "@/lib/i18n"
+import { useI18n } from "@/hooks/use-i18n"
+import { fetchCities, type Place } from "@/lib/api"
 import { placeLabel } from "@/lib/place"
 
 const MIN_QUERY_LENGTH = 2
@@ -23,8 +23,6 @@ const DEBOUNCE_MS = 300
 
 type CityComboboxProps = {
   id: string
-  t: Messages
-  lang: Lang
   inputRef: Ref<HTMLInputElement>
   inputValue: string
   onInputValueChange: (value: string) => void
@@ -39,8 +37,6 @@ type CityComboboxProps = {
  */
 export function CityCombobox({
   id,
-  t,
-  lang,
   inputRef,
   inputValue,
   onInputValueChange,
@@ -48,6 +44,7 @@ export function CityCombobox({
   onSelectedChange,
   invalid,
 }: CityComboboxProps) {
+  const { t, lang } = useI18n()
   const term = useDebouncedValue(inputValue.trim(), DEBOUNCE_MS)
   const showingSelection = selected !== null && inputValue === placeLabel(selected)
   const suggestions = useQuery({

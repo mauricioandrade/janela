@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
 
+import { I18nProvider } from "@/components/i18n-provider"
 import { Results } from "@/components/results"
-import { SearchForm, type SearchValues } from "@/components/search-form"
+import { SearchForm } from "@/components/search-form"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { ApiError, fetchWindows, type Lang } from "@/lib/api"
+import { useWindowsSearch } from "@/hooks/use-windows-search"
+import type { Lang, SearchValues } from "@/lib/api"
 import { messages } from "@/lib/i18n"
-import { readSearchFromUrl, writeLangToUrl, writeSearchToUrl } from "@/lib/url-state"
+import { placeLabel } from "@/lib/place"
+import { completeSearch, readSearchFromUrl, writeLangToUrl, writeSearchToUrl } from "@/lib/url-state"
 
 const LANG_KEY = "janela.lang"
 
-const fromUrl = readSearchFromUrl()
-
-function initialLang(): Lang {
-  if (fromUrl.lang) return fromUrl.lang
+function initialLang(fromUrl?: Lang): Lang {
+  if (fromUrl) return fromUrl
   try {
     const stored = localStorage.getItem(LANG_KEY)
     if (stored === "pt" || stored === "en") return stored
@@ -25,19 +25,11 @@ function initialLang(): Lang {
 }
 
 export function App() {
-  const [lang, setLang] = useState<Lang>(initialLang)
+  const [fromUrl] = useState(() => readSearchFromUrl())
+  const [lang, setLang] = useState<Lang>(() => initialLang(fromUrl.lang))
   // A shared link with a full search runs it right away.
-  const [search, setSearch] = useState<SearchValues | null>(() =>
-    fromUrl.city && fromUrl.activity && fromUrl.durationMinutes && fromUrl.days
-      ? {
-          city: fromUrl.city,
-          cityId: fromUrl.cityId,
-          activity: fromUrl.activity,
-          durationMinutes: fromUrl.durationMinutes,
-          days: fromUrl.days,
-        }
-      : null
-  )
+  const [search, setSearch] = useState<SearchValues | null>(() => completeSearch(fromUrl))
+  const windows = useWindowsSearch(search, lang)
   const t = messages[lang]
 
   useEffect(() => {
@@ -59,69 +51,80 @@ export function App() {
     if (search) writeLangToUrl(next)
   }
 
-  const params = search && { ...search, lang }
-  const query = useQuery({
-    queryKey: ["windows", params],
-    queryFn: ({ signal }) => fetchWindows(params!, signal),
-    enabled: params !== null,
-  })
-
-  const apiError = query.error instanceof ApiError ? query.error : null
-  const serverErrors: Partial<Record<keyof SearchValues, string>> = {}
-  if (apiError?.status === 404) serverErrors.city = t.cityNotFound
-  if (apiError?.status === 400) {
-    for (const field of apiError.fields) serverErrors[field as keyof SearchValues] = t.invalidTitle
-  }
+  // One short sentence for screen readers; errors announce themselves (Alert and FieldError are role="alert").
+  const status = windows.isFetching
+    ? t.loadingGemma
+    : windows.data
+      ? t.resultsReady(placeLabel(windows.data.location), windows.data.windows.length)
+      : ""
 
   return (
-    <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col gap-10 px-4 py-10 sm:py-16">
-      <header className="flex items-start justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <h1 translate="no" className="font-heading text-5xl font-bold tracking-tighter sm:text-6xl">
-            janela
-          </h1>
-          <p className="max-w-md text-lg text-pretty text-muted-foreground">{t.tagline}</p>
-        </div>
-        <ToggleGroup
-          variant="outline"
-          size="sm"
-          spacing={0}
-          aria-label={t.language}
-          value={[lang]}
-          onValueChange={(value) => value.length > 0 && handleLangChange(value[0] as Lang)}
-        >
-          <ToggleGroupItem value="pt" aria-label="Português">
-            PT
-          </ToggleGroupItem>
-          <ToggleGroupItem value="en" aria-label="English">
-            EN
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </header>
+    <I18nProvider lang={lang}>
+      <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col gap-10 px-4 py-10 sm:py-16">
+        <header className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <h1 translate="no" className="font-heading text-5xl font-bold tracking-tighter sm:text-6xl">
+              janela
+            </h1>
+            <p className="max-w-md text-lg text-pretty text-muted-foreground">{t.tagline}</p>
+          </div>
+          <ToggleGroup
+            variant="outline"
+            size="sm"
+            spacing={0}
+            aria-label={t.language}
+            value={[lang]}
+            onValueChange={(value) => value.length > 0 && handleLangChange(value[0] as Lang)}
+          >
+            <ToggleGroupItem value="pt" aria-label="Português">
+              PT
+            </ToggleGroupItem>
+            <ToggleGroupItem value="en" aria-label="English">
+              EN
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </header>
 
-      <main className="flex flex-col gap-12">
-        <SearchForm
-          t={t}
-          lang={lang}
-          initialValues={fromUrl}
-          resolvedPlace={query.data?.location ?? null}
-          isPending={query.isFetching}
-          serverErrors={serverErrors}
-          onSearch={handleSearch}
-        />
-        <section aria-live="polite" aria-busy={query.isFetching}>
-          <Results
-          t={t}
-          lang={lang}
-          data={query.data}
-          error={query.error}
-          isFetching={query.isFetching}
-          hasSearched={search !== null}
-          onRetry={() => query.refetch()}
+        <main className="flex flex-col gap-12">
+          <SearchForm
+            initialValues={fromUrl}
+            resolvedPlace={windows.data?.location ?? null}
+            isPending={windows.isFetching}
+            fieldProblems={windows.fieldProblems}
+            onSearch={handleSearch}
           />
-        </section>
-      </main>
-    </div>
+          <p className="sr-only" aria-live="polite">
+            {status}
+          </p>
+          <Results
+            data={windows.data}
+            error={windows.error}
+            isFetching={windows.isFetching}
+            hasSearched={search !== null}
+            onRetry={() => windows.refetch()}
+          />
+        </main>
+
+        <footer className="mt-auto border-t pt-6 text-sm text-muted-foreground">
+          {t.weatherBy}{" "}
+          <a
+            href="https://open-meteo.com"
+            className="underline underline-offset-4 hover:text-foreground"
+            translate="no"
+          >
+            Open-Meteo.com
+          </a>{" "}
+          (
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            className="underline underline-offset-4 hover:text-foreground"
+          >
+            CC BY 4.0
+          </a>
+          ). {t.narrativeBy}
+        </footer>
+      </div>
+    </I18nProvider>
   )
 }
 

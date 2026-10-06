@@ -23,36 +23,39 @@ import {
 } from "@/components/ui/select"
 import { Spinner } from "@/components/ui/spinner"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import type { Activity, Lang, Place, WindowsParams } from "@/lib/api"
-import type { Messages } from "@/lib/i18n"
+import { useI18n } from "@/hooks/use-i18n"
+import type { FieldProblems } from "@/hooks/use-windows-search"
+import type { Activity, Place, SearchValues } from "@/lib/api"
 import { placeLabel } from "@/lib/place"
 
 const DURATIONS = [30, 45, 60, 90, 120, 180, 240]
 const DAY_OPTIONS = [1, 2, 3]
 
-export type SearchValues = Omit<WindowsParams, "lang">
-
 type SearchFormProps = {
-  t: Messages
-  lang: Lang
   initialValues: Partial<SearchValues>
   /** The place the last search resolved to; fills in state and flags for a place opened from a link. */
   resolvedPlace: Place | null
   isPending: boolean
-  /** Server-side errors keyed by request parameter name. */
-  serverErrors: Partial<Record<keyof SearchValues, string>>
+  /** Why the server rejected fields of the last search. */
+  fieldProblems: FieldProblems
   onSearch: (values: SearchValues) => void
 }
 
 export function SearchForm({
-  t,
-  lang,
   initialValues,
   resolvedPlace,
   isPending,
-  serverErrors,
+  fieldProblems,
   onSearch,
 }: SearchFormProps) {
+  const { t } = useI18n()
+  const serverErrors = {
+    city:
+      fieldProblems.city === "notFound"
+        ? t.cityNotFound
+        : fieldProblems.city && t.invalidTitle,
+    durationMinutes: fieldProblems.durationMinutes && t.invalidTitle,
+  }
   const [city, setCity] = useState(initialValues.city ?? "")
   // A shared link pins its place by id; the name stands in for the label until a new search.
   const [place, setPlace] = useState<Place | null>(() =>
@@ -126,8 +129,6 @@ export function SearchForm({
               <FieldLabel htmlFor="city">{t.city}</FieldLabel>
               <CityCombobox
                 id="city"
-                t={t}
-                lang={lang}
                 inputRef={cityInput}
                 inputValue={city}
                 onInputValueChange={setCity}

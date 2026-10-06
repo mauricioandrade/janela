@@ -1,45 +1,42 @@
-import { Fragment } from "react"
 import { CloudRainIcon, SunIcon, ThermometerIcon, WindIcon, type LucideIcon } from "lucide-react"
+import { Progress } from "@base-ui/react/progress"
 import { cn } from "cn"
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { ProgressIndicator, ProgressTrack } from "@/components/ui/progress"
-import { Progress } from "@base-ui/react/progress"
 import { Separator } from "@/components/ui/separator"
-import type { Lang, OutdoorWindow } from "@/lib/api"
-import { formatDay, formatTime, scoreTier } from "@/lib/format"
-import type { Messages } from "@/lib/i18n"
-
-const TIER_FILL = {
-  high: "bg-score-high",
-  mid: "bg-score-mid",
-  low: "bg-score-low",
-} as const
+import { useI18n } from "@/hooks/use-i18n"
+import type { OutdoorWindow } from "@/lib/api"
+import { formatDay, formatTime } from "@/lib/format"
+import { scoreFill } from "@/lib/score"
 
 type WindowListProps = {
   windows: OutdoorWindow[]
-  lang: Lang
-  t: Messages
 }
 
-export function WindowList({ windows, lang, t }: WindowListProps) {
+/** The ranked windows as an ordered list, best first: the accessible counterpart of the day strip. */
+export function WindowList({ windows }: WindowListProps) {
+  const { t } = useI18n()
   return (
     <Card>
       <h2 className="sr-only">{t.windowsHeading}</h2>
-      <CardContent className="flex flex-col gap-5">
-        {windows.map((window, index) => (
-          <Fragment key={window.start}>
-            {index > 0 && <Separator />}
-            <WindowRow window={window} rank={index + 1} lang={lang} t={t} />
-          </Fragment>
-        ))}
+      <CardContent>
+        <ol className="flex flex-col gap-5">
+          {windows.map((window, index) => (
+            <li key={window.start} className="flex flex-col gap-5">
+              {index > 0 && <Separator />}
+              <WindowRow window={window} rank={index + 1} />
+            </li>
+          ))}
+        </ol>
       </CardContent>
     </Card>
   )
 }
 
-function WindowRow({ window, rank, lang, t }: { window: OutdoorWindow; rank: number; lang: Lang; t: Messages }) {
+function WindowRow({ window, rank }: { window: OutdoorWindow; rank: number }) {
+  const { t, lang } = useI18n()
   const metrics: { icon: LucideIcon; label: string; value: string }[] = []
   if (window.apparentTempC !== null)
     metrics.push({ icon: ThermometerIcon, label: t.feelsLike, value: `${Math.round(window.apparentTempC)}°C` })
@@ -74,7 +71,7 @@ function WindowRow({ window, rank, lang, t }: { window: OutdoorWindow; rank: num
         </ul>
         <Progress.Root value={window.score} className="flex w-40 items-center gap-3" aria-label={t.score}>
           <ProgressTrack className="h-2">
-            <ProgressIndicator className={TIER_FILL[scoreTier(window.score)]} />
+            <ProgressIndicator className={scoreFill(window.score)} />
           </ProgressTrack>
           <span className="w-7 text-right text-sm font-semibold tabular-nums">{window.score}</span>
         </Progress.Root>

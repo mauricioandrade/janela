@@ -1,13 +1,14 @@
 import { CpuIcon, FileTextIcon } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
+import { useI18n } from "@/hooks/use-i18n"
 import type { WindowsResponse } from "@/lib/api"
-import type { Messages } from "@/lib/i18n"
 
-type NarrativeProps = Pick<WindowsResponse, "narrative" | "aiGenerated" | "model"> & { t: Messages }
+type NarrativeProps = Pick<WindowsResponse, "narrative" | "aiGenerated" | "model">
 
 /** The model's recommendation is the headline of the results, set apart by type rather than a box. */
-export function Narrative({ narrative, aiGenerated, model, t }: NarrativeProps) {
+export function Narrative({ narrative, aiGenerated, model }: NarrativeProps) {
+  const { t } = useI18n()
   return (
     <section className="flex flex-col gap-4 border-l-4 border-primary pl-5">
       <h2 className="sr-only">{t.recommendation}</h2>

@@ -33,6 +33,9 @@ export type OutdoorWindow = {
   maxWindKmh: number | null
 }
 
+/** A search as the form submits it; the language is added by the page. */
+export type SearchValues = Omit<WindowsParams, "lang">
+
 export type WindowsResponse = {
   location: City & { timezone: string }
   activity: Activity
@@ -64,11 +67,11 @@ export async function fetchWindows(params: WindowsParams, signal?: AbortSignal):
     lang: params.lang,
   })
   if (params.cityId) query.set("cityId", String(params.cityId))
-  return getJson(`/api/windows?${query}`, signal)
+  return getJson(`/api/v1/windows?${query}`, signal)
 }
 
 export async function fetchCities(q: string, lang: Lang, signal?: AbortSignal): Promise<City[]> {
-  return getJson(`/api/cities?${new URLSearchParams({ q, lang })}`, signal)
+  return getJson(`/api/v1/cities?${new URLSearchParams({ q, lang })}`, signal)
 }
 
 async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
