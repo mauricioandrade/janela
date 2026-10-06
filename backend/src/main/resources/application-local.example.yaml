@@ -1,0 +1,13 @@
+# Copy to application-local.yaml (gitignored) and run with the "local" profile:
+#   ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+#
+# Backend in WSL2 + Ollama on Windows: with networkingMode=mirrored, localhost works.
+# Without mirrored networking, replace localhost with the Windows host IP
+# (e.g. the output of: ip route show default | awk '{print $3}').
+spring:
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: gemma3:4b
