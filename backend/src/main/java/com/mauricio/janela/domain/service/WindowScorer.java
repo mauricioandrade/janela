@@ -4,11 +4,14 @@ import com.mauricio.janela.domain.model.Activity;
 import com.mauricio.janela.domain.model.HourlyForecast;
 import com.mauricio.janela.domain.model.OutdoorWindow;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -27,7 +30,8 @@ public class WindowScorer {
     /**
      * Top {@value #MAX_WINDOWS} non-overlapping daytime windows covering {@code durationMinutes}
      * (rounded up to whole hours), best first. Windows containing any hour scoring below
-     * {@value #MIN_HOUR_SCORE} are discarded.
+     * {@value #MIN_HOUR_SCORE} are discarded. Across several days, each day's best window is picked before
+     * a second window from the same day, so the options are spread out rather than stacked on one morning.
      */
     public List<OutdoorWindow> findBestWindows(List<HourlyForecast> forecast, Activity activity, int durationMinutes) {
         Objects.requireNonNull(activity, "activity");
@@ -53,15 +57,17 @@ public class WindowScorer {
                 .thenComparing(candidate -> candidate.window().start()));
 
         List<OutdoorWindow> selected = new ArrayList<>();
+        Set<LocalDate> daysWithAWindow = new HashSet<>();
         for (Candidate candidate : candidates) {
-            if (selected.size() == MAX_WINDOWS) {
-                break;
-            }
-            if (selected.stream().noneMatch(chosen -> chosen.overlaps(candidate.window()))) {
-                selected.add(candidate.window());
+            if (daysWithAWindow.add(candidate.window().start().toLocalDate())) {
+                select(candidate, selected);
             }
         }
-        return List.copyOf(selected);
+        for (Candidate candidate : candidates) {
+            select(candidate, selected);
+        }
+        // Back to rank order: best first, earliest first on ties.
+        return candidates.stream().map(Candidate::window).filter(selected::contains).toList();
     }
 
     /**
@@ -88,6 +94,13 @@ public class WindowScorer {
         }
 
         return Math.clamp(score, 0, 100);
+    }
+
+    private static void select(Candidate candidate, List<OutdoorWindow> selected) {
+        if (selected.size() < MAX_WINDOWS
+                && selected.stream().noneMatch(chosen -> chosen.overlaps(candidate.window()))) {
+            selected.add(candidate.window());
+        }
     }
 
     private boolean isConsecutiveDaytime(List<HourlyForecast> block) {

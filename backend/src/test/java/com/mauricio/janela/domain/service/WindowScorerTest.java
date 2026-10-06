@@ -186,6 +186,33 @@ class WindowScorerTest {
         }
 
         @Test
+        void spreadsOptionsAcrossDaysBeforeRepeatingOne() {
+            // Day 1: room for three perfect windows (06–12). Day 2: only 06–08 is good, and a little worse.
+            List<HourlyForecast> forecast = new ArrayList<>();
+            for (int h = 6; h < 12; h++) {
+                forecast.add(hour(h, 18.0, 1.0, 0, 5.0, true));
+            }
+            forecast.add(new HourlyForecast(DAY.plusDays(1).atTime(6, 0), 18.0, 18.0, 20, 1.0, 5.0, true));
+            forecast.add(new HourlyForecast(DAY.plusDays(1).atTime(7, 0), 18.0, 18.0, 20, 1.0, 5.0, true));
+
+            List<OutdoorWindow> windows = scorer.findBestWindows(forecast, Activity.RUN, 120);
+
+            assertThat(windows).extracting(OutdoorWindow::start)
+                    .containsExactly(at(6), at(8), DAY.plusDays(1).atTime(6, 0));
+        }
+
+        @Test
+        void keepsSeveralWindowsOnTheSameDayWhenThereIsOnlyOneDay() {
+            List<HourlyForecast> forecast = new ArrayList<>();
+            for (int h = 6; h < 12; h++) {
+                forecast.add(hour(h, 18.0, 1.0, 0, 5.0, true));
+            }
+
+            assertThat(scorer.findBestWindows(forecast, Activity.RUN, 120)).extracting(OutdoorWindow::start)
+                    .containsExactly(at(6), at(8), at(10));
+        }
+
+        @Test
         void rejectsNonPositiveDuration() {
             assertThatThrownBy(() -> scorer.findBestWindows(List.of(), Activity.RUN, 0))
                     .isInstanceOf(IllegalArgumentException.class);
