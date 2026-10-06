@@ -13,13 +13,13 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 /**
- * Query parameters of {@code GET /api/windows}. {@code days} defaults to 1 and {@code lang} to "pt".
- * {@code cityId} comes from {@code GET /api/cities} and pins the exact place; Open-Meteo ids are 32-bit.
+ * Query parameters of {@code GET /api/v1/windows}. {@code days} defaults to 1 and {@code lang} to "pt".
+ * {@code cityId} comes from {@code GET /api/v1/cities} and pins the exact place; Open-Meteo ids are 32-bit.
  */
 public record WindowsRequest(
         @Schema(description = "City name; a label only when cityId is given", example = "Itobi")
         @NotBlank @Size(max = 100) String city,
-        @Schema(description = "Place id from GET /api/cities; pins that exact place", example = "3460543")
+        @Schema(description = "Place id from GET /api/v1/cities; pins that exact place", example = "3460543")
         @Positive @Max(Integer.MAX_VALUE) Long cityId,
         @Schema(description = "Outdoor activity; each has its own comfort limits", example = "BIKE")
         @NotNull Activity activity,

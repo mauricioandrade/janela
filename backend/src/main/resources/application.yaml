@@ -5,6 +5,12 @@ spring:
   threads:
     virtual:
       enabled: true
+  # Native API versioning (Spring Framework 7): /api/v1/... — the second path segment is the version.
+  mvc:
+    apiversion:
+      use:
+        path-segment: 1
+      supported: v1
   ai:
     ollama:
       base-url: ${OLLAMA_BASE_URL:http://localhost:11434}

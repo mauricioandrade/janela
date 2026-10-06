@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
- * Query parameters of {@code GET /api/cities}. {@code lang} defaults to "pt" and sets the language of place names.
+ * Query parameters of {@code GET /api/v1/cities}. {@code lang} defaults to "pt" and sets the language of place names.
  */
 public record CitiesRequest(
         @Schema(description = "Partial city name", example = "Itobi", minLength = 2, maxLength = 100)

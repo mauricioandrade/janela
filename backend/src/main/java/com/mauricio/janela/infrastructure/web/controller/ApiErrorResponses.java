@@ -19,23 +19,23 @@ final class ApiErrorResponses {
             @Schema(example = "Bad Request") String title,
             @Schema(example = "400") int status,
             @Schema(example = "Invalid request parameters.") String detail,
-            @Schema(example = "/api/windows") String instance,
+            @Schema(example = "/api/v1/windows") String instance,
             @Schema(description = "Invalid parameters; only on 400", nullable = true) List<String> fields
     ) {
     }
 
     static final String INVALID_PARAMETERS = """
             {"type": "about:blank", "title": "Bad Request", "status": 400,
-             "detail": "Invalid request parameters.", "instance": "/api/windows", "fields": ["durationMinutes"]}""";
+             "detail": "Invalid request parameters.", "instance": "/api/v1/windows", "fields": ["durationMinutes"]}""";
 
     static final String CITY_NOT_FOUND = """
             {"type": "about:blank", "title": "Not Found", "status": 404,
-             "detail": "City not found.", "instance": "/api/windows"}""";
+             "detail": "City not found.", "instance": "/api/v1/windows"}""";
 
     static final String WEATHER_UNAVAILABLE = """
             {"type": "about:blank", "title": "Service Unavailable", "status": 503,
              "detail": "Weather data is temporarily unavailable. Please try again later.",
-             "instance": "/api/windows"}""";
+             "instance": "/api/v1/windows"}""";
 
     private ApiErrorResponses() {
     }

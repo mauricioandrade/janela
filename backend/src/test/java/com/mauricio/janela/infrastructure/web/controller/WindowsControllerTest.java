@@ -52,7 +52,7 @@ class WindowsControllerTest {
         when(findWindowsUseCase.findWindows(any())).thenReturn(new WindowsResult(
                 CAMPINAS, Activity.RUN, List.of(window), Narrative.fromModel("Go early.", "gemma3:4b")));
 
-        mockMvc.perform(get("/api/windows")
+        mockMvc.perform(get("/api/v1/windows")
                         .param("city", " Campinas ")
                         .param("activity", "RUN")
                         .param("durationMinutes", "60")
@@ -80,7 +80,7 @@ class WindowsControllerTest {
         when(findWindowsUseCase.findWindows(any())).thenReturn(new WindowsResult(
                 itobi, Activity.BIKE, List.of(), Narrative.fromTemplate("Sem janelas.")));
 
-        mockMvc.perform(get("/api/windows")
+        mockMvc.perform(get("/api/v1/windows")
                         .param("city", "Itobi")
                         .param("cityId", "3460543")
                         .param("activity", "BIKE")
@@ -95,10 +95,20 @@ class WindowsControllerTest {
 
     @Test
     void answersSpringErrorsAsProblemDetails() throws Exception {
-        mockMvc.perform(post("/api/windows"))
+        mockMvc.perform(post("/api/v1/windows"))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.status").value(405));
+    }
+
+    @Test
+    void rejectsUnsupportedApiVersions() throws Exception {
+        mockMvc.perform(get("/api/v2/windows").param("city", "Campinas").param("activity", "RUN")
+                        .param("durationMinutes", "60"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+        verifyNoInteractions(findWindowsUseCase);
     }
 
     @Test
@@ -106,7 +116,7 @@ class WindowsControllerTest {
         when(findWindowsUseCase.findWindows(any())).thenReturn(new WindowsResult(
                 CAMPINAS, Activity.WALK, List.of(), Narrative.fromTemplate("Sem janelas.")));
 
-        mockMvc.perform(get("/api/windows")
+        mockMvc.perform(get("/api/v1/windows")
                         .param("city", "Campinas")
                         .param("activity", "WALK")
                         .param("durationMinutes", "30"))
@@ -119,7 +129,7 @@ class WindowsControllerTest {
 
     @Test
     void rejectsOutOfRangeParameters() throws Exception {
-        mockMvc.perform(get("/api/windows")
+        mockMvc.perform(get("/api/v1/windows")
                         .param("city", "")
                         .param("activity", "RUN")
                         .param("durationMinutes", "5")
@@ -134,7 +144,7 @@ class WindowsControllerTest {
 
     @Test
     void rejectsUnknownActivity() throws Exception {
-        mockMvc.perform(get("/api/windows")
+        mockMvc.perform(get("/api/v1/windows")
                         .param("city", "Campinas")
                         .param("activity", "SWIM")
                         .param("durationMinutes", "60"))
@@ -148,7 +158,7 @@ class WindowsControllerTest {
     void returns404WhenCityIsUnknown() throws Exception {
         when(findWindowsUseCase.findWindows(any())).thenThrow(new LocationNotFoundException("Atlantis"));
 
-        mockMvc.perform(get("/api/windows")
+        mockMvc.perform(get("/api/v1/windows")
                         .param("city", "Atlantis")
                         .param("activity", "RUN")
                         .param("durationMinutes", "60"))
@@ -161,7 +171,7 @@ class WindowsControllerTest {
         when(findWindowsUseCase.findWindows(any()))
                 .thenThrow(new ExternalServiceUnavailableException("Open-Meteo forecast request failed", null));
 
-        mockMvc.perform(get("/api/windows")
+        mockMvc.perform(get("/api/v1/windows")
                         .param("city", "Campinas")
                         .param("activity", "RUN")
                         .param("durationMinutes", "60"))
@@ -171,13 +181,13 @@ class WindowsControllerTest {
 
     @Test
     void allowsCorsOnlyFromTheFrontendDevServer() throws Exception {
-        mockMvc.perform(options("/api/windows")
+        mockMvc.perform(options("/api/v1/windows")
                         .header("Origin", "http://localhost:5173")
                         .header("Access-Control-Request-Method", "GET"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"));
 
-        mockMvc.perform(options("/api/windows")
+        mockMvc.perform(options("/api/v1/windows")
                         .header("Origin", "https://evil.example")
                         .header("Access-Control-Request-Method", "GET"))
                 .andExpect(status().isForbidden());

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/windows")
+@RequestMapping("/api/{version}/windows")
 @Tag(name = "Windows", description = "Best outdoor time windows and the model's recommendation")
 public class WindowsController {
 
@@ -27,7 +27,7 @@ public class WindowsController {
         this.findWindowsUseCase = findWindowsUseCase;
     }
 
-    @GetMapping
+    @GetMapping(version = "v1")
     @Operation(
             summary = "Find the best windows for an activity",
             description = """

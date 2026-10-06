@@ -4,7 +4,7 @@ import com.mauricio.janela.domain.model.Location;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * A city suggestion. {@code id} goes back to {@code GET /api/windows} as {@code cityId}.
+ * A city suggestion. {@code id} goes back to {@code GET /api/v1/windows} as {@code cityId}.
  */
 public record CityResponse(
         @Schema(description = "Place id; send it back as cityId", example = "3460543") Long id,

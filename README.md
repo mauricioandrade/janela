@@ -112,7 +112,10 @@ cd frontend && pnpm lint && pnpm build
 Interactive docs at http://localhost:8080/swagger-ui.html while the backend runs; the OpenAPI 3.1 document
 is generated from the code at `/v3/api-docs` and exported to [`docs/openapi.yaml`](docs/openapi.yaml).
 
-`GET /api/cities?q=Itobi&lang=pt` suggests up to 6 places while you type, each with its state (`admin1`),
+Routes are versioned in the path (`/api/v1/...`) with Spring Framework 7's native API versioning; an
+unsupported version answers `400` with a problem detail.
+
+`GET /api/v1/cities?q=Itobi&lang=pt` suggests up to 6 places while you type, each with its state (`admin1`),
 country and an `id`:
 
 ```json
@@ -120,19 +123,19 @@ country and an `id`:
    "latitude": -21.73694, "longitude": -46.975 }]
 ```
 
-`GET /api/windows`
+`GET /api/v1/windows`
 
 | Parameter         | Required | Values                                      |
 |-------------------|----------|---------------------------------------------|
 | `city`            | yes      | City name, e.g. `Recife`                    |
-| `cityId`          | no       | An `id` from `/api/cities`; pins that exact place instead of the name's best match |
+| `cityId`          | no       | An `id` from `/api/v1/cities`; pins that exact place instead of the name's best match |
 | `activity`        | yes      | `RUN`, `WALK`, `BIKE`, `PICNIC`, `GARDENING` |
 | `durationMinutes` | yes      | 15–480 (rounded up to whole hours)          |
 | `days`            | no       | 1–3, default 1                              |
 | `lang`            | no       | `pt` or `en`, default `pt`                  |
 
 ```bash
-curl "http://localhost:8080/api/windows?city=Recife&activity=RUN&durationMinutes=60&days=2&lang=en"
+curl "http://localhost:8080/api/v1/windows?city=Recife&activity=RUN&durationMinutes=60&days=2&lang=en"
 ```
 
 ```json
@@ -150,7 +153,7 @@ curl "http://localhost:8080/api/windows?city=Recife&activity=RUN&durationMinutes
 }
 ```
 
-Times are local to the city and `end` is exclusive. Errors use RFC 9457 problem details:
+Times are local to the city and `end` is exclusive. Errors, including Spring's own (unknown route, wrong method), use RFC 9457 problem details:
 `404` for an unknown city, `400` with a `fields` list for invalid parameters, `503` when the forecast is unavailable.
 
 ## Why open models

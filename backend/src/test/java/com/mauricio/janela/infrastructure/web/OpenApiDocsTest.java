@@ -23,10 +23,10 @@ class OpenApiDocsTest {
         mockMvc.perform(get("/v3/api-docs"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.info.title").value("Janela API"))
-                .andExpect(jsonPath("$.paths['/api/windows'].get.parameters[*].name")
+                .andExpect(jsonPath("$.paths['/api/v1/windows'].get.parameters[*].name")
                         .value(hasItems("city", "cityId", "activity", "durationMinutes", "days", "lang")))
-                .andExpect(jsonPath("$.paths['/api/windows'].get.responses['404']").exists())
-                .andExpect(jsonPath("$.paths['/api/windows'].get.responses['503']").exists())
-                .andExpect(jsonPath("$.paths['/api/cities'].get.parameters[*].name").value(hasItems("q", "lang")));
+                .andExpect(jsonPath("$.paths['/api/v1/windows'].get.responses['404']").exists())
+                .andExpect(jsonPath("$.paths['/api/v1/windows'].get.responses['503']").exists())
+                .andExpect(jsonPath("$.paths['/api/v1/cities'].get.parameters[*].name").value(hasItems("q", "lang")));
     }
 }

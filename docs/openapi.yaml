@@ -17,7 +17,7 @@ tags:
 - name: Cities
   description: City suggestions for the search field
 paths:
-  /api/windows:
+  /api/v1/windows:
     get:
       tags:
       - Windows
@@ -41,12 +41,12 @@ paths:
         example: Itobi
       - name: cityId
         in: query
-        description: Place id from GET /api/cities; pins that exact place
+        description: Place id from GET /api/v1/cities; pins that exact place
         required: false
         schema:
           type: integer
           format: int64
-          description: Place id from GET /api/cities; pins that exact place
+          description: Place id from GET /api/v1/cities; pins that exact place
           example: 3460543
           exclusiveMinimum: 0
           maximum: 2147483647
@@ -121,7 +121,7 @@ paths:
                 title: Bad Request
                 status: 400
                 detail: Invalid request parameters.
-                instance: /api/windows
+                instance: /api/v1/windows
                 fields:
                 - durationMinutes
         "404":
@@ -135,7 +135,7 @@ paths:
                 title: Not Found
                 status: 404
                 detail: City not found.
-                instance: /api/windows
+                instance: /api/v1/windows
         "503":
           description: Open-Meteo could not be reached
           content:
@@ -148,14 +148,14 @@ paths:
                 status: 503
                 detail: Weather data is temporarily unavailable. Please try again
                   later.
-                instance: /api/windows
-  /api/cities:
+                instance: /api/v1/windows
+  /api/v1/cities:
     get:
       tags:
       - Cities
       summary: Suggest cities for a partial name
       description: "Up to 6 places, best first, with state and country so namesakes\
-        \ can be told apart. Pass the chosen `id` to GET /api/windows as `cityId`."
+        \ can be told apart. Pass the chosen `id` to GET /api/v1/windows as `cityId`."
       operationId: searchCities
       parameters:
       - name: q
@@ -201,7 +201,7 @@ paths:
                 title: Bad Request
                 status: 400
                 detail: Invalid request parameters.
-                instance: /api/cities
+                instance: /api/v1/cities
                 fields:
                 - q
         "503":
@@ -231,7 +231,7 @@ components:
           example: Invalid request parameters.
         instance:
           type: string
-          example: /api/windows
+          example: /api/v1/windows
         fields:
           type:
           - array
