@@ -1,6 +1,6 @@
 package com.mauricio.janela.infrastructure.integration.openmeteo;
 
-import com.mauricio.janela.domain.exception.WeatherUnavailableException;
+import com.mauricio.janela.domain.exception.ExternalServiceUnavailableException;
 import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.port.out.GeocodingProvider;
@@ -25,16 +25,16 @@ public class OpenMeteoGeocodingClient implements GeocodingProvider {
     }
 
     @Override
-    public Optional<Location> findByName(String city) {
-        return search(city, 1, Language.PT).stream().findFirst();
+    public Optional<Location> findByName(String city, Language language) {
+        return search(city, 1, language).stream().findFirst();
     }
 
     @Override
-    public Optional<Location> findById(long id) {
+    public Optional<Location> findById(long id, Language language) {
         GeocodingResponse.Result result;
         try {
             result = restClient.get()
-                    .uri(uri -> uri.path("/get").queryParam("id", id).queryParam("language", "pt").build())
+                    .uri(uri -> uri.path("/get").queryParam("id", id).queryParam("language", language.code()).build())
                     .retrieve()
                     .body(GeocodingResponse.Result.class);
         } catch (HttpClientErrorException e) {
@@ -42,9 +42,9 @@ public class OpenMeteoGeocodingClient implements GeocodingProvider {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST || e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 return Optional.empty();
             }
-            throw new WeatherUnavailableException("Open-Meteo geocoding request failed", e);
+            throw new ExternalServiceUnavailableException("Open-Meteo geocoding request failed", e);
         } catch (RestClientException e) {
-            throw new WeatherUnavailableException("Open-Meteo geocoding request failed", e);
+            throw new ExternalServiceUnavailableException("Open-Meteo geocoding request failed", e);
         }
         return Optional.ofNullable(result)
                 .filter(GeocodingResponse.Result::hasCoordinates)
@@ -64,7 +64,7 @@ public class OpenMeteoGeocodingClient implements GeocodingProvider {
                     .retrieve()
                     .body(GeocodingResponse.class);
         } catch (RestClientException e) {
-            throw new WeatherUnavailableException("Open-Meteo geocoding request failed", e);
+            throw new ExternalServiceUnavailableException("Open-Meteo geocoding request failed", e);
         }
 
         if (response == null || response.results() == null) {

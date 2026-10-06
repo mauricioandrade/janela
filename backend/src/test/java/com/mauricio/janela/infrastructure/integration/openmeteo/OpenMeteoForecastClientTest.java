@@ -1,8 +1,9 @@
 package com.mauricio.janela.infrastructure.integration.openmeteo;
 
-import com.mauricio.janela.domain.exception.WeatherUnavailableException;
+import com.mauricio.janela.domain.exception.ExternalServiceUnavailableException;
 import com.mauricio.janela.domain.model.HourlyForecast;
 import com.mauricio.janela.domain.model.Location;
+import com.mauricio.janela.domain.model.TestLocations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -23,7 +24,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 class OpenMeteoForecastClientTest {
 
-    private static final Location CAMPINAS = new Location("Campinas", -22.9, -47.06, "America/Sao_Paulo");
+    private static final Location CAMPINAS = TestLocations.CAMPINAS;
 
     private MockRestServiceServer server;
     private OpenMeteoForecastClient client;
@@ -89,6 +90,6 @@ class OpenMeteoForecastClientTest {
                 .andRespond(withServerError());
 
         assertThatThrownBy(() -> client.getHourlyForecast(CAMPINAS, 1))
-                .isInstanceOf(WeatherUnavailableException.class);
+                .isInstanceOf(ExternalServiceUnavailableException.class);
     }
 }

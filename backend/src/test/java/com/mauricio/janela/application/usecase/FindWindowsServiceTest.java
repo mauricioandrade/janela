@@ -7,6 +7,7 @@ import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.NarrativeRequest;
+import com.mauricio.janela.domain.model.TestLocations;
 import com.mauricio.janela.domain.port.in.FindWindowsQuery;
 import com.mauricio.janela.domain.port.in.WindowsResult;
 import com.mauricio.janela.domain.port.out.GeocodingProvider;
@@ -30,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FindWindowsServiceTest {
 
-    private static final Location CAMPINAS = new Location("Campinas", -22.9, -47.06, "America/Sao_Paulo");
+    private static final Location CAMPINAS = TestLocations.CAMPINAS;
     private static final Location ITOBI = new Location(3460543L, "Itobi", "São Paulo", "Brasil", "BR",
             -21.73694, -46.975, "America/Sao_Paulo");
     private static final LocalDate TODAY = LocalDate.of(2026, 10, 6);
@@ -109,12 +110,12 @@ class FindWindowsServiceTest {
     private record FakeGeocoding(Optional<Location> byName, Optional<Location> byId) implements GeocodingProvider {
 
         @Override
-        public Optional<Location> findByName(String city) {
+        public Optional<Location> findByName(String city, Language language) {
             return byName;
         }
 
         @Override
-        public Optional<Location> findById(long id) {
+        public Optional<Location> findById(long id, Language language) {
             return byId;
         }
 

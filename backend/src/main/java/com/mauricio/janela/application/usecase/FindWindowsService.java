@@ -55,8 +55,8 @@ public class FindWindowsService implements FindWindowsUseCase {
     @Override
     public WindowsResult findWindows(FindWindowsQuery query) {
         Location location = (query.cityId() != null
-                ? geocodingProvider.findById(query.cityId())
-                : geocodingProvider.findByName(query.city()))
+                ? geocodingProvider.findById(query.cityId(), query.language())
+                : geocodingProvider.findByName(query.city(), query.language()))
                 .orElseThrow(() -> new LocationNotFoundException(query.city()));
 
         LocalDateTime now = LocalDateTime.now(clock.withZone(zoneOf(location)));

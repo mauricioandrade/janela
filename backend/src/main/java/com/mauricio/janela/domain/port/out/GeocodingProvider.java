@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface GeocodingProvider {
 
-    /** The best match for a free-text city name. */
-    Optional<Location> findByName(String city);
+    /** The best match for a free-text city name, with names in the given language. */
+    Optional<Location> findByName(String city, Language language);
 
-    /** The exact place behind a geocoder id, as returned by {@link #search}. */
-    Optional<Location> findById(long id);
+    /** The exact place behind a geocoder id, as returned by {@link #search}, with names in the given language. */
+    Optional<Location> findById(long id, Language language);
 
     /** Up to {@code limit} places matching a partial name, best first, with names in the given language. */
     List<Location> search(String query, int limit, Language language);

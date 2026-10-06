@@ -44,12 +44,12 @@ class SearchCitiesServiceTest {
     private static GeocodingProvider geocoderReturning(List<Location> results) {
         return new GeocodingProvider() {
             @Override
-            public Optional<Location> findByName(String city) {
+            public Optional<Location> findByName(String city, Language language) {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<Location> findById(long id) {
+            public Optional<Location> findById(long id, Language language) {
                 return Optional.empty();
             }
 

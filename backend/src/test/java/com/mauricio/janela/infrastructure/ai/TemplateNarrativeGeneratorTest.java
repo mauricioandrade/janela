@@ -6,6 +6,7 @@ import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.NarrativeRequest;
 import com.mauricio.janela.domain.model.OutdoorWindow;
+import com.mauricio.janela.domain.model.TestLocations;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TemplateNarrativeGeneratorTest {
 
-    private static final Location CAMPINAS = new Location("Campinas", -22.9, -47.06, "America/Sao_Paulo");
+    private static final Location CAMPINAS = TestLocations.CAMPINAS;
     private static final OutdoorWindow MORNING = new OutdoorWindow(
             LocalDateTime.of(2026, 10, 6, 6, 0), LocalDateTime.of(2026, 10, 6, 7, 0), 91, 19.4, 1.2, 5, 8.0);
     private static final OutdoorWindow EVENING = new OutdoorWindow(

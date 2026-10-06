@@ -1,18 +1,20 @@
 package com.mauricio.janela.infrastructure.web.controller;
 
+import com.mauricio.janela.domain.exception.ExternalServiceUnavailableException;
 import com.mauricio.janela.domain.exception.LocationNotFoundException;
-import com.mauricio.janela.domain.exception.WeatherUnavailableException;
 import com.mauricio.janela.domain.model.Activity;
 import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.OutdoorWindow;
+import com.mauricio.janela.domain.model.TestLocations;
 import com.mauricio.janela.domain.port.in.FindWindowsQuery;
 import com.mauricio.janela.domain.port.in.FindWindowsUseCase;
 import com.mauricio.janela.domain.port.in.WindowsResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,6 +28,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(WindowsController.class)
 class WindowsControllerTest {
 
-    private static final Location CAMPINAS = new Location("Campinas", -22.9, -47.06, "America/Sao_Paulo");
+    private static final Location CAMPINAS = TestLocations.CAMPINAS;
 
     @Autowired
     private MockMvc mockMvc;
@@ -87,6 +91,14 @@ class WindowsControllerTest {
 
         verify(findWindowsUseCase).findWindows(
                 new FindWindowsQuery("Itobi", 3460543L, Activity.BIKE, 120, 1, Language.PT));
+    }
+
+    @Test
+    void answersSpringErrorsAsProblemDetails() throws Exception {
+        mockMvc.perform(post("/api/windows"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.status").value(405));
     }
 
     @Test
@@ -147,7 +159,7 @@ class WindowsControllerTest {
     @Test
     void returns503WhenWeatherIsUnavailable() throws Exception {
         when(findWindowsUseCase.findWindows(any()))
-                .thenThrow(new WeatherUnavailableException("Open-Meteo forecast request failed", null));
+                .thenThrow(new ExternalServiceUnavailableException("Open-Meteo forecast request failed", null));
 
         mockMvc.perform(get("/api/windows")
                         .param("city", "Campinas")

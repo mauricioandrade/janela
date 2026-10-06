@@ -2,10 +2,10 @@ package com.mauricio.janela.infrastructure.ai;
 
 import com.mauricio.janela.domain.model.Activity;
 import com.mauricio.janela.domain.model.Language;
-import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.NarrativeRequest;
 import com.mauricio.janela.domain.model.OutdoorWindow;
+import com.mauricio.janela.domain.model.TestLocations;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 class OllamaNarrativeGeneratorTest {
 
     private static final NarrativeRequest REQUEST = new NarrativeRequest(
-            new Location("Campinas", -22.9, -47.06, "America/Sao_Paulo"),
+            TestLocations.CAMPINAS,
             Activity.RUN,
             60,
             List.of(new OutdoorWindow(LocalDateTime.of(2026, 10, 6, 6, 0), LocalDateTime.of(2026, 10, 6, 7, 0),

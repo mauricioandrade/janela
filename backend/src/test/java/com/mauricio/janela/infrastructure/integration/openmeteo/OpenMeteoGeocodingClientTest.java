@@ -1,6 +1,6 @@
 package com.mauricio.janela.infrastructure.integration.openmeteo;
 
-import com.mauricio.janela.domain.exception.WeatherUnavailableException;
+import com.mauricio.janela.domain.exception.ExternalServiceUnavailableException;
 import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Location;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +13,14 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.queryParam;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServiceUnavailable;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-import static org.hamcrest.Matchers.startsWith;
-import static org.springframework.http.HttpMethod.GET;
 
 class OpenMeteoGeocodingClientTest {
 
@@ -44,7 +44,7 @@ class OpenMeteoGeocodingClientTest {
                 .andRespond(withSuccess(new ClassPathResource("openmeteo/geocoding-campinas.json"),
                         MediaType.APPLICATION_JSON));
 
-        assertThat(client.findByName("Campinas"))
+        assertThat(client.findByName("Campinas", Language.PT))
                 .contains(new Location(3467865L, "Campinas", "São Paulo", "Brasil", "BR", -22.90556, -47.06083,
                         "America/Sao_Paulo"));
         server.verify();
@@ -69,12 +69,13 @@ class OpenMeteoGeocodingClientTest {
     void findsPlaceById() {
         server.expect(requestTo(startsWith("https://geocoding.test/v1/get")))
                 .andExpect(queryParam("id", "3460543"))
+                .andExpect(queryParam("language", "en"))
                 .andRespond(withSuccess("""
                         {"id": 3460543, "name": "Itobi", "latitude": -21.73694, "longitude": -46.975,
                          "country_code": "BR", "timezone": "America/Sao_Paulo", "country": "Brasil",
                          "admin1": "São Paulo"}""", MediaType.APPLICATION_JSON));
 
-        assertThat(client.findById(3460543))
+        assertThat(client.findById(3460543, Language.EN))
                 .contains(new Location(3460543L, "Itobi", "São Paulo", "Brasil", "BR", -21.73694, -46.975,
                         "America/Sao_Paulo"));
         server.verify();
@@ -85,7 +86,7 @@ class OpenMeteoGeocodingClientTest {
         server.expect(requestTo(startsWith("https://geocoding.test/v1/get")))
                 .andRespond(withBadRequest().body("{\"error\": true, \"reason\": \"Location ID not found.\"}"));
 
-        assertThat(client.findById(99999999)).isEmpty();
+        assertThat(client.findById(99999999, Language.PT)).isEmpty();
     }
 
     @Test
@@ -93,7 +94,7 @@ class OpenMeteoGeocodingClientTest {
         server.expect(requestTo(startsWith("https://geocoding.test/v1/search")))
                 .andRespond(withSuccess("{\"generationtime_ms\": 0.4}", MediaType.APPLICATION_JSON));
 
-        assertThat(client.findByName("Nowhereville")).isEmpty();
+        assertThat(client.findByName("Nowhereville", Language.PT)).isEmpty();
     }
 
     @Test
@@ -101,7 +102,7 @@ class OpenMeteoGeocodingClientTest {
         server.expect(requestTo(startsWith("https://geocoding.test/v1/search")))
                 .andRespond(withServiceUnavailable());
 
-        assertThatThrownBy(() -> client.findByName("Campinas"))
-                .isInstanceOf(WeatherUnavailableException.class);
+        assertThatThrownBy(() -> client.findByName("Campinas", Language.PT))
+                .isInstanceOf(ExternalServiceUnavailableException.class);
     }
 }

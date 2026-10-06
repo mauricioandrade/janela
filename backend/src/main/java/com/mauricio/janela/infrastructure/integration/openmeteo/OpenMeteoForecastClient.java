@@ -1,6 +1,6 @@
 package com.mauricio.janela.infrastructure.integration.openmeteo;
 
-import com.mauricio.janela.domain.exception.WeatherUnavailableException;
+import com.mauricio.janela.domain.exception.ExternalServiceUnavailableException;
 import com.mauricio.janela.domain.model.HourlyForecast;
 import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.port.out.WeatherProvider;
@@ -39,7 +39,7 @@ public class OpenMeteoForecastClient implements WeatherProvider {
                     .retrieve()
                     .body(ForecastResponse.class);
         } catch (RestClientException e) {
-            throw new WeatherUnavailableException("Open-Meteo forecast request failed", e);
+            throw new ExternalServiceUnavailableException("Open-Meteo forecast request failed", e);
         }
         return ForecastMapper.toHourlyForecasts(response);
     }

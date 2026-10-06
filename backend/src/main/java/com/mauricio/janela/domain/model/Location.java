@@ -14,9 +14,4 @@ public record Location(
         double longitude,
         String timezone
 ) {
-
-    /** A place known only by name and coordinates. */
-    public Location(String name, double latitude, double longitude, String timezone) {
-        this(null, name, null, null, null, latitude, longitude, timezone);
-    }
 }
