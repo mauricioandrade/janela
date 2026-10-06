@@ -80,8 +80,9 @@ cd frontend && pnpm install && pnpm dev
 Open http://localhost:5173. The first answer takes about 15 seconds while Gemma writes; without Ollama
 you get the template text in a few seconds.
 
-Searches are shareable: `http://localhost:5173/?city=Recife&activity=run&duration=60&days=2&lang=en`
-runs the search as soon as the page opens.
+Type a city and pick a suggestion — "Itobi – SP", with the country and state flags — so a name shared by
+several places resolves to the right one. Searches are shareable:
+`http://localhost:5173/?city=Recife&activity=run&duration=60&days=2&lang=en` runs the search as soon as the page opens.
 
 ### Configuration
 
@@ -108,11 +109,20 @@ cd frontend && pnpm lint && pnpm build
 
 ## API
 
+`GET /api/cities?q=Itobi&lang=pt` suggests up to 6 places while you type, each with its state (`admin1`),
+country and an `id`:
+
+```json
+[{ "id": 3460543, "name": "Itobi", "admin1": "São Paulo", "country": "Brasil", "countryCode": "BR",
+   "latitude": -21.73694, "longitude": -46.975 }]
+```
+
 `GET /api/windows`
 
 | Parameter         | Required | Values                                      |
 |-------------------|----------|---------------------------------------------|
 | `city`            | yes      | City name, e.g. `Recife`                    |
+| `cityId`          | no       | An `id` from `/api/cities`; pins that exact place instead of the name's best match |
 | `activity`        | yes      | `RUN`, `WALK`, `BIKE`, `PICNIC`, `GARDENING` |
 | `durationMinutes` | yes      | 15–480 (rounded up to whole hours)          |
 | `days`            | no       | 1–3, default 1                              |
@@ -124,7 +134,8 @@ curl "http://localhost:8080/api/windows?city=Recife&activity=RUN&durationMinutes
 
 ```json
 {
-  "location": { "name": "Recife", "latitude": -8.05389, "longitude": -34.88111, "timezone": "America/Recife" },
+  "location": { "id": 3390760, "name": "Recife", "admin1": "Pernambuco", "country": "Brasil", "countryCode": "BR",
+                "latitude": -8.05389, "longitude": -34.88111, "timezone": "America/Recife" },
   "activity": "RUN",
   "windows": [
     { "start": "2026-10-07T17:00", "end": "2026-10-07T18:00", "score": 75,
@@ -167,7 +178,9 @@ docs/       Screenshots
 - Weather data by [Open-Meteo](https://open-meteo.com) (CC BY 4.0)
 - [Gemma](https://ai.google.dev/gemma) open-weight models by Google
 - [Spring AI](https://spring.io/projects/spring-ai) and [Ollama](https://ollama.com)
-- Typefaces: [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) and [Geist](https://vercel.com/font)
+- Typefaces: [Inter](https://rsms.me/inter/) and [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque)
+- Country flags: [country-flag-icons](https://gitlab.com/catamphetamine/country-flag-icons) (MIT);
+  Brazilian state flags: [Wikimedia Commons](https://commons.wikimedia.org) (public domain)
 
 ## License
 
