@@ -76,18 +76,20 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
     }
 
     /**
-     * Day and times are pre-formatted in the target language so the model copies them instead of parsing ISO dates.
+     * Pre-digested so a small model copies instead of interpreting: day and times are formatted in the target
+     * language, numbers are rounded the way the UI shows them, and UV comes with its WHO category. The score is
+     * left out on purpose; rank already says which window is best and the model kept quoting the raw number.
      */
     record WindowPayload(
             int rank,
             String day,
             String start,
             String end,
-            int score,
-            Double apparentTempC,
-            Double maxUv,
-            Integer maxRainProbability,
-            Double maxWindKmh
+            Long feelsLikeC,
+            Long uvIndex,
+            String uvLevel,
+            Integer rainChancePercent,
+            Long windKmh
     ) {
 
         private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
@@ -95,9 +97,23 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
         static WindowPayload from(int rank, OutdoorWindow window, Language language) {
             DateTimeFormatter day = DateTimeFormatter.ofPattern(
                     language == Language.PT ? "EEEE, dd/MM" : "EEEE, MMM d", language.locale());
+            Long uv = round(window.maxUv());
             return new WindowPayload(rank, window.start().format(day), window.start().format(TIME),
-                    window.end().format(TIME), window.score(), window.apparentTempC(),
-                    window.maxUv(), window.maxRainProbability(), window.maxWindKmh());
+                    window.end().format(TIME), round(window.apparentTempC()), uv,
+                    uv == null ? null : uvLevel(uv, language), window.maxRainProbability(),
+                    round(window.maxWindKmh()));
+        }
+
+        private static Long round(Double value) {
+            return value == null ? null : Math.round(value);
+        }
+
+        /** WHO UV index categories. */
+        static String uvLevel(long uv, Language language) {
+            int category = uv <= 2 ? 0 : uv <= 5 ? 1 : uv <= 7 ? 2 : uv <= 10 ? 3 : 4;
+            return (language == Language.PT
+                    ? List.of("baixo", "moderado", "alto", "muito alto", "extremo")
+                    : List.of("low", "moderate", "high", "very high", "extreme")).get(category);
         }
     }
 }

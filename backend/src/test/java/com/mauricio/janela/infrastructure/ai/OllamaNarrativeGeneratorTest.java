@@ -7,6 +7,8 @@ import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.NarrativeRequest;
 import com.mauricio.janela.domain.model.OutdoorWindow;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -66,7 +68,16 @@ class OllamaNarrativeGeneratorTest {
         assertThat(prompt.getValue().getUserMessage().getText())
                 .contains("\"city\":\"Campinas\"", "\"activity\":\"RUN\"", "\"rank\":1",
                         "\"day\":\"Tuesday, Oct 6\"", "\"start\":\"06:00\"", "\"end\":\"07:00\"",
-                        "\"score\":91", "\"maxRainProbability\":5");
+                        "\"feelsLikeC\":19", "\"uvIndex\":1", "\"uvLevel\":\"low\"", "\"rainChancePercent\":5",
+                        "\"windKmh\":8")
+                .doesNotContain("score");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"0, low", "2, low", "3, moderate", "5, moderate", "6, high", "7, high", "8, very high",
+            "10, very high", "11, extreme"})
+    void classifiesUvWithWhoCategories(long uv, String level) {
+        assertThat(OllamaNarrativeGenerator.WindowPayload.uvLevel(uv, Language.EN)).isEqualTo(level);
     }
 
     @Test
