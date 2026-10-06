@@ -109,6 +109,9 @@ cd frontend && pnpm lint && pnpm build
 
 ## API
 
+Interactive docs at http://localhost:8080/swagger-ui.html while the backend runs; the OpenAPI 3.1 document
+is generated from the code at `/v3/api-docs` and exported to [`docs/openapi.yaml`](docs/openapi.yaml).
+
 `GET /api/cities?q=Itobi&lang=pt` suggests up to 6 places while you type, each with its state (`admin1`),
 country and an `id`:
 

@@ -1,0 +1,399 @@
+openapi: 3.1.0
+info:
+  title: Janela API
+  description: Finds the best time windows in the next days for an outdoor activity
+    and explains them with a local Gemma model (template text when the model is offline).
+    Times are local to the city; errors are RFC 9457 problem details.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: "1.0"
+servers:
+- url: http://localhost:8080
+  description: Local
+tags:
+- name: Windows
+  description: Best outdoor time windows and the model's recommendation
+- name: Cities
+  description: City suggestions for the search field
+paths:
+  /api/windows:
+    get:
+      tags:
+      - Windows
+      summary: Find the best windows for an activity
+      description: "Scores the hourly forecast in deterministic Java and returns up\
+        \ to 3 non-overlapping daytime windows, best first, plus a short recommendation.\
+        \ The narrative is written by the local model (aiGenerated=true) or, if it\
+        \ is unavailable, by a template (aiGenerated=false)."
+      operationId: findWindows
+      parameters:
+      - name: city
+        in: query
+        description: City name; a label only when cityId is given
+        required: true
+        schema:
+          type: string
+          description: City name; a label only when cityId is given
+          example: Itobi
+          maxLength: 100
+          minLength: 0
+        example: Itobi
+      - name: cityId
+        in: query
+        description: Place id from GET /api/cities; pins that exact place
+        required: false
+        schema:
+          type: integer
+          format: int64
+          description: Place id from GET /api/cities; pins that exact place
+          example: 3460543
+          exclusiveMinimum: 0
+          maximum: 2147483647
+        example: 3460543
+      - name: activity
+        in: query
+        description: Outdoor activity; each has its own comfort limits
+        required: true
+        schema:
+          type: string
+          description: Outdoor activity; each has its own comfort limits
+          enum:
+          - RUN
+          - WALK
+          - BIKE
+          - PICNIC
+          - GARDENING
+          example: BIKE
+        example: BIKE
+      - name: durationMinutes
+        in: query
+        description: "How long the activity takes, rounded up to whole hours"
+        required: true
+        schema:
+          type: integer
+          format: int32
+          description: "How long the activity takes, rounded up to whole hours"
+          example: 120
+          maximum: 480
+          minimum: 15
+        example: 120
+      - name: days
+        in: query
+        description: "Days to look ahead, starting today"
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          description: "Days to look ahead, starting today"
+          example: 2
+          maximum: 3
+          minimum: 1
+        example: 2
+      - name: lang
+        in: query
+        description: Language of the narrative
+        required: false
+        schema:
+          type: string
+          default: pt
+          description: Language of the narrative
+          enum:
+          - pt
+          - en
+          pattern: pt|en
+      responses:
+        "200":
+          description: Windows found (the list may be empty)
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/WindowsResponse"
+        "400":
+          description: Invalid parameters; `fields` lists the offending ones
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+              example:
+                type: about:blank
+                title: Bad Request
+                status: 400
+                detail: Invalid request parameters.
+                instance: /api/windows
+                fields:
+                - durationMinutes
+        "404":
+          description: No city matches the name or cityId
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+              example:
+                type: about:blank
+                title: Not Found
+                status: 404
+                detail: City not found.
+                instance: /api/windows
+        "503":
+          description: Open-Meteo could not be reached
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+              example:
+                type: about:blank
+                title: Service Unavailable
+                status: 503
+                detail: Weather data is temporarily unavailable. Please try again
+                  later.
+                instance: /api/windows
+  /api/cities:
+    get:
+      tags:
+      - Cities
+      summary: Suggest cities for a partial name
+      description: "Up to 6 places, best first, with state and country so namesakes\
+        \ can be told apart. Pass the chosen `id` to GET /api/windows as `cityId`."
+      operationId: searchCities
+      parameters:
+      - name: q
+        in: query
+        description: Partial city name
+        required: true
+        schema:
+          type: string
+          description: Partial city name
+          example: Itobi
+          maxLength: 100
+          minLength: 2
+        example: Itobi
+      - name: lang
+        in: query
+        description: Language of place and country names
+        required: false
+        schema:
+          type: string
+          default: pt
+          description: Language of place and country names
+          enum:
+          - pt
+          - en
+          pattern: pt|en
+      responses:
+        "200":
+          description: Suggestions (empty when nothing matches)
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CityResponse"
+        "400":
+          description: "`q` is missing, shorter than 2 or longer than 100 characters"
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+              example:
+                type: about:blank
+                title: Bad Request
+                status: 400
+                detail: Invalid request parameters.
+                instance: /api/cities
+                fields:
+                - q
+        "503":
+          description: Open-Meteo geocoding could not be reached
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+components:
+  schemas:
+    Problem:
+      type: object
+      description: RFC 9457 problem details
+      properties:
+        type:
+          type: string
+          example: about:blank
+        title:
+          type: string
+          example: Bad Request
+        status:
+          type: integer
+          format: int32
+          example: 400
+        detail:
+          type: string
+          example: Invalid request parameters.
+        instance:
+          type: string
+          example: /api/windows
+        fields:
+          type:
+          - array
+          - "null"
+          description: Invalid parameters; only on 400
+          items:
+            type: string
+    LocationResponse:
+      type: object
+      properties:
+        id:
+          type:
+          - integer
+          - "null"
+          format: int64
+          example: 3460543
+        name:
+          type: string
+          example: Itobi
+        admin1:
+          type:
+          - string
+          - "null"
+          description: State or province
+          example: São Paulo
+        country:
+          type:
+          - string
+          - "null"
+          example: Brasil
+        countryCode:
+          type:
+          - string
+          - "null"
+          description: ISO 3166-1 alpha-2
+          example: BR
+        latitude:
+          type: number
+          format: double
+          example: -21.73694
+        longitude:
+          type: number
+          format: double
+          example: -46.975
+        timezone:
+          type: string
+          description: IANA time zone; window times are local to it
+          example: America/Sao_Paulo
+    WindowResponse:
+      type: object
+      properties:
+        start:
+          type: string
+          description: Local start time
+          example: 2026-10-07T07:00
+        end:
+          type: string
+          description: "Local end time, exclusive"
+          example: 2026-10-07T08:00
+        score:
+          type: integer
+          format: int32
+          description: "Average hour score, 0–100"
+          example: 94
+          maximum: 100
+          minimum: 0
+        apparentTempC:
+          type:
+          - number
+          - "null"
+          format: double
+          description: "Average feels-like temperature, °C"
+          example: 23.1
+        maxUv:
+          type:
+          - number
+          - "null"
+          format: double
+          description: Highest UV index in the window
+          example: 0.4
+        maxRainProbability:
+          type:
+          - integer
+          - "null"
+          format: int32
+          description: "Highest chance of rain, %"
+          example: 10
+        maxWindKmh:
+          type:
+          - number
+          - "null"
+          format: double
+          description: "Highest wind speed, km/h"
+          example: 8.2
+    WindowsResponse:
+      type: object
+      properties:
+        location:
+          $ref: "#/components/schemas/LocationResponse"
+        activity:
+          type: string
+          enum:
+          - RUN
+          - WALK
+          - BIKE
+          - PICNIC
+          - GARDENING
+          example: BIKE
+        windows:
+          type: array
+          description: "Up to 3 non-overlapping windows, best first; empty when no\
+            \ hour is good enough"
+          items:
+            $ref: "#/components/schemas/WindowResponse"
+        narrative:
+          type: string
+          description: Short recommendation ending with a "🌿" touch-grass challenge
+          example: "A melhor opção para pedalar é quarta-feira, 07/10, das 07:00 à\
+            s 08:00…"
+        aiGenerated:
+          type: boolean
+          description: "true when the local model wrote the narrative, false for the\
+            \ template"
+        model:
+          type:
+          - string
+          - "null"
+          description: Model that wrote the narrative; null for the template
+          example: gemma3:4b
+    CityResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Place id; send it back as cityId
+          example: 3460543
+        name:
+          type: string
+          example: Itobi
+        admin1:
+          type:
+          - string
+          - "null"
+          description: State or province
+          example: São Paulo
+        country:
+          type:
+          - string
+          - "null"
+          example: Brasil
+        countryCode:
+          type:
+          - string
+          - "null"
+          description: ISO 3166-1 alpha-2
+          example: BR
+        latitude:
+          type: number
+          format: double
+          example: -21.73694
+        longitude:
+          type: number
+          format: double
+          example: -46.975
