@@ -36,6 +36,8 @@ type SearchFormProps = {
   t: Messages
   lang: Lang
   initialValues: Partial<SearchValues>
+  /** The place the last search resolved to; fills in state and flags for a place opened from a link. */
+  resolvedPlace: Place | null
   isPending: boolean
   /** Server-side errors keyed by request parameter name. */
   serverErrors: Partial<Record<keyof SearchValues, string>>
@@ -46,6 +48,7 @@ export function SearchForm({
   t,
   lang,
   initialValues,
+  resolvedPlace,
   isPending,
   serverErrors,
   onSearch,
@@ -73,6 +76,19 @@ export function SearchForm({
   )
   const [days, setDays] = useState(initialValues.days ?? 2)
   const [cityRequired, setCityRequired] = useState(false)
+  const [completedId, setCompletedId] = useState<number | null>(null)
+
+  // Adjusting state during render (not in an effect) when the pinned place comes back with its details.
+  if (
+    resolvedPlace?.id &&
+    resolvedPlace.id === place?.id &&
+    completedId !== resolvedPlace.id &&
+    !place.admin1
+  ) {
+    setCompletedId(resolvedPlace.id)
+    setPlace(resolvedPlace)
+    if (city === place.name) setCity(placeLabel(resolvedPlace))
+  }
   const cityInput = useRef<HTMLInputElement>(null)
 
   // Move focus to the city field when the server can't find it.

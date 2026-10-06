@@ -104,6 +104,7 @@ export function App() {
           t={t}
           lang={lang}
           initialValues={fromUrl}
+          resolvedPlace={query.data?.location ?? null}
           isPending={query.isFetching}
           serverErrors={serverErrors}
           onSearch={handleSearch}
