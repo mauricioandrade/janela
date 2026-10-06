@@ -23,3 +23,5 @@ janela:
     forecast-base-url: https://api.open-meteo.com/v1
     connect-timeout: 5s
     read-timeout: 10s
+  cors:
+    allowed-origins: http://localhost:5173
