@@ -1,4 +1,4 @@
-import { CloudOffIcon, MapPinIcon, SearchXIcon, ServerCrashIcon, SproutIcon } from "lucide-react"
+import { CloudOffIcon, MapPinIcon, SearchXIcon, ServerCrashIcon, SunIcon } from "lucide-react"
 
 import { DayStrip } from "@/components/day-strip"
 import { Narrative } from "@/components/narrative"
@@ -43,10 +43,10 @@ export function Results({ t, lang, data, error, isFetching, hasSearched, onRetry
 
   if (!data || !hasSearched) {
     return (
-      <Empty>
+      <Empty className="border">
         <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <SproutIcon />
+          <EmptyMedia>
+            <StripPreview />
           </EmptyMedia>
           <EmptyTitle>{t.emptyTitle}</EmptyTitle>
           <EmptyDescription>{t.emptyDescription}</EmptyDescription>
@@ -78,6 +78,27 @@ export function Results({ t, lang, data, error, isFetching, hasSearched, onRetry
           <WindowList windows={data.windows} lang={lang} t={t} />
         </>
       )}
+    </div>
+  )
+}
+
+/** A ghost of the day strip: hints at what a search returns before there is one. */
+function StripPreview() {
+  return (
+    <div aria-hidden className="flex w-64 flex-col gap-2">
+      <div className="relative h-9 overflow-hidden rounded-md bg-night">
+        <span className="absolute inset-y-0 left-1/3 w-px bg-foreground/10" />
+        <span className="absolute inset-y-0 left-2/3 w-px bg-foreground/10" />
+        <div className="animate-window-open absolute inset-y-1.5 left-[12%] flex w-[16%] items-center justify-center rounded-sm bg-score-high text-primary-foreground">
+          <SunIcon className="size-3.5" />
+        </div>
+        <div className="absolute inset-y-1.5 left-[70%] w-[12%] rounded-sm bg-score-mid/50" />
+      </div>
+      <div className="flex justify-between text-xs text-muted-foreground tabular-nums">
+        <span>06h</span>
+        <span>12h</span>
+        <span>18h</span>
+      </div>
     </div>
   )
 }

@@ -74,7 +74,7 @@ export function App() {
           <h1 translate="no" className="font-heading text-5xl font-bold tracking-tighter sm:text-6xl">
             janela
           </h1>
-          <p className="max-w-sm text-pretty text-muted-foreground">{t.tagline}</p>
+          <p className="max-w-md text-lg text-pretty text-muted-foreground">{t.tagline}</p>
         </div>
         <ToggleGroup
           variant="outline"
