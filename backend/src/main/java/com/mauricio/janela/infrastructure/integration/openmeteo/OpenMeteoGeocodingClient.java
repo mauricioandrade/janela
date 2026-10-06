@@ -4,8 +4,10 @@ import com.mauricio.janela.domain.exception.ExternalServiceUnavailableException;
 import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.port.out.GeocodingProvider;
+import com.mauricio.janela.infrastructure.config.CacheConfig;
 import com.mauricio.janela.infrastructure.config.OpenMeteoConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -25,11 +27,13 @@ public class OpenMeteoGeocodingClient implements GeocodingProvider {
     }
 
     @Override
+    @Cacheable(cacheNames = CacheConfig.PLACES, key = "{'name', #city.toLowerCase(), #language}")
     public Optional<Location> findByName(String city, Language language) {
         return search(city, 1, language).stream().findFirst();
     }
 
     @Override
+    @Cacheable(cacheNames = CacheConfig.PLACES, key = "{'id', #id, #language}")
     public Optional<Location> findById(long id, Language language) {
         GeocodingResponse.Result result;
         try {
@@ -52,6 +56,7 @@ public class OpenMeteoGeocodingClient implements GeocodingProvider {
     }
 
     @Override
+    @Cacheable(cacheNames = CacheConfig.PLACES, key = "{'search', #query.toLowerCase(), #limit, #language}")
     public List<Location> search(String query, int limit, Language language) {
         GeocodingResponse response;
         try {

@@ -4,8 +4,10 @@ import com.mauricio.janela.domain.exception.ExternalServiceUnavailableException;
 import com.mauricio.janela.domain.model.HourlyForecast;
 import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.port.out.WeatherProvider;
+import com.mauricio.janela.infrastructure.config.CacheConfig;
 import com.mauricio.janela.infrastructure.config.OpenMeteoConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -25,6 +27,7 @@ public class OpenMeteoForecastClient implements WeatherProvider {
     }
 
     @Override
+    @Cacheable(cacheNames = CacheConfig.FORECASTS, key = "{#location.latitude(), #location.longitude(), #days}")
     public List<HourlyForecast> getHourlyForecast(Location location, int days) {
         ForecastResponse response;
         try {
