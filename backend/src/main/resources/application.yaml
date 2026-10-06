@@ -1,6 +1,10 @@
 spring:
   application:
     name: janela
+  # Requests wait up to OLLAMA_TIMEOUT on the model; virtual threads keep that from tying up platform threads.
+  threads:
+    virtual:
+      enabled: true
   ai:
     ollama:
       base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
