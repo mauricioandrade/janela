@@ -20,7 +20,10 @@ type DayStripProps = {
   label: string
 }
 
-/** Each day as a band of daylight hours, with the ranked windows cut out of it. */
+/**
+ * Each day as a band of daylight hours, with the ranked windows cut out of it.
+ * Purely visual: the window list below carries the same data for assistive tech.
+ */
 export function DayStrip({ windows, lang, label }: DayStripProps) {
   const days = [...new Set(windows.map((window) => dayKey(window.start)))].sort()
   const firstHour = Math.min(DEFAULT_FIRST_HOUR, ...windows.map((window) => Math.floor(minutesOfDay(window.start) / 60)))
@@ -33,7 +36,7 @@ export function DayStrip({ windows, lang, label }: DayStripProps) {
   const position = (minutes: number) => ((minutes - range.from) / range.span) * 100
 
   return (
-    <figure className="flex flex-col gap-3">
+    <figure className="flex flex-col gap-3" aria-hidden>
       <figcaption className="text-sm text-muted-foreground">{label}</figcaption>
       <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3">
         {days.map((day) => (

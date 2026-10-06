@@ -89,8 +89,8 @@ function isShownInForm(error: Error) {
 
 function LoadingState({ t }: { t: Messages }) {
   return (
-    <div className="flex flex-col gap-8" aria-busy>
-      <p className="flex items-center gap-2 text-sm text-muted-foreground" role="status">
+    <div className="flex flex-col gap-8">
+      <p className="flex items-center gap-2 text-sm text-muted-foreground">
         <Spinner role="presentation" aria-label={undefined} aria-hidden />
         {t.loadingGemma}
       </p>

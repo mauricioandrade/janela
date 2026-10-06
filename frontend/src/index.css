@@ -141,6 +141,14 @@
     }
   html {
     @apply font-sans;
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+    }
+  html.dark {
+    color-scheme: dark;
+    }
+  button, a, input, [role="button"] {
+    touch-action: manipulation;
     }
 }
 

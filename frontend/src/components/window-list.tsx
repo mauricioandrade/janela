@@ -26,6 +26,7 @@ type WindowListProps = {
 export function WindowList({ windows, lang, t }: WindowListProps) {
   return (
     <Card>
+      <h2 className="sr-only">{t.windowsHeading}</h2>
       <CardContent className="flex flex-col gap-5">
         {windows.map((window, index) => (
           <Fragment key={window.start}>
