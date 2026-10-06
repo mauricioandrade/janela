@@ -97,6 +97,31 @@ class FindWindowsServiceTest {
     }
 
     @Test
+    void afterTodaysDaylightCountsTheNextDaysThatStillHaveSome() {
+        // 20:00 in São Paulo: today's daylight is over.
+        Clock evening = Clock.fixed(Instant.parse("2026-10-06T23:00:00Z"), ZoneOffset.UTC);
+        AtomicReference<Integer> requestedDays = new AtomicReference<>();
+        WeatherProvider pleasantDays = (location, days) -> {
+            requestedDays.set(days);
+            return IntStream.range(0, days)
+                    .mapToObj(offset -> pleasantDay().stream().map(hour -> new HourlyForecast(
+                            hour.time().plusDays(offset), hour.temperatureC(), hour.apparentTemperatureC(),
+                            hour.precipitationProbability(), hour.uvIndex(), hour.windSpeedKmh(), hour.isDay())))
+                    .flatMap(hours -> hours)
+                    .toList();
+        };
+        FindWindowsQuery twoDays = new FindWindowsQuery("Campinas", null, Activity.WALK, 60, 2, Language.PT);
+
+        WindowsResult result = new FindWindowsService(geocoding, pleasantDays, new WindowScorer(), template, template,
+                evening).findWindows(twoDays);
+
+        assertThat(requestedDays.get()).isEqualTo(3);
+        assertThat(result.windows()).extracting(window -> window.start().toLocalDate())
+                .containsOnly(TODAY.plusDays(1), TODAY.plusDays(2))
+                .contains(TODAY.plusDays(1), TODAY.plusDays(2));
+    }
+
+    @Test
     void throwsWhenCityIsUnknown() {
         FindWindowsService service = new FindWindowsService(new FakeGeocoding(Optional.empty(), Optional.empty()),
                 weather, new WindowScorer(), template, template, CLOCK);

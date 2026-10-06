@@ -18,9 +18,12 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Geocodes the city, scores the forecast and asks the model to explain the result. If the model fails,
@@ -59,16 +62,32 @@ public class FindWindowsService implements FindWindowsUseCase {
                 : geocodingProvider.findByName(query.city(), query.language()))
                 .orElseThrow(() -> new LocationNotFoundException(query.city()));
 
-        LocalDateTime now = LocalDateTime.now(clock.withZone(zoneOf(location)));
-        List<HourlyForecast> upcoming = weatherProvider.getHourlyForecast(location, query.days()).stream()
-                .filter(hour -> hour.time() != null && !hour.time().isBefore(now))
-                .toList();
+        List<HourlyForecast> upcoming = upcomingDays(location, query.days());
 
         List<OutdoorWindow> windows = windowScorer.findBestWindows(upcoming, query.activity(), query.durationMinutes());
         NarrativeRequest narrativeRequest = new NarrativeRequest(
                 location, query.activity(), query.durationMinutes(), windows, query.language());
 
         return new WindowsResult(location, query.activity(), windows, narrate(narrativeRequest));
+    }
+
+    /**
+     * Hours from now on, over the next {@code days} days that still have daylight ahead. After sunset today
+     * counts no more, so one extra day is fetched to keep "3 days" meaning three days you can still go out.
+     */
+    private List<HourlyForecast> upcomingDays(Location location, int days) {
+        LocalDateTime now = LocalDateTime.now(clock.withZone(zoneOf(location)));
+        List<HourlyForecast> upcoming = weatherProvider.getHourlyForecast(location, days + 1).stream()
+                .filter(hour -> hour.time() != null && !hour.time().isBefore(now))
+                .toList();
+        Set<LocalDate> daylightDays = upcoming.stream()
+                .filter(hour -> !Boolean.FALSE.equals(hour.isDay()))
+                .map(hour -> hour.time().toLocalDate())
+                .distinct()
+                .sorted()
+                .limit(days)
+                .collect(Collectors.toSet());
+        return upcoming.stream().filter(hour -> daylightDays.contains(hour.time().toLocalDate())).toList();
     }
 
     /**
