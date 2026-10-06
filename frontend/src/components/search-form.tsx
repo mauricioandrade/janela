@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useEffect, useRef, useState, type FormEvent } from "react"
 import { SearchIcon } from "lucide-react"
 
 import { ACTIVITIES, ACTIVITY_ICONS } from "@/components/activity-icons"
@@ -18,24 +18,36 @@ export type SearchValues = Omit<WindowsParams, "lang">
 
 type SearchFormProps = {
   t: Messages
+  initialValues: Partial<SearchValues>
   isPending: boolean
   /** Server-side errors keyed by request parameter name. */
   serverErrors: Partial<Record<keyof SearchValues, string>>
   onSearch: (values: SearchValues) => void
 }
 
-export function SearchForm({ t, isPending, serverErrors, onSearch }: SearchFormProps) {
-  const [city, setCity] = useState("")
-  const [activity, setActivity] = useState<Activity>("WALK")
-  const [durationMinutes, setDurationMinutes] = useState(60)
-  const [days, setDays] = useState(2)
+export function SearchForm({ t, initialValues, isPending, serverErrors, onSearch }: SearchFormProps) {
+  const [city, setCity] = useState(initialValues.city ?? "")
+  const [activity, setActivity] = useState<Activity>(initialValues.activity ?? "WALK")
+  const [durationMinutes, setDurationMinutes] = useState(
+    DURATIONS.includes(initialValues.durationMinutes ?? 0) ? initialValues.durationMinutes! : 60
+  )
+  const [days, setDays] = useState(initialValues.days ?? 2)
   const [cityRequired, setCityRequired] = useState(false)
+  const cityInput = useRef<HTMLInputElement>(null)
+
+  // Move focus to the city field when the server can't find it.
+  useEffect(() => {
+    if (serverErrors.city) cityInput.current?.focus()
+  }, [serverErrors.city])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const trimmed = city.trim()
     setCityRequired(trimmed === "")
-    if (trimmed === "") return
+    if (trimmed === "") {
+      cityInput.current?.focus()
+      return
+    }
     onSearch({ city: trimmed, activity, durationMinutes, days })
   }
 
@@ -47,6 +59,7 @@ export function SearchForm({ t, isPending, serverErrors, onSearch }: SearchFormP
         <Field data-invalid={cityError ? true : undefined}>
           <FieldLabel htmlFor="city">{t.city}</FieldLabel>
           <Input
+            ref={cityInput}
             id="city"
             name="city"
             autoComplete="address-level2"
