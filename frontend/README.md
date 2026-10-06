@@ -1,21 +1,16 @@
-# React + TypeScript + Vite + shadcn/ui
+# Janela — frontend
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
-
-## Adding components
-
-To add components to your app, run the following command:
+Single-page React app for [Janela](../README.md): search form, Gemma narrative, day strip and ranked windows.
 
 ```bash
-npx shadcn@latest add button
+pnpm install
+pnpm dev      # http://localhost:5173, expects the backend on http://localhost:8080 (override with VITE_API_URL)
+pnpm lint
+pnpm build
 ```
 
-This will place the ui components in the `src/components` directory.
-
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button"
-```
+- `src/lib/api.ts` — typed client for `GET /api/windows` and its problem-detail errors
+- `src/lib/i18n.ts` — pt/en interface copy (the narrative language comes from the backend)
+- `src/lib/url-state.ts` — shareable `?city=&activity=&duration=&days=&lang=` links
+- `src/components/` — app components; `src/components/ui/` holds shadcn/ui (base-nova) sources
+- Theme tokens (palette, score tiers, the window-open animation) live in `src/index.css`
