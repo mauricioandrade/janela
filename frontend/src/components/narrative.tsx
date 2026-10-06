@@ -11,7 +11,7 @@ export function Narrative({ narrative, aiGenerated, model, t }: NarrativeProps) 
   return (
     <section className="flex flex-col gap-4 border-l-4 border-primary pl-5">
       <h2 className="sr-only">{t.recommendation}</h2>
-      <p className="font-heading text-xl leading-relaxed text-pretty whitespace-pre-line sm:text-2xl">{narrative}</p>
+      <p className="text-xl leading-relaxed font-[450] tracking-tight text-pretty whitespace-pre-line sm:text-[1.375rem]">{narrative}</p>
       <Badge variant={aiGenerated ? "default" : "outline"}>
         {aiGenerated ? <CpuIcon data-icon="inline-start" /> : <FileTextIcon data-icon="inline-start" />}
         {aiGenerated ? (
