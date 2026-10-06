@@ -20,19 +20,31 @@ type DayStripProps = {
  */
 export function DayStrip({ windows }: DayStripProps) {
   const { t, lang } = useI18n()
-  const days = [...new Set(windows.map((window) => dayKey(window.start)))].sort()
-  const firstHour = Math.min(DEFAULT_FIRST_HOUR, ...windows.map((window) => Math.floor(minutesOfDay(window.start) / 60)))
-  const lastHour = Math.max(DEFAULT_LAST_HOUR, ...windows.map((window) => Math.ceil(minutesOfDay(window.end, true) / 60)))
+  const days = [
+    ...new Set(windows.map((window) => dayKey(window.start))),
+  ].sort()
+  const firstHour = Math.min(
+    DEFAULT_FIRST_HOUR,
+    ...windows.map((window) => Math.floor(minutesOfDay(window.start) / 60))
+  )
+  const lastHour = Math.max(
+    DEFAULT_LAST_HOUR,
+    ...windows.map((window) => Math.ceil(minutesOfDay(window.end, true) / 60))
+  )
   const range = { from: firstHour * 60, span: (lastHour - firstHour) * 60 }
   // Edge hours are left unlabeled so their labels don't spill past the band.
-  const ticks = Array.from({ length: lastHour - firstHour - 1 }, (_, i) => firstHour + 1 + i).filter(
-    (hour) => hour % TICK_EVERY_HOURS === 0
-  )
-  const position = (minutes: number) => ((minutes - range.from) / range.span) * 100
+  const ticks = Array.from(
+    { length: lastHour - firstHour - 1 },
+    (_, i) => firstHour + 1 + i
+  ).filter((hour) => hour % TICK_EVERY_HOURS === 0)
+  const position = (minutes: number) =>
+    ((minutes - range.from) / range.span) * 100
 
   return (
     <figure className="flex flex-col gap-3" aria-hidden>
-      <figcaption className="text-sm text-muted-foreground">{t.dayStrip}</figcaption>
+      <figcaption className="text-sm text-muted-foreground">
+        {t.dayStrip}
+      </figcaption>
       <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3">
         {days.map((day) => (
           <DayRow
@@ -45,9 +57,16 @@ export function DayStrip({ windows }: DayStripProps) {
           />
         ))}
         <div />
-        <div className="relative h-4 text-xs text-muted-foreground tabular-nums" aria-hidden>
+        <div
+          className="relative h-4 text-xs text-muted-foreground tabular-nums"
+          aria-hidden
+        >
           {ticks.map((hour) => (
-            <span key={hour} className="absolute -translate-x-1/2" style={{ left: `${position(hour * 60)}%` }}>
+            <span
+              key={hour}
+              className="absolute -translate-x-1/2"
+              style={{ left: `${position(hour * 60)}%` }}
+            >
               {String(hour).padStart(2, "0")}h
             </span>
           ))}
@@ -68,8 +87,10 @@ type DayRowProps = {
 function DayRow({ label, windows, ranks, ticks, position }: DayRowProps) {
   return (
     <>
-      <span className="text-sm font-medium first-letter:uppercase">{label}</span>
-      <div className="relative h-10 overflow-hidden rounded-md bg-night">
+      <span className="text-sm font-medium first-letter:uppercase">
+        {label}
+      </span>
+      <div className="relative h-10 overflow-hidden rounded-md bg-linear-to-r from-night via-secondary to-night">
         {ticks.map((hour) => (
           <span
             key={hour}
@@ -87,7 +108,7 @@ function DayRow({ label, windows, ranks, ticks, position }: DayRowProps) {
               key={window.start}
               title={`${formatTime(window.start)}–${formatTime(window.end)}`}
               className={cn(
-                "animate-window-open absolute inset-y-1.5 flex min-w-5 items-center justify-center rounded-sm text-xs font-semibold text-primary-foreground",
+                "absolute inset-y-1.5 flex min-w-5 animate-window-open items-center justify-center rounded-sm text-xs font-semibold text-primary-foreground",
                 scoreFill(window.score)
               )}
               style={{

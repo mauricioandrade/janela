@@ -143,8 +143,7 @@ export function SearchForm({
               <FieldLegend variant="label">{t.activity}</FieldLegend>
               <ToggleGroup
                 variant="outline"
-                size="lg"
-                className="flex-wrap"
+                className="grid w-full grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-3"
                 value={[activity]}
                 onValueChange={(value) =>
                   value.length > 0 && setActivity(value[0] as Activity)
@@ -153,8 +152,12 @@ export function SearchForm({
                 {ACTIVITIES.map((option) => {
                   const Icon = ACTIVITY_ICONS[option]
                   return (
-                    <ToggleGroupItem key={option} value={option}>
-                      <Icon data-icon="inline-start" />
+                    <ToggleGroupItem
+                      key={option}
+                      value={option}
+                      className="h-auto flex-col gap-1.5 px-2 py-3"
+                    >
+                      <Icon />
                       {t.activities[option]}
                     </ToggleGroupItem>
                   )
@@ -162,7 +165,7 @@ export function SearchForm({
               </ToggleGroup>
             </FieldSet>
 
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
               <Field
                 data-invalid={serverErrors.durationMinutes ? true : undefined}
               >

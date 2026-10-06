@@ -16,8 +16,13 @@ export function PlaceFlags({ place, className }: PlaceFlagsProps) {
   if (!countryFlag && !stateFlag) return null
 
   return (
-    <span className={cn("inline-flex shrink-0 items-center gap-1", className)} aria-hidden>
-      {countryFlag && <Flag src={countryFlag} title={place.country ?? undefined} />}
+    <span
+      className={cn("inline-flex shrink-0 items-center gap-1", className)}
+      aria-hidden
+    >
+      {countryFlag && (
+        <Flag src={countryFlag} title={place.country ?? undefined} />
+      )}
       {stateFlag && <Flag src={stateFlag} title={place.admin1 ?? undefined} />}
     </span>
   )
@@ -38,12 +43,16 @@ function Flag({ src, title }: { src: string; title?: string }) {
 }
 
 function useCountryFlag(countryCode: string | null) {
-  const [loaded, setLoaded] = useState<{ code: string; url: string } | null>(null)
+  const [loaded, setLoaded] = useState<{ code: string; url: string } | null>(
+    null
+  )
 
   useEffect(() => {
     if (!countryCode) return
     let active = true
-    loadCountryFlag(countryCode)?.then((url) => active && setLoaded({ code: countryCode, url }))
+    loadCountryFlag(countryCode)?.then(
+      (url) => active && setLoaded({ code: countryCode, url })
+    )
     return () => {
       active = false
     }

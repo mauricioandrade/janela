@@ -137,7 +137,21 @@
     @apply border-border outline-ring/50;
     }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    /* The sky over the page: a glow from the top in the colour of the best window's time of day. */
+    background:
+      radial-gradient(150% 75% at 50% -25%, var(--sky), transparent 72%) fixed,
+      var(--background);
+    }
+  /* Fine grain so the sky reads as air, not as a flat gradient. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
   html {
     @apply font-sans;
@@ -168,4 +182,28 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-window-open { animation: none; }
+}
+
+/* Sky colours by the best window's time of day; <html data-sky> is set by the page. Before a search: morning mist. */
+@property --sky {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+:root { --sky: oklch(0.93 0.035 165); }
+:root[data-sky="dawn"] { --sky: oklch(0.92 0.065 70); }
+:root[data-sky="day"] { --sky: oklch(0.92 0.05 225); }
+:root[data-sky="dusk"] { --sky: oklch(0.9 0.07 15); }
+:root.dark { --sky: oklch(0.31 0.045 170); }
+:root.dark[data-sky="dawn"] { --sky: oklch(0.33 0.07 330); }
+:root.dark[data-sky="day"] { --sky: oklch(0.33 0.06 235); }
+:root.dark[data-sky="dusk"] { --sky: oklch(0.33 0.08 10); }
+
+:root {
+  transition: --sky 1.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { transition: none; }
 }

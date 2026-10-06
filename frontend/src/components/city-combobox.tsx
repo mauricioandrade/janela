@@ -46,7 +46,8 @@ export function CityCombobox({
 }: CityComboboxProps) {
   const { t, lang } = useI18n()
   const term = useDebouncedValue(inputValue.trim(), DEBOUNCE_MS)
-  const showingSelection = selected !== null && inputValue === placeLabel(selected)
+  const showingSelection =
+    selected !== null && inputValue === placeLabel(selected)
   const suggestions = useQuery({
     queryKey: ["cities", term, lang],
     queryFn: ({ signal }) => fetchCities(term, lang, signal),
@@ -92,7 +93,9 @@ export function CityCombobox({
             {t.citySearching}
           </p>
         )}
-        {!suggestions.isFetching && <ComboboxEmpty>{t.cityNoMatches}</ComboboxEmpty>}
+        {!suggestions.isFetching && (
+          <ComboboxEmpty>{t.cityNoMatches}</ComboboxEmpty>
+        )}
         <ComboboxList>
           {(city: Place) => (
             <ComboboxItem key={city.id} value={city} className="gap-2.5 py-1.5">

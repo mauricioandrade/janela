@@ -1,12 +1,24 @@
-import { CloudOffIcon, SearchXIcon, ServerCrashIcon, SunIcon } from "lucide-react"
+import {
+  CloudOffIcon,
+  SearchXIcon,
+  ServerCrashIcon,
+  SunIcon,
+} from "lucide-react"
 
+import { Alternatives } from "@/components/alternatives"
+import { BestWindow } from "@/components/best-window"
 import { DayStrip } from "@/components/day-strip"
 import { Narrative } from "@/components/narrative"
 import { PlaceFlags } from "@/components/place-flags"
-import { WindowList } from "@/components/window-list"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { useI18n } from "@/hooks/use-i18n"
@@ -21,7 +33,13 @@ type ResultsProps = {
   onRetry: () => void
 }
 
-export function Results({ data, error, isFetching, hasSearched, onRetry }: ResultsProps) {
+export function Results({
+  data,
+  error,
+  isFetching,
+  hasSearched,
+  onRetry,
+}: ResultsProps) {
   const { t } = useI18n()
   if (isFetching) return <LoadingState />
 
@@ -31,9 +49,19 @@ export function Results({ data, error, isFetching, hasSearched, onRetry }: Resul
     return (
       <Alert variant="destructive">
         {weatherDown ? <CloudOffIcon /> : <ServerCrashIcon />}
-        <AlertTitle>{weatherDown ? t.weatherDownTitle : invalid ? t.invalidTitle : t.networkTitle}</AlertTitle>
+        <AlertTitle>
+          {weatherDown
+            ? t.weatherDownTitle
+            : invalid
+              ? t.invalidTitle
+              : t.networkTitle}
+        </AlertTitle>
         <AlertDescription className="flex flex-col items-start gap-3">
-          {weatherDown ? t.weatherDownDescription : invalid ? error.message : t.networkDescription}
+          {weatherDown
+            ? t.weatherDownDescription
+            : invalid
+              ? error.message
+              : t.networkDescription}
           <Button variant="outline" size="sm" onClick={onRetry}>
             {t.retry}
           </Button>
@@ -61,11 +89,18 @@ export function Results({ data, error, isFetching, hasSearched, onRetry }: Resul
       <p className="flex items-center gap-2 text-sm text-muted-foreground">
         <PlaceFlags place={data.location} />
         <span>
-          <span className="font-medium text-foreground">{placeLabel(data.location)}</span>
+          <span className="font-medium text-foreground">
+            {placeLabel(data.location)}
+          </span>
           {data.location.country && `, ${data.location.country}`}
         </span>
       </p>
-      <Narrative narrative={data.narrative} aiGenerated={data.aiGenerated} model={data.model} />
+      {data.windows.length > 0 && <BestWindow window={data.windows[0]} />}
+      <Narrative
+        narrative={data.narrative}
+        aiGenerated={data.aiGenerated}
+        model={data.model}
+      />
       {data.windows.length === 0 ? (
         <Empty className="border">
           <EmptyHeader>
@@ -79,7 +114,9 @@ export function Results({ data, error, isFetching, hasSearched, onRetry }: Resul
       ) : (
         <>
           <DayStrip windows={data.windows} />
-          <WindowList windows={data.windows} />
+          {data.windows.length > 1 && (
+            <Alternatives windows={data.windows.slice(1)} />
+          )}
         </>
       )}
     </div>
@@ -93,7 +130,7 @@ function StripPreview() {
       <div className="relative h-9 overflow-hidden rounded-md bg-night">
         <span className="absolute inset-y-0 left-1/3 w-px bg-foreground/10" />
         <span className="absolute inset-y-0 left-2/3 w-px bg-foreground/10" />
-        <div className="animate-window-open absolute inset-y-1.5 left-[12%] flex w-[16%] items-center justify-center rounded-sm bg-score-high text-primary-foreground">
+        <div className="absolute inset-y-1.5 left-[12%] flex w-[16%] animate-window-open items-center justify-center rounded-sm bg-score-high text-primary-foreground">
           <SunIcon className="size-3.5" />
         </div>
         <div className="absolute inset-y-1.5 left-[70%] w-[12%] rounded-sm bg-score-mid/50" />
@@ -109,7 +146,10 @@ function StripPreview() {
 
 /** City-not-found and invalid fields are shown inline next to the field they concern. */
 function isShownInForm(error: Error) {
-  return error instanceof ApiError && (error.status === 404 || (error.status === 400 && error.fields.length > 0))
+  return (
+    error instanceof ApiError &&
+    (error.status === 404 || (error.status === 400 && error.fields.length > 0))
+  )
 }
 
 function LoadingState() {
@@ -120,13 +160,16 @@ function LoadingState() {
         <Spinner role="presentation" aria-label={undefined} aria-hidden />
         {t.loadingGemma}
       </p>
+      <Skeleton className="h-72 w-full rounded-2xl" />
       <div className="flex flex-col gap-3 border-l-4 border-muted pl-5">
-        <Skeleton className="h-6 w-full" />
-        <Skeleton className="h-6 w-11/12" />
-        <Skeleton className="h-6 w-2/3" />
+        <Skeleton className="h-5 w-full" />
+        <Skeleton className="h-5 w-11/12" />
+        <Skeleton className="h-5 w-2/3" />
       </div>
-      <Skeleton className="h-24 w-full" />
-      <Skeleton className="h-48 w-full" />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Skeleton className="h-36 rounded-xl" />
+        <Skeleton className="h-36 rounded-xl" />
+      </div>
     </div>
   )
 }

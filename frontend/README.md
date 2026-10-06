@@ -31,7 +31,8 @@ module).
 |--------|------|
 | `lib/api.ts` | Types mirroring the backend (`WindowsResponse`, `SearchValues`, `City`, `Place`), `fetchWindows` and `fetchCities` against `/api/v1`, `ApiError` (status + `fields` from problem details) |
 | `lib/format.ts` | Day and time formatting from the API's local `yyyy-MM-ddTHH:mm` strings (never shifted to the browser's time zone) |
-| `lib/score.ts` | Score tiers and their `score-*` color classes |
+| `lib/score.ts` | Score tiers, their `score-*` fill/track/icon classes, WHO UV categories |
+| `lib/sky.ts` | Dawn / day / dusk for a window's start — sets `<html data-sky>`, which tints the page's sky |
 | `lib/place.ts` | "Itobi – SP" labels, Brazilian state codes, flag URLs (country flags lazy-loaded from `country-flag-icons`, state flags in `public/flags/br`) |
 | `lib/i18n.ts` | All interface copy in `pt` and `en`; the narrative's language comes from the backend |
 | `I18nProvider` / `useI18n()` | The current `lang` and its copy `t`, for any component — no `t`/`lang` props |
@@ -44,10 +45,13 @@ module).
 |-----------|------|
 | `SearchForm` | Form state (city text, picked place, activity, duration, days), client-side validation, field problems turned into copy; calls `onSearch` |
 | `CityCombobox` | City field with debounced suggestions (`["cities", term, lang]` query); picking one pins its id |
-| `Results` | Chooses the state to show: loading, error, empty, no windows, or results |
+| `Results` | Chooses the state to show: loading, error, empty, no windows, or results — in the order answer, why, context, alternatives |
+| `BestWindow` | The answer: day, the time as the page's one hero number, score, and four `StatTile`s in a `dl` |
 | `Narrative` | The model's recommendation and its "written by Gemma / template" badge |
 | `DayStrip` | Visual band of daylight hours with the windows cut out — decorative, `aria-hidden` |
-| `WindowList` | Ranked windows (`ol`) with metrics and score; the accessible source of the same data |
+| `Alternatives` | The runner-up windows as an ordered list of quieter cards |
+| `ScoreBadge` / `ScoreMeter` | A score as status (icon + word + number, never colour alone) and as a meter whose track is a lighter step of its fill |
+| `StatTile` | One labelled weather number (`dt`/`dd`), with an optional qualifier such as the UV category |
 | `PlaceFlags` | Country and state flags next to a place name (decorative) |
 
 ## State
@@ -70,7 +74,10 @@ module).
 - **Type:** Inter Variable for text (optical sizing on), Bricolage Grotesque (`font-heading`) for the wordmark
   and window titles only. Times use `tabular-nums`.
 - **Copy** goes in `lib/i18n.ts` for both languages, in sentence case. Errors say what happened and what to do.
-- **Motion:** one moment only — windows "open" in the day strip. Respect `prefers-reduced-motion`.
+- **Motion:** windows "open" in the day strip, and the sky eases to its new colour; nothing else moves.
+  Both respect `prefers-reduced-motion`.
+- **Layout:** one column on phones and tablets; from `lg` the form is a sticky sidebar and results take the
+  rest. Check 390, 820 and 1440 px.
 
 ## Accessibility checklist
 
