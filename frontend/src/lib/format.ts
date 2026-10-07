@@ -43,3 +43,8 @@ export function formatDayParts(localDateTime: string, lang: Lang) {
 export function hourOf(localDateTime: string) {
   return Number(localDateTime.slice(11, 13))
 }
+
+/** Feels-like temperature for the reader: Fahrenheit in English, Celsius in Portuguese (the API sends Celsius). */
+export function formatTemperature(celsius: number, lang: Lang) {
+  return lang === "en" ? `${Math.round((celsius * 9) / 5 + 32)}°F` : `${Math.round(celsius)}°C`
+}

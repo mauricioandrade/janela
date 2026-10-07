@@ -4,7 +4,7 @@ import { ScoreBadge } from "@/components/score"
 import { RainWarning, UvWarning } from "@/components/warnings"
 import { useI18n } from "@/hooks/use-i18n"
 import type { OutdoorWindow } from "@/lib/api"
-import { formatDayParts, formatTime } from "@/lib/format"
+import { formatDayParts, formatTemperature, formatTime } from "@/lib/format"
 
 /** Every window in rank order, set like a timetable: one row per window, numbers in columns. */
 export function WindowsTable({ windows }: { windows: OutdoorWindow[] }) {
@@ -14,7 +14,7 @@ export function WindowsTable({ windows }: { windows: OutdoorWindow[] }) {
     rank: index + 1,
     day: formatDayParts(window.start, lang),
     time: `${formatTime(window.start)}–${formatTime(window.end)}`,
-    feelsLike: window.apparentTempC !== null ? `${Math.round(window.apparentTempC)}°C` : "—",
+    feelsLike: window.apparentTempC !== null ? formatTemperature(window.apparentTempC, lang) : "—",
     uv: window.maxUv !== null ? String(Math.round(window.maxUv)) : "—",
     rain: window.maxRainProbability !== null ? `${window.maxRainProbability}%` : "—",
     wind: window.maxWindKmh !== null ? `${Math.round(window.maxWindKmh)} km/h` : "—",

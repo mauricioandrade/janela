@@ -5,7 +5,7 @@ import { ScoreBadge } from "@/components/score"
 import { RainWarning, UvWarning } from "@/components/warnings"
 import { useI18n } from "@/hooks/use-i18n"
 import type { Activity, City, OutdoorWindow } from "@/lib/api"
-import { formatDay, formatTime } from "@/lib/format"
+import { formatDay, formatTemperature, formatTime } from "@/lib/format"
 import { placeLabel } from "@/lib/place"
 import { uvLevel } from "@/lib/score"
 
@@ -19,7 +19,7 @@ type AnswerProps = {
 export function Answer({ window, activity, place }: AnswerProps) {
   const { t, lang } = useI18n()
   const readings = [
-    { label: t.feelsLikeLong, value: window.apparentTempC !== null ? `${Math.round(window.apparentTempC)}°C` : null },
+    { label: t.feelsLikeLong, value: window.apparentTempC !== null ? formatTemperature(window.apparentTempC, lang) : null },
     {
       label: t.uvLong,
       value: window.maxUv !== null ? String(Math.round(window.maxUv)) : null,
