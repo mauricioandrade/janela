@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,7 +66,7 @@ class OllamaNarrativeGeneratorTest {
 
         Narrative narrative = generator.generate(REQUEST);
 
-        assertThat(narrative).isEqualTo(Narrative.fromModel("Go at 06:00.\n🌿 Notice three bird calls.", "gemma3:4b"));
+        assertThat(narrative).isEqualTo(Narrative.fromModel("Go at 06:00.\n\n🌿 Notice three bird calls.", "gemma3:4b"));
 
         ArgumentCaptor<Prompt> prompt = ArgumentCaptor.forClass(Prompt.class);
         verify(chatModel).call(prompt.capture());
@@ -73,14 +74,47 @@ class OllamaNarrativeGeneratorTest {
                 .contains("Write in English.")
                 .doesNotContain("{language}");
         assertThat(prompt.getValue().getUserMessage().getText())
-                .contains("\"city\":\"Campinas\"", "\"activity\":\"RUN\"", "\"rank\":1",
+                .contains("\"city\":\"Campinas\"", "\"activity\":\"RUN\"", "\"best\":{",
                         "\"day\":\"Tuesday, Oct 6\"", "\"start\":\"06:00\"", "\"end\":\"07:00\"",
                         "\"temperatureUnit\":\"°F\"", "\"temperature\":67", "\"comfort\":\"pleasant\"",
                         "\"uvIndex\":1", "\"uvLevel\":\"low\"", "\"rainChancePercent\":5",
+                        "\"rainLevel\":\"low\"", "\"rating\":\"great\"",
                         "\"windUnit\":\"mph\"", "\"wind\":5",
                         "\"reasons\":[\"before the day's heat peaks at 13:00\",\"before the likeliest rain, at 16:00\","
                                 + "\"before the strongest sun, at 12:00\"]", "\"challengeIdea\":\"")
                 .doesNotContain("score", "Wednesday", "hottest");
+    }
+
+    @Test
+    void sendsOnlyTheBestWindowAndOneAlternative() {
+        when(chatModel.call(any(Prompt.class))).thenReturn(reply("Go at 16:00.\n🌿 Count three birds."));
+        LocalDateTime four = LocalDateTime.of(2026, 10, 6, 16, 0);
+        NarrativeRequest threeWindows = new NarrativeRequest(TestLocations.CAMPINAS, Activity.WORKOUT, 60,
+                List.of(new OutdoorWindow(four, four.plusHours(1), 53, 27.6, 2.2, 47, 5.8),
+                        new OutdoorWindow(four.plusHours(1), four.plusHours(2), 51, 27.1, 2.0, 54, 9.6),
+                        new OutdoorWindow(four.plusHours(2), four.plusHours(3), 50, 26.9, 0.2, 57, 3.8)),
+                Language.PT, List.of());
+
+        generator.generate(threeWindows);
+
+        ArgumentCaptor<Prompt> prompt = ArgumentCaptor.forClass(Prompt.class);
+        verify(chatModel).call(prompt.capture());
+        assertThat(prompt.getValue().getUserMessage().getText())
+                .contains("\"best\":{", "\"alternative\":{", "\"rating\":\"razoável\"",
+                        "\"rainLevel\":\"alta\"", "\"comfort\":\"muito quente\"")
+                .doesNotContain("rank", "\"start\":\"18:00\"");
+    }
+
+    @ParameterizedTest
+    @CsvSource({"69, fair", "70, great", "40, fair", "39, poor"})
+    void ratesWithTheScreensThresholds(int score, String rating) {
+        assertThat(OllamaNarrativeGenerator.WindowPayload.rating(score, Language.EN)).isEqualTo(rating);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"0, low", "19, low", "20, moderate", "39, moderate", "40, high", "100, high"})
+    void wordsRainChanceLikeTheScreenWarns(int chance, String level) {
+        assertThat(OllamaNarrativeGenerator.WindowPayload.rainLevel(chance, Language.EN)).isEqualTo(level);
     }
 
     @ParameterizedTest
@@ -99,6 +133,30 @@ class OllamaNarrativeGeneratorTest {
 
         assertThat(OllamaNarrativeGenerator.WindowPayload.reasons(afternoon, outlook, Language.PT))
                 .containsExactly("depois do pico de calor do dia, às 13:00", "depois do sol mais forte, às 12:00");
+    }
+
+    @Test
+    void asksAgainOnceWithTheProblemNamed() {
+        when(chatModel.call(any(Prompt.class)))
+                .thenReturn(reply("Go at 6:00 AM.\n🌿 Count three birds."), reply("Tuesday, Oct 6 at 06:00 is pleasant.\n🌿 Count three birds."));
+
+        Narrative narrative = generator.generate(REQUEST);
+
+        assertThat(narrative.text()).isEqualTo("Tuesday, Oct 6 at 06:00 is pleasant.\n\n🌿 Count three birds.");
+        ArgumentCaptor<Prompt> prompts = ArgumentCaptor.forClass(Prompt.class);
+        verify(chatModel, times(2)).call(prompts.capture());
+        assertThat(prompts.getAllValues().get(1).getUserMessage().getText())
+                .contains("Your previous answer broke a rule (12-hour time 6:00 am)");
+    }
+
+    @Test
+    void givesUpAfterTheSecondBrokenTextSoTheCallerCanFallBack() {
+        when(chatModel.call(any(Prompt.class))).thenReturn(reply("Go at 6:00 AM by the beach."));
+
+        assertThatThrownBy(() -> generator.generate(REQUEST))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("rejected twice");
+        verify(chatModel, times(2)).call(any(Prompt.class));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.mauricio.janela.infrastructure.ai;
 
 import com.mauricio.janela.domain.model.Activity;
+import com.mauricio.janela.domain.model.DayOutlook;
 import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.NarrativeRequest;
@@ -158,7 +159,8 @@ public class TemplateNarrativeGenerator implements NarrativeGenerator {
 
     /** The same idea bank the model gets, written out as a sentence. */
     private static String challenge(NarrativeRequest request, OutdoorWindow best, Language language) {
-        String idea = ChallengeIdeas.pick(request.activity(), best, request.location(), language);
+        String idea = ChallengeIdeas.pick(request.activity(), best,
+                request.outlookFor(best).map(DayOutlook::lastLightAt).orElse(null), request.location(), language);
         return Character.toUpperCase(idea.charAt(0)) + idea.substring(1) + ".";
     }
 }

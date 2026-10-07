@@ -5,6 +5,7 @@ import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.model.OutdoorWindow;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -91,23 +92,42 @@ final class ChallengeIdeas {
             new Idea("procure a primeira estrela ou planeta", "look for the first star or planet"),
             new Idea("repare no ar esfriando quando o sol some", "notice the air cooling as the sun disappears"));
 
+    enum PartOfDay { DAWN, DAYTIME, DUSK }
+
     private ChallengeIdeas() {
     }
 
-    /** One idea for this window, in the reader's language. */
-    static String pick(Activity activity, OutdoorWindow window, Location location, Language language) {
-        int hour = window.start().getHour();
-        List<Idea> pool = new ArrayList<>(BY_ACTIVITY.get(activity));
-        pool.addAll(hour < 9 ? DAWN : hour >= 16 ? DUSK : DAYTIME);
+    /**
+     * Dusk only when the window ends within the last hour of light, so a 16:00 workout is not told to watch a sunset
+     * that comes at 18:10. Without a known end of daylight, the window counts as daytime.
+     */
+    static PartOfDay partOfDay(OutdoorWindow window, LocalDateTime lastLightAt) {
+        if (window.start().getHour() < 9) return PartOfDay.DAWN;
+        if (lastLightAt != null && !window.end().isBefore(lastLightAt.minusHours(1))) return PartOfDay.DUSK;
+        return PartOfDay.DAYTIME;
+    }
+
+    /** One idea for this window, in the reader's language; {@code lastLightAt} is when that day's light ends. */
+    static String pick(Activity activity, OutdoorWindow window, LocalDateTime lastLightAt, Location location,
+                       Language language) {
+        List<Idea> pool = pool(activity, partOfDay(window, lastLightAt));
         int index = Math.floorMod(Objects.hash(location.name(), window.start(), activity), pool.size());
         Idea idea = pool.get(index);
         return language == Language.EN ? idea.en() : idea.pt();
     }
 
-    /** Every idea in the pool for an activity and hour, for tests. */
-    static List<String> poolFor(Activity activity, int hour, Language language) {
+    /** Every idea in the pool for an activity and part of the day, for tests. */
+    static List<String> poolFor(Activity activity, PartOfDay part, Language language) {
+        return pool(activity, part).stream().map(idea -> language == Language.EN ? idea.en() : idea.pt()).toList();
+    }
+
+    private static List<Idea> pool(Activity activity, PartOfDay part) {
         List<Idea> pool = new ArrayList<>(BY_ACTIVITY.get(activity));
-        pool.addAll(hour < 9 ? DAWN : hour >= 16 ? DUSK : DAYTIME);
-        return pool.stream().map(idea -> language == Language.EN ? idea.en() : idea.pt()).toList();
+        pool.addAll(switch (part) {
+            case DAWN -> DAWN;
+            case DAYTIME -> DAYTIME;
+            case DUSK -> DUSK;
+        });
+        return pool;
     }
 }

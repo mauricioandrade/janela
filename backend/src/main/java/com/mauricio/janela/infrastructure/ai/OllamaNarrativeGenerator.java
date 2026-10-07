@@ -8,6 +8,8 @@ import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.NarrativeRequest;
 import com.mauricio.janela.domain.model.OutdoorWindow;
 import com.mauricio.janela.domain.port.out.NarrativeGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -18,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Optional;
 
 /**
  * Asks the local Gemma model (via Ollama) to explain the windows. The model only receives the
@@ -26,6 +28,8 @@ import java.util.stream.IntStream;
  */
 @Component
 public class OllamaNarrativeGenerator implements NarrativeGenerator {
+
+    private static final Logger log = LoggerFactory.getLogger(OllamaNarrativeGenerator.class);
 
     private final ChatClient chatClient;
     private final JsonMapper jsonMapper;
@@ -45,16 +49,33 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
 
     @Override
     public Narrative generate(NarrativeRequest request) {
+        PromptPayload payload = PromptPayload.from(request);
+        String json = jsonMapper.writeValueAsString(payload);
+        String text = ask(request, json);
+        Optional<String> problem = NarrativeCheck.problem(text, payload);
+        if (problem.isPresent()) {
+            // One second try, told what was wrong; a small model usually fixes a named mistake.
+            log.info("Gemma narrative rejected ({}), asking again: {}", problem.get(), text.strip());
+            text = ask(request, json + "\n\nYour previous answer broke a rule (" + problem.get()
+                    + "). Write it again following every rule.");
+            problem = NarrativeCheck.problem(text, payload);
+        }
+        if (problem.isPresent()) {
+            throw new IllegalStateException("Gemma narrative rejected twice (" + problem.get() + "): " + text.strip());
+        }
+        return Narrative.fromModel(NarrativeCheck.tidy(text), model);
+    }
+
+    private String ask(NarrativeRequest request, String user) {
         String text = chatClient.prompt()
                 .system(system -> system.text(systemPrompt).param("language", request.language().displayName()))
-                .user(jsonMapper.writeValueAsString(PromptPayload.from(request)))
+                .user(user)
                 .call()
                 .content();
-
         if (text == null || text.isBlank()) {
             throw new IllegalStateException("Ollama returned an empty narrative");
         }
-        return Narrative.fromModel(text.strip(), model);
+        return text;
     }
 
     /**
@@ -68,12 +89,15 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
             int durationMinutes,
             String temperatureUnit,
             String windUnit,
-            List<WindowPayload> windows,
+            WindowPayload best,
+            WindowPayload alternative,
             String challengeIdea
     ) {
 
         static PromptPayload from(NarrativeRequest request) {
             Language language = request.language();
+            // The best window and one alternative, by name: given a ranked list of three, the model mixed up the order,
+            // praised the wrong one and wrote "Rank 2" into the text.
             List<OutdoorWindow> windows = request.windows();
             return new PromptPayload(
                     language.code(),
@@ -82,22 +106,24 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
                     request.durationMinutes(),
                     language.temperatureSymbol(),
                     language.windSymbol(),
-                    IntStream.range(0, windows.size())
-                            .mapToObj(i -> WindowPayload.from(i + 1, windows.get(i), request, language))
-                            .toList(),
+                    windows.isEmpty() ? null : WindowPayload.from(windows.getFirst(), request, language),
+                    windows.size() < 2 ? null : WindowPayload.from(windows.get(1), request, language),
                     windows.isEmpty() ? null
-                            : ChallengeIdeas.pick(request.activity(), windows.getFirst(), request.location(), language));
+                            : ChallengeIdeas.pick(request.activity(), windows.getFirst(),
+                            request.outlookFor(windows.getFirst()).map(DayOutlook::lastLightAt).orElse(null),
+                            request.location(), language));
         }
     }
 
     /**
      * Pre-digested so a small model rewrites conclusions instead of drawing them: day and times are formatted in the
-     * target language, numbers are rounded and converted to the reader's units, temperature and UV come with words,
-     * and {@code reasons} are the window's advantages already worked out from the day's outlook. The score is left
-     * out on purpose; rank already says which window is best.
+     * target language, numbers are rounded and converted to the reader's units, the window's quality, temperature, UV
+     * and rain come with words, and {@code reasons} are the window's advantages already worked out from the day's
+     * outlook. The score itself is left out on purpose: the model kept quoting it; {@code rating} is the same word the
+     * screen shows next to it.
      */
     record WindowPayload(
-            int rank,
+            String rating,
             String day,
             String start,
             String end,
@@ -106,20 +132,37 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
             Long uvIndex,
             String uvLevel,
             Integer rainChancePercent,
+            String rainLevel,
             Long wind,
             List<String> reasons
     ) {
 
-        static WindowPayload from(int rank, OutdoorWindow window, NarrativeRequest request, Language language) {
+        static WindowPayload from(OutdoorWindow window, NarrativeRequest request, Language language) {
             Long uv = round(window.maxUv());
             Double feelsLike = window.apparentTempC();
-            return new WindowPayload(rank, dayName(window.start(), language), window.start().format(TIME),
+            Integer rain = window.maxRainProbability();
+            return new WindowPayload(rating(window.score(), language), dayName(window.start(), language),
+                    window.start().format(TIME),
                     window.end().format(TIME),
                     round(feelsLike == null ? null : language.temperatureFromCelsius(feelsLike)),
                     feelsLike == null ? null : comfortWord(request.activity().comfortOf(feelsLike), language),
-                    uv, uv == null ? null : uvLevel(uv, language), window.maxRainProbability(),
+                    uv, uv == null ? null : uvLevel(uv, language), rain, rain == null ? null : rainLevel(rain, language),
                     round(window.maxWindKmh() == null ? null : language.windFromKmh(window.maxWindKmh())),
                     request.outlookFor(window).map(outlook -> reasons(window, outlook, language)).orElse(List.of()));
+        }
+
+        /** The score's word, with the screen's thresholds (lib/score.ts on the frontend). */
+        static String rating(int score, Language language) {
+            int tier = score >= 70 ? 0 : score >= 40 ? 1 : 2;
+            return (language == Language.PT ? List.of("ótima", "razoável", "fraca") : List.of("great", "fair", "poor"))
+                    .get(tier);
+        }
+
+        /** Rain chance as a word; from 40% the screen already warns of likely rain. */
+        static String rainLevel(int chance, Language language) {
+            int level = chance < 20 ? 0 : chance < 40 ? 1 : 2;
+            return (language == Language.PT ? List.of("baixa", "moderada", "alta") : List.of("low", "moderate", "high"))
+                    .get(level);
         }
 
         /** WHO UV index categories. */

@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * The shape of one day's daylight: when it is hottest, wettest and sunniest. It lets the narrative explain why a
+ * The shape of one day's daylight: when it is hottest, wettest and sunniest, and when the light ends. It lets the narrative explain why a
  * window wins ("before the 13:00 heat") without the model reading raw hourly data. Any peak may be null.
  */
 public record DayOutlook(
@@ -18,8 +18,15 @@ public record DayOutlook(
         LocalDateTime wettestAt,
         Integer maxRainProbability,
         LocalDateTime strongestSunAt,
-        Double maxUv
+        Double maxUv,
+        LocalDateTime lastLightAt
 ) {
+
+    /** An outlook without the end of daylight, for callers that only care about the peaks. */
+    public DayOutlook(LocalDate date, LocalDateTime hottestAt, Double hottestApparentTempC, LocalDateTime wettestAt,
+                      Integer maxRainProbability, LocalDateTime strongestSunAt, Double maxUv) {
+        this(date, hottestAt, hottestApparentTempC, wettestAt, maxRainProbability, strongestSunAt, maxUv, null);
+    }
 
     /** The outlook of the daylight hours in {@code hours} that fall on {@code date}. */
     public static DayOutlook of(LocalDate date, List<HourlyForecast> hours) {
@@ -37,7 +44,10 @@ public record DayOutlook(
                 wettest.map(HourlyForecast::time).orElse(null),
                 wettest.map(HourlyForecast::precipitationProbability).orElse(null),
                 sunniest.map(HourlyForecast::time).orElse(null),
-                sunniest.map(HourlyForecast::uvIndex).orElse(null));
+                sunniest.map(HourlyForecast::uvIndex).orElse(null),
+                // The end of the last hour Open-Meteo still marks as day, about when the sun sets.
+                daylight.stream().map(HourlyForecast::time).max(Comparator.naturalOrder())
+                        .map(time -> time.plusHours(1)).orElse(null));
     }
 
     /** The first hour with the highest value; ties go to the earliest hour. */

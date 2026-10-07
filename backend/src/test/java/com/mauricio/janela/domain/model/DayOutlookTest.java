@@ -29,6 +29,7 @@ class DayOutlookTest {
         assertThat(outlook.maxRainProbability()).isEqualTo(70);
         assertThat(outlook.strongestSunAt()).isEqualTo(DAY.atTime(12, 0)); // ties go to the earliest hour
         assertThat(outlook.maxUv()).isEqualTo(11.0);
+        assertThat(outlook.lastLightAt()).isEqualTo(DAY.atTime(17, 0)); // the end of the last daylight hour
     }
 
     @Test
@@ -38,6 +39,7 @@ class DayOutlookTest {
         assertThat(outlook.hottestAt()).isNull();
         assertThat(outlook.wettestAt()).isNull();
         assertThat(outlook.strongestSunAt()).isNull();
+        assertThat(outlook.lastLightAt()).isEqualTo(DAY.atTime(9, 0));
     }
 
     private static HourlyForecast hour(LocalDate day, int hour, Double feelsLike, Integer rain, Double uv, boolean isDay) {
