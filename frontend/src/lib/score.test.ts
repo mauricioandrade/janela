@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { scoreFill, scoreTier, scoreTrack, uvLevel } from "@/lib/score"
+import { scoreIconColor, scoreTier, uvLevel } from "@/lib/score"
 
 describe("score tiers", () => {
   it.each([
@@ -15,16 +15,12 @@ describe("score tiers", () => {
   })
 
   it("maps tiers to the score tokens", () => {
-    expect(scoreFill(92)).toBe("bg-score-high")
-    expect(scoreFill(10)).toBe("bg-score-low")
+    expect(scoreIconColor(92)).toBe("text-score-high")
+    expect(scoreIconColor(10)).toBe("text-score-low")
   })
 })
 
-describe("meters and UV", () => {
-  it("draws the track a lighter step of the fill's hue", () => {
-    expect(scoreTrack(92)).toBe("bg-score-high/20")
-  })
-
+describe("UV", () => {
   it.each([
     [0.4, "low"],
     [2.4, "low"],

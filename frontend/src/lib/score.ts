@@ -6,32 +6,10 @@ export function scoreTier(score: number): ScoreTier {
   return "low"
 }
 
-const TIER_FILL: Record<ScoreTier, string> = {
-  high: "bg-score-high",
-  mid: "bg-score-mid",
-  low: "bg-score-low",
-}
-
-const TIER_TRACK: Record<ScoreTier, string> = {
-  high: "bg-score-high/20",
-  mid: "bg-score-mid/25",
-  low: "bg-score-low/20",
-}
-
 const TIER_TEXT: Record<ScoreTier, string> = {
   high: "text-score-high",
   mid: "text-score-mid",
   low: "text-score-low",
-}
-
-/** Background class for a score: the `score-*` tokens in index.css. */
-export function scoreFill(score: number) {
-  return TIER_FILL[scoreTier(score)]
-}
-
-/** A lighter step of the same hue, for the unfilled part of a meter. */
-export function scoreTrack(score: number) {
-  return TIER_TRACK[scoreTier(score)]
 }
 
 /** Colour for a tier icon; text itself stays in text tokens. */
