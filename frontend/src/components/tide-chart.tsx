@@ -3,7 +3,13 @@ import { cn } from "cn"
 
 import { useI18n } from "@/hooks/use-i18n"
 import type { HourScore, OutdoorWindow } from "@/lib/api"
-import { dayKey, formatDayParts, formatTime, hourOf, minutesOfDay } from "@/lib/format"
+import {
+  dayKey,
+  formatDayParts,
+  formatTime,
+  hourOf,
+  minutesOfDay,
+} from "@/lib/format"
 
 /** Below this hour score the scorer discards any window containing the hour. */
 const WINDOW_FLOOR = 40
@@ -32,7 +38,9 @@ export function TideChart({ hours, windows }: TideChartProps) {
   const last = Math.max(...hours.map((hour) => hourOf(hour.time))) + 1
   const scale = { first, last }
   // Edge hours get their own labels; ticks too close to them would collide on a phone.
-  const ticks = range(first + 2, last - 2).filter((hour) => hour % TICK_EVERY_HOURS === 0)
+  const ticks = range(first + 2, last - 2).filter(
+    (hour) => hour % TICK_EVERY_HOURS === 0
+  )
 
   return (
     <section aria-labelledby="tide-heading" className="flex flex-col gap-4">
@@ -40,7 +48,9 @@ export function TideChart({ hours, windows }: TideChartProps) {
         <h2 id="tide-heading" className="text-lg font-semibold tracking-tight">
           {t.tideHeading}
         </h2>
-        <p className="max-w-[65ch] text-sm text-muted-foreground">{t.tideCaption}</p>
+        <p className="max-w-[65ch] text-sm text-muted-foreground">
+          {t.tideCaption}
+        </p>
       </header>
 
       <div className="flex flex-col gap-2">
@@ -55,16 +65,27 @@ export function TideChart({ hours, windows }: TideChartProps) {
             delayMs={index * 120}
           />
         ))}
-        <div className="grid grid-cols-[3.75rem_1fr] gap-3 sm:grid-cols-[4.5rem_1fr]" aria-hidden>
+        <div
+          className="grid grid-cols-[3.75rem_1fr] gap-3 sm:grid-cols-[4.5rem_1fr]"
+          aria-hidden
+        >
           <span />
-          <div className="relative h-4 font-condensed text-xs text-muted-foreground tabular-nums">
-            <span className="absolute left-0">{String(first).padStart(2, "0")}h</span>
+          <div className="relative h-4 text-xs text-muted-foreground font-condensed tabular-nums">
+            <span className="absolute left-0">
+              {String(first).padStart(2, "0")}h
+            </span>
             {ticks.map((hour) => (
-              <span key={hour} className="absolute -translate-x-1/2" style={{ left: `${xPercent(hour, scale)}%` }}>
+              <span
+                key={hour}
+                className="absolute -translate-x-1/2"
+                style={{ left: `${xPercent(hour, scale)}%` }}
+              >
                 {String(hour).padStart(2, "0")}h
               </span>
             ))}
-            <span className="absolute right-0">{String(last).padStart(2, "0")}h</span>
+            <span className="absolute right-0">
+              {String(last).padStart(2, "0")}h
+            </span>
           </div>
         </div>
       </div>
@@ -88,22 +109,37 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
   const dayWindows = windows
     .map((window, index) => ({ window, rank: index + 1 }))
     .filter(({ window }) => dayKey(window.start) === day)
-  const peak = hours.reduce((best, hour) => (hour.score > best.score ? hour : best), hours[0])
+  const peak = hours.reduce(
+    (best, hour) => (hour.score > best.score ? hour : best),
+    hours[0]
+  )
 
-  const points: Point[] = hours.map((hour) => ({ x: x(hourOf(hour.time) + 0.5, scale), y: y(hour.score) }))
+  const points: Point[] = hours.map((hour) => ({
+    x: x(hourOf(hour.time) + 0.5, scale),
+    y: y(hour.score),
+  }))
   // Hold the first and last hour's level out to the edges of the day.
-  const edged = [{ x: x(hourOf(hours[0].time), scale), y: points[0].y }, ...points, {
-    x: x(hourOf(hours[hours.length - 1].time) + 1, scale),
-    y: points[points.length - 1].y,
-  }]
+  const edged = [
+    { x: x(hourOf(hours[0].time), scale), y: points[0].y },
+    ...points,
+    {
+      x: x(hourOf(hours[hours.length - 1].time) + 1, scale),
+      y: points[points.length - 1].y,
+    },
+  ]
   const line = smoothPath(edged)
   const area = `${line} L ${edged[edged.length - 1].x} ${H} L ${edged[0].x} ${H} Z`
 
   function handlePointer(event: PointerEvent<HTMLDivElement>) {
     const box = event.currentTarget.getBoundingClientRect()
-    const hourAt = scale.first + ((event.clientX - box.left) / box.width) * (scale.last - scale.first)
+    const hourAt =
+      scale.first +
+      ((event.clientX - box.left) / box.width) * (scale.last - scale.first)
     const nearest = hours.reduce((best, hour) =>
-      Math.abs(hourOf(hour.time) + 0.5 - hourAt) < Math.abs(hourOf(best.time) + 0.5 - hourAt) ? hour : best
+      Math.abs(hourOf(hour.time) + 0.5 - hourAt) <
+      Math.abs(hourOf(best.time) + 0.5 - hourAt)
+        ? hour
+        : best
     )
     setHovered(nearest)
   }
@@ -111,12 +147,20 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
   return (
     <div className="grid grid-cols-[3.75rem_1fr] items-stretch gap-3 sm:grid-cols-[4.5rem_1fr]">
       <p className="flex flex-col justify-center leading-tight">
-        <span className="font-semibold first-letter:uppercase">{parts.weekday}</span>
-        <span className="font-condensed text-sm text-muted-foreground">{parts.date}</span>
+        <span className="font-semibold first-letter:uppercase">
+          {parts.weekday}
+        </span>
+        <span className="text-sm text-muted-foreground font-condensed">
+          {parts.date}
+        </span>
       </p>
       <div
         role="img"
-        aria-label={t.tideDaySummary(`${parts.weekday} ${parts.date}`, peak.score, formatTime(peak.time))}
+        aria-label={t.tideDaySummary(
+          `${parts.weekday} ${parts.date}`,
+          peak.score,
+          formatTime(peak.time)
+        )}
         className="relative h-24 touch-pan-y rounded-md border bg-card sm:h-28"
         onPointerMove={handlePointer}
         onPointerDown={handlePointer}
@@ -143,10 +187,15 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
             <rect
               key={window.start}
               x={x(minutesOfDay(window.start) / 60, scale)}
-              width={x(minutesOfDay(window.end, true) / 60, scale) - x(minutesOfDay(window.start) / 60, scale)}
+              width={
+                x(minutesOfDay(window.end, true) / 60, scale) -
+                x(minutesOfDay(window.start) / 60, scale)
+              }
               y={0}
               height={H}
-              className={cn("animate-tide-fill fill-primary", rank === 1 ? "opacity-25" : "opacity-12")}
+              // Intensity lives in fill-opacity: the entrance animation drives opacity and would override it.
+              fillOpacity={rank === 1 ? 0.25 : 0.12}
+              className="animate-tide-fill fill-primary"
               style={{ animationDelay: `${delayMs + 300 + rank * 80}ms` }}
             />
           ))}
@@ -172,29 +221,56 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
           />
         </svg>
 
-        {dayWindows.map(({ window, rank }) => (
-          <span
-            key={window.start}
-            aria-hidden
-            className={cn(
-              "absolute top-1.5 flex -translate-x-1/2 items-center gap-1 rounded px-1.5 py-0.5 font-condensed text-xs font-semibold whitespace-nowrap tabular-nums",
-              rank === 1 ? "bg-primary text-primary-foreground" : "bg-card/90 text-foreground ring-1 ring-border"
-            )}
-            style={{ left: `${xPercent((minutesOfDay(window.start) + minutesOfDay(window.end, true)) / 120, scale)}%` }}
-          >
-            <span className="opacity-70">{rank}</span>
-            {formatTime(window.start)}–{formatTime(window.end)}
-          </span>
-        ))}
+        {dayWindows.map(({ window, rank }) => {
+          const middle = xPercent(
+            (minutesOfDay(window.start) + minutesOfDay(window.end, true)) / 120,
+            scale
+          )
+          // Near an edge the label hugs the inside instead of spilling out of the chart.
+          const anchor = middle < 12 ? "start" : middle > 88 ? "end" : "middle"
+          return (
+            <span
+              key={window.start}
+              aria-hidden
+              className={cn(
+                "absolute top-1.5 flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold whitespace-nowrap font-condensed tabular-nums",
+                anchor === "middle" && "-translate-x-1/2",
+                rank === 1
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card/90 text-foreground ring-1 ring-border"
+              )}
+              style={
+                anchor === "start"
+                  ? {
+                      left: `${xPercent(minutesOfDay(window.start) / 60, scale)}%`,
+                      marginLeft: 4,
+                    }
+                  : anchor === "end"
+                    ? {
+                        right: `${100 - xPercent(minutesOfDay(window.end, true) / 60, scale)}%`,
+                        marginRight: 4,
+                      }
+                    : { left: `${middle}%` }
+              }
+            >
+              <span className="opacity-70">{rank}</span>
+              {formatTime(window.start)}–{formatTime(window.end)}
+            </span>
+          )
+        })}
 
         {hovered && (
-          <span aria-hidden className="pointer-events-none absolute inset-y-0" style={{ left: `${xPercent(hourOf(hovered.time) + 0.5, scale)}%` }}>
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0"
+            style={{ left: `${xPercent(hourOf(hovered.time) + 0.5, scale)}%` }}
+          >
             <span className="absolute inset-y-0 w-px bg-foreground/30" />
             <span
               className="absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-tide"
               style={{ top: `${y(hovered.score)}%` }}
             />
-            <span className="absolute bottom-1 left-2 rounded bg-foreground px-1.5 py-0.5 font-condensed text-xs font-medium whitespace-nowrap text-background tabular-nums">
+            <span className="absolute bottom-1 left-2 rounded bg-foreground px-1.5 py-0.5 text-xs font-medium whitespace-nowrap text-background font-condensed tabular-nums">
               {t.tideHour(formatTime(hovered.time), hovered.score)}
             </span>
           </span>
