@@ -3,7 +3,7 @@
 **Find your window to touch grass.**
 
 Janela (Portuguese for *window*) finds the best time windows in the next few days for an outdoor activity —
-running, walking, cycling, a picnic, some gardening — based on what actually matters in a tropical climate:
+running, walking, cycling, a picnic, some gardening, a workout at the square's outdoor gym — based on what actually matters in a tropical climate:
 heat, UV index, afternoon storms and wind.
 
 Then a **local open-weight model (Gemma, via Ollama)** turns those numbers into a short, human recommendation
@@ -60,6 +60,7 @@ windows are returned.
 | Bike      | 12–24 °C         | 6                  | 22 km/h  |
 | Picnic    | 18–28 °C         | 4                  | 20 km/h  |
 | Gardening | 15–27 °C         | 5                  | 30 km/h  |
+| Outdoor workout | 10–23 °C   | 5                  | 30 km/h  |
 
 ## Running locally
 
@@ -129,7 +130,7 @@ country and an `id`:
 |-------------------|----------|---------------------------------------------|
 | `city`            | yes      | City name, e.g. `Recife`                    |
 | `cityId`          | no       | An `id` from `/api/v1/cities`; pins that exact place instead of the name's best match |
-| `activity`        | yes      | `RUN`, `WALK`, `BIKE`, `PICNIC`, `GARDENING` |
+| `activity`        | yes      | `RUN`, `WALK`, `BIKE`, `PICNIC`, `GARDENING`, `WORKOUT` |
 | `durationMinutes` | yes      | 15–480 (rounded up to whole hours)          |
 | `days`            | no       | 1–3, default 1                              |
 | `lang`            | no       | `pt` or `en`, default `pt`                  |

@@ -64,6 +64,7 @@ paths:
           - BIKE
           - PICNIC
           - GARDENING
+          - WORKOUT
           example: BIKE
         example: BIKE
       - name: durationMinutes
@@ -353,6 +354,7 @@ components:
           - BIKE
           - PICNIC
           - GARDENING
+          - WORKOUT
           example: BIKE
         windows:
           type: array

@@ -143,7 +143,7 @@ export function SearchForm({
               <FieldLegend variant="label">{t.activity}</FieldLegend>
               <ToggleGroup
                 variant="outline"
-                className="grid w-full grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-3"
+                className="grid w-full grid-cols-3 items-stretch gap-2 sm:grid-cols-6 lg:grid-cols-3"
                 value={[activity]}
                 onValueChange={(value) =>
                   value.length > 0 && setActivity(value[0] as Activity)
@@ -155,7 +155,7 @@ export function SearchForm({
                     <ToggleGroupItem
                       key={option}
                       value={option}
-                      className="h-auto flex-col gap-1.5 px-2 py-3"
+                      className="h-auto flex-col gap-1.5 px-2 py-3 text-center leading-tight whitespace-normal"
                     >
                       <Icon />
                       {t.activities[option]}

@@ -1,6 +1,6 @@
 import type { Activity, Lang, SearchValues, WindowsParams } from "@/lib/api"
 
-const ACTIVITY_VALUES: Activity[] = ["RUN", "WALK", "BIKE", "PICNIC", "GARDENING"]
+const ACTIVITY_VALUES: Activity[] = ["RUN", "WALK", "BIKE", "PICNIC", "GARDENING", "WORKOUT"]
 
 /** Reads a shareable search from the URL (`?city=Itobi&cityId=3460543&activity=RUN&duration=60&days=2&lang=pt`). */
 export function readSearchFromUrl(queryString = window.location.search): Partial<WindowsParams> {

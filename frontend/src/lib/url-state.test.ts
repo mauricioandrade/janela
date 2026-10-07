@@ -14,6 +14,10 @@ describe("readSearchFromUrl", () => {
     })
   })
 
+  it("accepts the outdoor workout", () => {
+    expect(readSearchFromUrl("?activity=workout").activity).toBe("WORKOUT")
+  })
+
   it("drops values it can't trust", () => {
     expect(readSearchFromUrl("?city=%20&cityId=-4&activity=SWIM&duration=abc&days=9&lang=fr")).toEqual({})
   })

@@ -16,6 +16,7 @@ export const messages = {
       BIKE: "Pedalar",
       PICNIC: "Piquenique",
       GARDENING: "Jardinagem",
+      WORKOUT: "Treino ao ar livre",
     } satisfies Record<Activity, string>,
     duration: "Duração",
     durationOption: (minutes: number) =>
@@ -56,7 +57,7 @@ export const messages = {
     rainLong: "Chance de chuva",
     windLong: "Vento",
     answerLead: (activity: Activity, day: string) => {
-      const verb = { RUN: "Correr", WALK: "Caminhar", BIKE: "Pedalar", PICNIC: "Piquenique", GARDENING: "Jardinagem" }[activity]
+      const verb = { RUN: "Correr", WALK: "Caminhar", BIKE: "Pedalar", PICNIC: "Piquenique", GARDENING: "Jardinagem", WORKOUT: "Treinar" }[activity]
       const preposition = /^(sábado|domingo)/i.test(day) ? "no" : "na"
       return `${verb} ${preposition} ${day}`
     },
@@ -92,6 +93,7 @@ export const messages = {
       BIKE: "Bike",
       PICNIC: "Picnic",
       GARDENING: "Gardening",
+      WORKOUT: "Outdoor workout",
     } satisfies Record<Activity, string>,
     duration: "Duration",
     durationOption: (minutes: number) =>
@@ -132,7 +134,7 @@ export const messages = {
     rainLong: "Chance of rain",
     windLong: "Wind",
     answerLead: (activity: Activity, day: string) => {
-      const verb = { RUN: "Run", WALK: "Walk", BIKE: "Ride", PICNIC: "Picnic", GARDENING: "Garden" }[activity]
+      const verb = { RUN: "Run", WALK: "Walk", BIKE: "Ride", PICNIC: "Picnic", GARDENING: "Garden", WORKOUT: "Work out" }[activity]
       return `${verb} on ${day}`
     },
     inPlace: (place: string) => `in ${place}`,

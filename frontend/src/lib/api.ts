@@ -1,4 +1,4 @@
-export type Activity = "RUN" | "WALK" | "BIKE" | "PICNIC" | "GARDENING"
+export type Activity = "RUN" | "WALK" | "BIKE" | "PICNIC" | "GARDENING" | "WORKOUT"
 export type Lang = "pt" | "en"
 
 /** A geocoded place; `admin1` is the state or province. Only `name` and coordinates are always present. */
