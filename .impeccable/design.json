@@ -1,0 +1,640 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-07T00:17:51+00:00",
+  "title": "Design System: janela",
+  "extensions": {
+    "colorMeta": {
+      "sea-mist": {
+        "role": "neutral",
+        "displayName": "Sea Mist",
+        "canonical": "oklch(0.965 0.009 215)",
+        "tonalRamp": [
+          "oklch(0.15 0.009 215)",
+          "oklch(0.25 0.009 215)",
+          "oklch(0.35 0.009 215)",
+          "oklch(0.45 0.009 215)",
+          "oklch(0.6 0.009 215)",
+          "oklch(0.75 0.009 215)",
+          "oklch(0.88 0.009 215)",
+          "oklch(0.95 0.009 215)"
+        ]
+      },
+      "chart-paper": {
+        "role": "neutral",
+        "displayName": "Chart Paper",
+        "canonical": "oklch(0.99 0.004 215)",
+        "tonalRamp": [
+          "oklch(0.15 0.004 215)",
+          "oklch(0.25 0.004 215)",
+          "oklch(0.35 0.004 215)",
+          "oklch(0.45 0.004 215)",
+          "oklch(0.6 0.004 215)",
+          "oklch(0.75 0.004 215)",
+          "oklch(0.88 0.004 215)",
+          "oklch(0.95 0.004 215)"
+        ]
+      },
+      "marine-navy": {
+        "role": "neutral",
+        "displayName": "Marine Navy",
+        "canonical": "oklch(0.27 0.05 240)",
+        "tonalRamp": [
+          "oklch(0.15 0.05 240)",
+          "oklch(0.25 0.05 240)",
+          "oklch(0.35 0.05 240)",
+          "oklch(0.45 0.05 240)",
+          "oklch(0.6 0.05 240)",
+          "oklch(0.75 0.05 240)",
+          "oklch(0.88 0.05 240)",
+          "oklch(0.95 0.05 240)"
+        ]
+      },
+      "tide-teal": {
+        "role": "primary",
+        "displayName": "Tide Teal",
+        "canonical": "oklch(0.52 0.09 195)",
+        "tonalRamp": [
+          "oklch(0.15 0.09 195)",
+          "oklch(0.25 0.09 195)",
+          "oklch(0.35 0.09 195)",
+          "oklch(0.45 0.09 195)",
+          "oklch(0.6 0.09 195)",
+          "oklch(0.75 0.09 195)",
+          "oklch(0.88 0.09 195)",
+          "oklch(0.95 0.09 195)"
+        ]
+      },
+      "tide-teal-ring": {
+        "role": "primary",
+        "displayName": "Tide Teal Ring",
+        "canonical": "oklch(0.6 0.09 195)",
+        "tonalRamp": [
+          "oklch(0.15 0.09 195)",
+          "oklch(0.25 0.09 195)",
+          "oklch(0.35 0.09 195)",
+          "oklch(0.45 0.09 195)",
+          "oklch(0.6 0.09 195)",
+          "oklch(0.75 0.09 195)",
+          "oklch(0.88 0.09 195)",
+          "oklch(0.95 0.09 195)"
+        ]
+      },
+      "shallow-water": {
+        "role": "primary",
+        "displayName": "Shallow Water",
+        "canonical": "oklch(0.91 0.03 195)",
+        "tonalRamp": [
+          "oklch(0.15 0.03 195)",
+          "oklch(0.25 0.03 195)",
+          "oklch(0.35 0.03 195)",
+          "oklch(0.45 0.03 195)",
+          "oklch(0.6 0.03 195)",
+          "oklch(0.75 0.03 195)",
+          "oklch(0.88 0.03 195)",
+          "oklch(0.95 0.03 195)"
+        ]
+      },
+      "mist-secondary": {
+        "role": "neutral",
+        "displayName": "Mist Secondary",
+        "canonical": "oklch(0.925 0.016 215)",
+        "tonalRamp": [
+          "oklch(0.15 0.016 215)",
+          "oklch(0.25 0.016 215)",
+          "oklch(0.35 0.016 215)",
+          "oklch(0.45 0.016 215)",
+          "oklch(0.6 0.016 215)",
+          "oklch(0.75 0.016 215)",
+          "oklch(0.88 0.016 215)",
+          "oklch(0.95 0.016 215)"
+        ]
+      },
+      "mist-muted": {
+        "role": "neutral",
+        "displayName": "Mist Muted",
+        "canonical": "oklch(0.935 0.012 215)",
+        "tonalRamp": [
+          "oklch(0.15 0.012 215)",
+          "oklch(0.25 0.012 215)",
+          "oklch(0.35 0.012 215)",
+          "oklch(0.45 0.012 215)",
+          "oklch(0.6 0.012 215)",
+          "oklch(0.75 0.012 215)",
+          "oklch(0.88 0.012 215)",
+          "oklch(0.95 0.012 215)"
+        ]
+      },
+      "slate-ink-muted": {
+        "role": "neutral",
+        "displayName": "Slate Ink Muted",
+        "canonical": "oklch(0.46 0.035 235)",
+        "tonalRamp": [
+          "oklch(0.15 0.035 235)",
+          "oklch(0.25 0.035 235)",
+          "oklch(0.35 0.035 235)",
+          "oklch(0.45 0.035 235)",
+          "oklch(0.6 0.035 235)",
+          "oklch(0.75 0.035 235)",
+          "oklch(0.88 0.035 235)",
+          "oklch(0.95 0.035 235)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(0.875 0.016 220)",
+        "tonalRamp": [
+          "oklch(0.15 0.016 220)",
+          "oklch(0.25 0.016 220)",
+          "oklch(0.35 0.016 220)",
+          "oklch(0.45 0.016 220)",
+          "oklch(0.6 0.016 220)",
+          "oklch(0.75 0.016 220)",
+          "oklch(0.88 0.016 220)",
+          "oklch(0.95 0.016 220)"
+        ]
+      },
+      "input-stroke": {
+        "role": "neutral",
+        "displayName": "Input Stroke",
+        "canonical": "oklch(0.85 0.02 220)",
+        "tonalRamp": [
+          "oklch(0.15 0.02 220)",
+          "oklch(0.25 0.02 220)",
+          "oklch(0.35 0.02 220)",
+          "oklch(0.45 0.02 220)",
+          "oklch(0.6 0.02 220)",
+          "oklch(0.75 0.02 220)",
+          "oklch(0.88 0.02 220)",
+          "oklch(0.95 0.02 220)"
+        ]
+      },
+      "shell-foreground": {
+        "role": "neutral",
+        "displayName": "Shell Foreground",
+        "canonical": "oklch(0.97 0.01 215)",
+        "tonalRamp": [
+          "oklch(0.15 0.01 215)",
+          "oklch(0.25 0.01 215)",
+          "oklch(0.35 0.01 215)",
+          "oklch(0.45 0.01 215)",
+          "oklch(0.6 0.01 215)",
+          "oklch(0.75 0.01 215)",
+          "oklch(0.88 0.01 215)",
+          "oklch(0.95 0.01 215)"
+        ]
+      },
+      "shell-muted": {
+        "role": "neutral",
+        "displayName": "Shell Muted",
+        "canonical": "oklch(0.78 0.03 225)",
+        "tonalRamp": [
+          "oklch(0.15 0.03 225)",
+          "oklch(0.25 0.03 225)",
+          "oklch(0.35 0.03 225)",
+          "oklch(0.45 0.03 225)",
+          "oklch(0.6 0.03 225)",
+          "oklch(0.75 0.03 225)",
+          "oklch(0.88 0.03 225)",
+          "oklch(0.95 0.03 225)"
+        ]
+      },
+      "sun-amber": {
+        "role": "secondary",
+        "displayName": "Sun Amber",
+        "canonical": "oklch(0.72 0.14 70)",
+        "tonalRamp": [
+          "oklch(0.15 0.14 70)",
+          "oklch(0.25 0.14 70)",
+          "oklch(0.35 0.14 70)",
+          "oklch(0.45 0.14 70)",
+          "oklch(0.6 0.14 70)",
+          "oklch(0.75 0.14 70)",
+          "oklch(0.88 0.14 70)",
+          "oklch(0.95 0.14 70)"
+        ]
+      },
+      "storm-violet": {
+        "role": "secondary",
+        "displayName": "Storm Violet",
+        "canonical": "oklch(0.5 0.08 285)",
+        "tonalRamp": [
+          "oklch(0.15 0.08 285)",
+          "oklch(0.25 0.08 285)",
+          "oklch(0.35 0.08 285)",
+          "oklch(0.45 0.08 285)",
+          "oklch(0.6 0.08 285)",
+          "oklch(0.75 0.08 285)",
+          "oklch(0.88 0.08 285)",
+          "oklch(0.95 0.08 285)"
+        ]
+      },
+      "coral-low": {
+        "role": "tertiary",
+        "displayName": "Coral Low",
+        "canonical": "oklch(0.56 0.16 30)",
+        "tonalRamp": [
+          "oklch(0.15 0.16 30)",
+          "oklch(0.25 0.16 30)",
+          "oklch(0.35 0.16 30)",
+          "oklch(0.45 0.16 30)",
+          "oklch(0.6 0.16 30)",
+          "oklch(0.75 0.16 30)",
+          "oklch(0.88 0.16 30)",
+          "oklch(0.95 0.16 30)"
+        ]
+      },
+      "destructive": {
+        "role": "tertiary",
+        "displayName": "Destructive",
+        "canonical": "oklch(0.55 0.17 28)",
+        "tonalRamp": [
+          "oklch(0.15 0.17 28)",
+          "oklch(0.25 0.17 28)",
+          "oklch(0.35 0.17 28)",
+          "oklch(0.45 0.17 28)",
+          "oklch(0.6 0.17 28)",
+          "oklch(0.75 0.17 28)",
+          "oklch(0.88 0.17 28)",
+          "oklch(0.95 0.17 28)"
+        ]
+      },
+      "night-sea": {
+        "role": "neutral",
+        "displayName": "Night Sea (dark ground)",
+        "canonical": "oklch(0.19 0.03 238)",
+        "tonalRamp": [
+          "oklch(0.15 0.03 238)",
+          "oklch(0.25 0.03 238)",
+          "oklch(0.35 0.03 238)",
+          "oklch(0.45 0.03 238)",
+          "oklch(0.6 0.03 238)",
+          "oklch(0.75 0.03 238)",
+          "oklch(0.88 0.03 238)",
+          "oklch(0.95 0.03 238)"
+        ]
+      },
+      "night-paper": {
+        "role": "neutral",
+        "displayName": "Night Paper (dark panels)",
+        "canonical": "oklch(0.23 0.032 238)",
+        "tonalRamp": [
+          "oklch(0.15 0.032 238)",
+          "oklch(0.25 0.032 238)",
+          "oklch(0.35 0.032 238)",
+          "oklch(0.45 0.032 238)",
+          "oklch(0.6 0.032 238)",
+          "oklch(0.75 0.032 238)",
+          "oklch(0.88 0.032 238)",
+          "oklch(0.95 0.032 238)"
+        ]
+      },
+      "night-shell": {
+        "role": "neutral",
+        "displayName": "Night Shell (dark bar)",
+        "canonical": "oklch(0.14 0.03 240)",
+        "tonalRamp": [
+          "oklch(0.15 0.03 240)",
+          "oklch(0.25 0.03 240)",
+          "oklch(0.35 0.03 240)",
+          "oklch(0.45 0.03 240)",
+          "oklch(0.6 0.03 240)",
+          "oklch(0.75 0.03 240)",
+          "oklch(0.88 0.03 240)",
+          "oklch(0.95 0.03 240)"
+        ]
+      },
+      "night-ink": {
+        "role": "neutral",
+        "displayName": "Night Ink (dark text)",
+        "canonical": "oklch(0.95 0.01 215)",
+        "tonalRamp": [
+          "oklch(0.15 0.01 215)",
+          "oklch(0.25 0.01 215)",
+          "oklch(0.35 0.01 215)",
+          "oklch(0.45 0.01 215)",
+          "oklch(0.6 0.01 215)",
+          "oklch(0.75 0.01 215)",
+          "oklch(0.88 0.01 215)",
+          "oklch(0.95 0.01 215)"
+        ]
+      },
+      "night-ink-muted": {
+        "role": "neutral",
+        "displayName": "Night Ink Muted",
+        "canonical": "oklch(0.74 0.03 225)",
+        "tonalRamp": [
+          "oklch(0.15 0.03 225)",
+          "oklch(0.25 0.03 225)",
+          "oklch(0.35 0.03 225)",
+          "oklch(0.45 0.03 225)",
+          "oklch(0.6 0.03 225)",
+          "oklch(0.75 0.03 225)",
+          "oklch(0.88 0.03 225)",
+          "oklch(0.95 0.03 225)"
+        ]
+      },
+      "night-tide": {
+        "role": "primary",
+        "displayName": "Night Tide",
+        "canonical": "oklch(0.74 0.1 190)",
+        "tonalRamp": [
+          "oklch(0.15 0.1 190)",
+          "oklch(0.25 0.1 190)",
+          "oklch(0.35 0.1 190)",
+          "oklch(0.45 0.1 190)",
+          "oklch(0.6 0.1 190)",
+          "oklch(0.75 0.1 190)",
+          "oklch(0.88 0.1 190)",
+          "oklch(0.95 0.1 190)"
+        ]
+      },
+      "night-sun": {
+        "role": "secondary",
+        "displayName": "Night Sun",
+        "canonical": "oklch(0.8 0.13 75)",
+        "tonalRamp": [
+          "oklch(0.15 0.13 75)",
+          "oklch(0.25 0.13 75)",
+          "oklch(0.35 0.13 75)",
+          "oklch(0.45 0.13 75)",
+          "oklch(0.6 0.13 75)",
+          "oklch(0.75 0.13 75)",
+          "oklch(0.88 0.13 75)",
+          "oklch(0.95 0.13 75)"
+        ]
+      },
+      "night-storm": {
+        "role": "secondary",
+        "displayName": "Night Storm",
+        "canonical": "oklch(0.7 0.08 285)",
+        "tonalRamp": [
+          "oklch(0.15 0.08 285)",
+          "oklch(0.25 0.08 285)",
+          "oklch(0.35 0.08 285)",
+          "oklch(0.45 0.08 285)",
+          "oklch(0.6 0.08 285)",
+          "oklch(0.75 0.08 285)",
+          "oklch(0.88 0.08 285)",
+          "oklch(0.95 0.08 285)"
+        ]
+      },
+      "night-coral": {
+        "role": "tertiary",
+        "displayName": "Night Coral",
+        "canonical": "oklch(0.7 0.15 30)",
+        "tonalRamp": [
+          "oklch(0.15 0.15 30)",
+          "oklch(0.25 0.15 30)",
+          "oklch(0.35 0.15 30)",
+          "oklch(0.45 0.15 30)",
+          "oklch(0.6 0.15 30)",
+          "oklch(0.75 0.15 30)",
+          "oklch(0.88 0.15 30)",
+          "oklch(0.95 0.15 30)"
+        ]
+      },
+      "night-hairline": {
+        "role": "neutral",
+        "displayName": "Night Hairline",
+        "canonical": "oklch(1 0 0 / 11%)",
+        "tonalRamp": [
+          "oklch(1 0 0 / 4%)",
+          "oklch(1 0 0 / 6%)",
+          "oklch(1 0 0 / 8%)",
+          "oklch(1 0 0 / 11%)",
+          "oklch(1 0 0 / 16%)",
+          "oklch(1 0 0 / 24%)",
+          "oklch(1 0 0 / 40%)",
+          "oklch(1 0 0 / 60%)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Lowercase 'janela' on the shell bar only; Archivo wide (font-stretch 118%)."
+      },
+      "display-time": {
+        "displayName": "Display Time",
+        "purpose": "The best window's start–end inside the answer heading; condensed (72%), one per page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Answer lead line, empty-state and no-windows titles (1.25rem mobile, 1.5rem from sm)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings: comfort across the days, all windows."
+      },
+      "reading": {
+        "displayName": "Reading",
+        "purpose": "Condensed tabular values in the answer's readings row; timetable cells use it at 1rem."
+      },
+      "narrative": {
+        "displayName": "Narrative",
+        "purpose": "The model's recommendation, max 65ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Form, captions, tagline, footer."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Muted sentence-case labels over values and table headers; never uppercase eyebrows."
+      },
+      "tick": {
+        "displayName": "Tick",
+        "purpose": "Condensed tabular window labels, axis hours and hover readouts on the tide chart."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel-ring",
+        "value": "0 0 0 1px color-mix(in oklch, var(--foreground) 10%, transparent)",
+        "purpose": "Hairline ring on the search card; a border, not elevation."
+      },
+      {
+        "name": "flag-ring",
+        "value": "0 0 0 1px color-mix(in oklch, var(--foreground) 15%, transparent)",
+        "purpose": "1px outline keeping flag images legible on any ground."
+      },
+      {
+        "name": "focus-ring",
+        "value": "0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent)",
+        "purpose": "Focus for buttons, toggles and fields."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-tide",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Easing for the one authored moment."
+      },
+      {
+        "name": "tide-draw",
+        "value": "900ms, stroke-dashoffset 1 → 0, staggered 120ms per day",
+        "purpose": "Each day's comfort curve draws in when results land."
+      },
+      {
+        "name": "tide-fill",
+        "value": "700ms, opacity 0 → 1 and scaleY 0.2 → 1 from the bottom, delay day + 300ms + 80ms × rank",
+        "purpose": "Window bands rise like high water after the curve."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce → animation: none; scroll-to-answer becomes instant",
+        "purpose": "Motion is optional; the result is complete without it."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Shell Bar",
+      "kind": "nav",
+      "refersTo": "shell-bar",
+      "description": "Marine-navy top bar: window mark, wide lowercase wordmark, tagline, PT/EN switch.",
+      "html": "<header class=\"ds-shell\"><span class=\"ds-shell-brand\"><svg viewBox=\"0 0 32 32\" width=\"28\" height=\"28\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"26\" height=\"26\" rx=\"6\" fill=\"var(--tide, oklch(0.52 0.09 195))\"/><path d=\"M16 6v20M6 16h20\" stroke=\"var(--shell, oklch(0.27 0.05 240))\" stroke-width=\"2.5\"/><rect x=\"5.5\" y=\"5.5\" width=\"9.25\" height=\"9.25\" rx=\"2\" fill=\"var(--sun, oklch(0.72 0.14 70))\"/></svg><span class=\"ds-wordmark\">janela</span></span><span class=\"ds-shell-tag\">The best time in the next days to go outside.</span><span class=\"ds-lang\"><button class=\"ds-lang-item\" aria-pressed=\"true\">PT</button><button class=\"ds-lang-item\" aria-pressed=\"false\">EN</button></span></header>",
+      "css": ".ds-shell{display:flex;align-items:center;gap:16px;padding:16px 32px;background:var(--shell, oklch(0.27 0.05 240));color:var(--shell-foreground, oklch(0.97 0.01 215));font-family:'Archivo Variable', ui-sans-serif, system-ui, sans-serif} .ds-shell-brand{display:flex;align-items:center;gap:10px} .ds-wordmark{font-size:1.875rem;font-weight:800;font-stretch:118%;letter-spacing:-0.025em} .ds-shell-tag{border-left:1px solid color-mix(in oklch,var(--shell-foreground, oklch(0.97 0.01 215)) 20%,transparent);padding-left:16px;font-size:.875rem;color:var(--shell-muted, oklch(0.78 0.03 225));max-width:20rem} .ds-lang{margin-left:auto;display:flex} .ds-lang-item{height:28px;min-width:28px;padding:0 10px;font:500 .8rem 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;color:var(--shell-foreground, oklch(0.97 0.01 215));background:transparent;border:1px solid color-mix(in oklch,var(--shell-foreground, oklch(0.97 0.01 215)) 25%,transparent);cursor:pointer;transition:background .15s} .ds-lang-item:first-child{border-radius:6.4px 0 0 6.4px} .ds-lang-item:last-child{border-radius:0 6.4px 6.4px 0;border-left:0} .ds-lang-item:hover{background:color-mix(in oklch,var(--shell-foreground, oklch(0.97 0.01 215)) 10%,transparent)} .ds-lang-item[aria-pressed=true]{background:var(--primary, oklch(0.52 0.09 195));border-color:var(--primary, oklch(0.52 0.09 195));color:var(--primary-foreground, oklch(0.99 0.004 215))} .ds-lang-item:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in oklch,var(--ring, oklch(0.6 0.09 195)) 50%,transparent)}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Tide-teal action with a leading icon; the search submit.",
+      "html": "<button class=\"ds-btn-primary\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg>Find my window</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 10px 0 8px;border:1px solid transparent;border-radius:8px;background:var(--primary, oklch(0.52 0.09 195));color:var(--primary-foreground, oklch(0.99 0.004 215));font:500 .875rem 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;cursor:pointer;transition:all .15s} .ds-btn-primary:hover{background:color-mix(in oklch,var(--primary, oklch(0.52 0.09 195)) 80%,transparent)} .ds-btn-primary:focus-visible{outline:none;border-color:var(--ring, oklch(0.6 0.09 195));box-shadow:0 0 0 3px color-mix(in oklch,var(--ring, oklch(0.6 0.09 195)) 50%,transparent)} .ds-btn-primary:active{transform:translateY(1px)}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Hairline secondary action, e.g. Retry.",
+      "html": "<button class=\"ds-btn-outline\">Try again</button>",
+      "css": ".ds-btn-outline{height:28px;padding:0 10px;border:1px solid var(--border, oklch(0.875 0.016 220));border-radius:6.4px;background:var(--background, oklch(0.965 0.009 215));color:var(--foreground, oklch(0.27 0.05 240));font:500 .8rem 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;cursor:pointer;transition:all .15s} .ds-btn-outline:hover{background:var(--muted, oklch(0.935 0.012 215))} .ds-btn-outline:focus-visible{outline:none;border-color:var(--ring, oklch(0.6 0.09 195));box-shadow:0 0 0 3px color-mix(in oklch,var(--ring, oklch(0.6 0.09 195)) 50%,transparent)} .ds-btn-outline:active{transform:translateY(1px)}"
+    },
+    {
+      "name": "Segmented Toggle",
+      "kind": "chip",
+      "refersTo": "toggle-outline",
+      "description": "Outline toggles; pressed fills tide teal. Used for days and activities.",
+      "html": "<div class=\"ds-toggle\" role=\"group\"><button class=\"ds-toggle-item\" aria-pressed=\"false\">Today</button><button class=\"ds-toggle-item\" aria-pressed=\"false\">2 days</button><button class=\"ds-toggle-item\" aria-pressed=\"true\">3 days</button></div>",
+      "css": ".ds-toggle{display:flex;gap:8px;width:320px} .ds-toggle-item{flex:1;height:36px;padding:0 10px;border:1px solid var(--input, oklch(0.85 0.02 220));border-radius:8px;background:transparent;color:var(--foreground, oklch(0.27 0.05 240));font:500 .875rem 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;cursor:pointer;transition:all .15s} .ds-toggle-item:hover{background:var(--muted, oklch(0.935 0.012 215))} .ds-toggle-item[aria-pressed=true]{background:var(--primary, oklch(0.52 0.09 195));border-color:var(--primary, oklch(0.52 0.09 195));color:var(--primary-foreground, oklch(0.99 0.004 215))} .ds-toggle-item:focus-visible{outline:none;border-color:var(--ring, oklch(0.6 0.09 195));box-shadow:0 0 0 3px color-mix(in oklch,var(--ring, oklch(0.6 0.09 195)) 50%,transparent)}"
+    },
+    {
+      "name": "City Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Labelled input group with a leading addon; focus ring in tide.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">City</span><span class=\"ds-input-group\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 0 1 16 0Z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg><input class=\"ds-input\" placeholder=\"e.g. Recife\"></span></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:8px;width:320px;font-family:'Archivo Variable', ui-sans-serif, system-ui, sans-serif} .ds-field-label{font-size:.875rem;font-weight:500;color:var(--foreground, oklch(0.27 0.05 240))} .ds-input-group{display:flex;align-items:center;gap:6px;height:36px;padding:0 8px;border:1px solid var(--input, oklch(0.85 0.02 220));border-radius:8px;color:var(--muted-foreground, oklch(0.46 0.035 235));transition:border-color .15s,box-shadow .15s} .ds-input-group:focus-within{border-color:var(--ring, oklch(0.6 0.09 195));box-shadow:0 0 0 3px color-mix(in oklch,var(--ring, oklch(0.6 0.09 195)) 50%,transparent)} .ds-input{flex:1;border:0;outline:0;background:transparent;font:400 .875rem 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;color:var(--foreground, oklch(0.27 0.05 240))}"
+    },
+    {
+      "name": "Answer",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "The best window as a heading: lead line, high-water time, ruled readings row.",
+      "html": "<section class=\"ds-answer\"><h2 class=\"ds-answer-h\"><span class=\"ds-answer-lead\">Run on Thursday, 8 Oct, <span class=\"ds-muted\">in Recife – PE</span></span><span class=\"ds-answer-time\">06:00<span class=\"ds-dash\">–</span>08:00</span></h2><dl class=\"ds-readings\"><div><dt>Score</dt><dd><span class=\"ds-score\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/></svg><b>97</b><span class=\"ds-muted\">Great</span></span></dd></div><div><dt>Feels like</dt><dd><b>23°C</b></dd></div><div><dt>UV index</dt><dd><b>8</b><span class=\"ds-muted\">very high</span><span class=\"ds-sun\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" role=\"img\" aria-label=\"High UV\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41\"/></svg></span></dd></div><div><dt>Rain chance</dt><dd><b>45%</b><span class=\"ds-storm\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" role=\"img\" aria-label=\"Likely rain\"><path d=\"M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2\"/><path d=\"M16 14v6M8 14v6M12 16v6\"/></svg></span></dd></div><div><dt>Wind</dt><dd><b>3 km/h</b></dd></div></dl></section>",
+      "css": ".ds-answer{display:flex;flex-direction:column;gap:20px;font-family:'Archivo Variable', ui-sans-serif, system-ui, sans-serif;color:var(--foreground, oklch(0.27 0.05 240));max-width:720px} .ds-answer-h{display:flex;flex-direction:column;gap:4px;margin:0} .ds-answer-lead{font-size:1.5rem;font-weight:600;letter-spacing:-0.025em} .ds-muted{color:var(--muted-foreground, oklch(0.46 0.035 235));font-weight:400} .ds-answer-time{font-size:7rem;line-height:.9;font-weight:700;font-stretch:72%;letter-spacing:-0.02em} .ds-dash{margin:0 .06em;font-weight:300;color:var(--muted-foreground, oklch(0.46 0.035 235))} .ds-readings{display:grid;grid-template-columns:repeat(5,1fr);margin:0;border-top:1px solid var(--border, oklch(0.875 0.016 220));border-bottom:1px solid var(--border, oklch(0.875 0.016 220))} .ds-readings>div{padding:12px 16px;border-left:1px solid var(--border, oklch(0.875 0.016 220))} .ds-readings>div:first-child{border-left:0;padding-left:0} .ds-readings dt{font-size:.75rem;color:var(--muted-foreground, oklch(0.46 0.035 235))} .ds-readings dd{margin:4px 0 0;display:flex;align-items:baseline;gap:6px;font-size:.875rem} .ds-readings dd b{font-size:1.5rem;font-weight:600;font-stretch:72%} .ds-score{display:inline-flex;align-items:baseline;gap:6px;font-size:1.125rem} .ds-score svg{align-self:center;color:var(--tide, oklch(0.52 0.09 195))} .ds-score b{font-stretch:72%;font-variant-numeric:tabular-nums} .ds-sun{color:var(--sun, oklch(0.72 0.14 70));align-self:center} .ds-storm{color:var(--storm, oklch(0.5 0.08 285));align-self:center}"
+    },
+    {
+      "name": "Tide Row",
+      "kind": "custom",
+      "refersTo": "tide-row",
+      "description": "Signature: one day's hourly comfort as a tide curve, windows as teal bands with condensed time labels.",
+      "html": "<div class=\"ds-tide\"><p class=\"ds-tide-day\"><b>Thu</b><span>8 Oct</span></p><div class=\"ds-tide-box\"><svg viewBox=\"0 0 1000 100\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><line x1=\"230\" x2=\"230\" y1=\"0\" y2=\"100\" class=\"ds-tick\"/><line x1=\"460\" x2=\"460\" y1=\"0\" y2=\"100\" class=\"ds-tick\"/><line x1=\"690\" x2=\"690\" y1=\"0\" y2=\"100\" class=\"ds-tick\"/><rect x=\"0\" y=\"0\" width=\"154\" height=\"100\" class=\"ds-band\"/><line x1=\"0\" x2=\"1000\" y1=\"66\" y2=\"66\" class=\"ds-floor\"/><path class=\"ds-area\" d=\"M0 22 C 80 20, 160 30, 240 40 S 420 80, 520 84 S 700 60, 800 52 S 940 56, 1000 54 L 1000 100 L 0 100 Z\"/><path class=\"ds-curve\" pathLength=\"1\" d=\"M0 22 C 80 20, 160 30, 240 40 S 420 80, 520 84 S 700 60, 800 52 S 940 56, 1000 54\"/></svg><span class=\"ds-tide-label\"><span>1</span>06:00–08:00</span></div></div>",
+      "css": ".ds-tide{display:grid;grid-template-columns:4.5rem 1fr;gap:12px;width:640px;font-family:'Archivo Variable', ui-sans-serif, system-ui, sans-serif;color:var(--foreground, oklch(0.27 0.05 240))} .ds-tide-day{display:flex;flex-direction:column;justify-content:center;margin:0;line-height:1.25} .ds-tide-day b{font-weight:600} .ds-tide-day span{font-size:.875rem;font-stretch:72%;color:var(--muted-foreground, oklch(0.46 0.035 235))} .ds-tide-box{position:relative;height:112px;border:1px solid var(--border, oklch(0.875 0.016 220));border-radius:6.4px;background:var(--card, oklch(0.99 0.004 215));overflow:hidden} .ds-tide-box svg{position:absolute;inset:0;width:100%;height:100%} .ds-tick{stroke:var(--border, oklch(0.875 0.016 220));vector-effect:non-scaling-stroke} .ds-band{fill:var(--primary, oklch(0.52 0.09 195));opacity:.25;transform-box:fill-box;transform-origin:bottom;animation:ds-fill 700ms cubic-bezier(0.16, 1, 0.3, 1) 300ms both} .ds-floor{stroke:color-mix(in oklch,var(--muted-foreground, oklch(0.46 0.035 235)) 50%,transparent);stroke-dasharray:4 4;vector-effect:non-scaling-stroke} .ds-area{fill:color-mix(in oklch,var(--tide, oklch(0.52 0.09 195)) 15%,transparent)} .ds-curve{fill:none;stroke:var(--tide, oklch(0.52 0.09 195));stroke-width:2;stroke-linejoin:round;vector-effect:non-scaling-stroke;stroke-dasharray:1;animation:ds-draw 900ms cubic-bezier(0.16, 1, 0.3, 1) both} .ds-tide-label{position:absolute;top:6px;left:7.7%;transform:translateX(-50%);display:flex;gap:4px;padding:2px 6px;border-radius:4px;background:var(--primary, oklch(0.52 0.09 195));color:var(--primary-foreground, oklch(0.99 0.004 215));font-size:.75rem;font-weight:600;font-stretch:72%;font-variant-numeric:tabular-nums;white-space:nowrap} .ds-tide-label span{opacity:.7} @keyframes ds-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}} @keyframes ds-fill{from{opacity:0;transform:scaleY(.2)}to{opacity:.25;transform:scaleY(1)}} @media (prefers-reduced-motion:reduce){.ds-curve,.ds-band{animation:none}}"
+    },
+    {
+      "name": "Timetable",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Every window as a ruled, condensed, tabular row; the best row tinted teal.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>Rank</th><th>Day</th><th>Time</th><th>Score</th><th class=\"r\">Feels</th><th class=\"r\">UV</th><th class=\"r\">Rain</th></tr></thead><tbody><tr class=\"best\"><td>1</td><td>Thu <span class=\"m\">8 Oct</span></td><td class=\"t\">06:00–08:00</td><td><span class=\"ds-tscore\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/></svg><b>97</b><span class=\"m\">Great</span></span></td><td class=\"r\">23°C</td><td class=\"r\">1</td><td class=\"r\">0%</td></tr><tr><td>2</td><td>Fri <span class=\"m\">9 Oct</span></td><td class=\"t\">16:00–18:00</td><td><span class=\"ds-tscore\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/></svg><b>84</b><span class=\"m\">Great</span></span></td><td class=\"r\">27°C</td><td class=\"r\">2</td><td class=\"r\"><span class=\"ds-storm\"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" role=\"img\" aria-label=\"Likely rain\"><path d=\"M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2\"/><path d=\"M16 14v6M8 14v6M12 16v6\"/></svg></span> 45%</td></tr></tbody></table>",
+      "css": ".ds-table{width:640px;border-collapse:collapse;font-family:'Archivo Variable', ui-sans-serif, system-ui, sans-serif;color:var(--foreground, oklch(0.27 0.05 240));font-size:.875rem} .ds-table th{text-align:left;font-size:.75rem;font-weight:500;color:var(--muted-foreground, oklch(0.46 0.035 235));padding-bottom:8px;border-bottom:1px solid var(--border, oklch(0.875 0.016 220))} .ds-table td{padding:10px 0;border-bottom:1px solid var(--border, oklch(0.875 0.016 220));font-size:1rem;font-stretch:72%;font-variant-numeric:tabular-nums;vertical-align:baseline} .ds-table td:first-child{padding-left:8px} .ds-table .r{text-align:right} .ds-table .t{font-size:1.125rem} .ds-table .m{color:var(--muted-foreground, oklch(0.46 0.035 235))} .ds-table tr.best{background:color-mix(in oklch,var(--primary, oklch(0.52 0.09 195)) 6%,transparent);font-weight:600} .ds-table tbody tr:hover{background:color-mix(in oklch,var(--primary, oklch(0.52 0.09 195)) 4%,transparent)} .ds-tscore{display:inline-flex;align-items:baseline;gap:6px;font-weight:400} .ds-tscore svg{align-self:center;color:var(--tide, oklch(0.52 0.09 195))} .ds-tscore b{font-weight:600} .ds-storm{color:var(--storm, oklch(0.5 0.08 285));vertical-align:-0.125em}"
+    },
+    {
+      "name": "Narrative Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The model's recommendation in a hairline chart-paper panel, led by the authorship badge.",
+      "html": "<section class=\"ds-panel\"><span class=\"ds-badge\"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/><rect x=\"9\" y=\"9\" width=\"6\" height=\"6\" rx=\"1\"/><path d=\"M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2\"/></svg>Written locally by gemma3:4b</span><p class=\"ds-narrative\">Pick Thursday, 06:00 to 08:00: 23°C feels-like and low UV, ideal for a two-hour run before the heat.</p></section>",
+      "css": ".ds-panel{display:flex;flex-direction:column;gap:16px;width:560px;padding:24px;border:1px solid var(--border, oklch(0.875 0.016 220));border-radius:11.2px;background:var(--card, oklch(0.99 0.004 215));font-family:'Archivo Variable', ui-sans-serif, system-ui, sans-serif;color:var(--foreground, oklch(0.27 0.05 240))} .ds-badge{display:inline-flex;align-items:center;gap:4px;width:fit-content;height:24px;padding:0 10px 0 8px;border-radius:20.8px;background:var(--primary, oklch(0.52 0.09 195));color:var(--primary-foreground, oklch(0.99 0.004 215));font-size:.875rem;font-weight:500} .ds-narrative{margin:0;max-width:65ch;font-size:1.0625rem;line-height:1.625;text-wrap:pretty}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Tide Table",
+    "overview": "janela reads each day the way a harbour tide table reads the sea: a curve of comfort rising and falling across the daylight hours, the good windows marked like high water with their times set in tall condensed figures. The world is maritime and printed rather than glossy: a marine-navy shell bar, a cool sea-mist ground, chart-paper panels, and one tide-teal colour that means comfort and action at once. Heat and storms each get their own colour (sun amber, storm violet), and those colours only ever show up as icons with labels.\n\nThe page answers before it explains. The best window is a heading whose time is set at high-water size, then the four readings in a ruled row, then the model's recommendation in a quiet panel, then one tide row per day, then a timetable of every window. The layout stays dense and tabular, as on a printed table: hairline rules, columns of tabular numbers, no decorative fill. It has to stay light on a phone and must never look like a corporate dashboard.\n\nExplicitly rejected: the weather app's stack of identical icon cards, a hero of stat tiles, cream or warm-paper grounds, grain, and gradients.",
+    "keyCharacteristics": [
+      "One typeface, Archivo Variable, played across its width axis: condensed (72%) for every time and number, normal for interface text, wide (118%) only for the wordmark.",
+      "Tide teal is the single accent: comfort curve, best window, primary actions, pressed toggles, focus ring.",
+      "Flat, ruled surfaces: hairline borders and 1px rings, no drop shadows on panels.",
+      "Status is never colour alone: score = icon + number + word; warnings = icon with an accessible label.",
+      "One authored motion moment: the tides draw in when results land."
+    ],
+    "rules": [
+      {
+        "name": "The One Tide Rule",
+        "body": "Teal means comfort or action, and nothing else. Do not introduce a second accent; a new state reuses teal at an opacity step (6%, 12%, 15%, 25%) or a neutral.",
+        "section": "colors"
+      },
+      {
+        "name": "The Signal-Not-Text Rule",
+        "body": "Sun amber, storm violet and coral are icon and fill colours. Text always stays in ink or muted ink, because amber on sea-mist fails contrast.",
+        "section": "colors"
+      },
+      {
+        "name": "The Cool Ground Rule",
+        "body": "The ground is sea-mist (hue 215), never cream, beige or warm paper.",
+        "section": "colors"
+      },
+      {
+        "name": "The Width-Is-Meaning Rule",
+        "body": "Every time, score and measurement is condensed and tabular. Interface words stay at normal width, and only the wordmark is wide.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Eyebrow Rule",
+        "body": "Labels are sentence case and sit directly over their value. There are no uppercase tracked kickers above headings.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ruled-Not-Raised Rule",
+        "body": "A surface is separated by a hairline or a tonal step, never by a shadow. If a new panel seems to need a shadow, use a border instead.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** set every time, score and measurement in condensed Archivo (72%) with tabular figures.",
+      "**Do** make the best window's time the largest thing on the page, inside the answer heading.",
+      "**Do** separate surfaces with hairlines (`hairline`, or white at 11% in dark) and tonal steps between sea-mist and chart paper.",
+      "**Do** show a score as icon + number + word, and a warning as an icon with its own accessible label.",
+      "**Do** reuse tide teal at opacity steps (6, 12, 15, 25%) for new comfort or selection states instead of adding a hue.",
+      "**Do** define every new colour in both `:root` and `.dark`, using the same role names.",
+      "**Do** keep a reduced-motion path for any new animation, and keep the tide draw the only authored moment."
+    ],
+    "donts": [
+      "**Don't** colour text with sun amber, storm violet or coral; they fail text contrast on sea-mist.",
+      "**Don't** add eyebrow labels or uppercase tracked kickers above headings.",
+      "**Don't** build a hero of stat tiles or a stack of identical weather cards; readings stay in one ruled row and windows stay in a timetable.",
+      "**Don't** add drop shadows to panels, grain, textures or gradients.",
+      "**Don't** use a cream, beige or warm-paper ground.",
+      "**Don't** use the wide (118%) width anywhere but the wordmark.",
+      "**Don't** put results inside cards; only the search panel and the narrative panel are containers."
+    ]
+  }
+}
