@@ -1,6 +1,7 @@
 package com.mauricio.janela.application.usecase;
 
 import com.mauricio.janela.domain.exception.LocationNotFoundException;
+import com.mauricio.janela.domain.model.DayOutlook;
 import com.mauricio.janela.domain.model.HourlyForecast;
 import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.model.Narrative;
@@ -65,8 +66,14 @@ public class FindWindowsService implements FindWindowsUseCase {
         List<HourlyForecast> upcoming = upcomingDays(location, query.days());
 
         List<OutdoorWindow> windows = windowScorer.findBestWindows(upcoming, query.activity(), query.durationMinutes());
+        List<DayOutlook> outlooks = upcoming.stream()
+                .map(hour -> hour.time().toLocalDate())
+                .distinct()
+                .sorted()
+                .map(date -> DayOutlook.of(date, upcoming))
+                .toList();
         NarrativeRequest narrativeRequest = new NarrativeRequest(
-                location, query.activity(), query.durationMinutes(), windows, query.language());
+                location, query.activity(), query.durationMinutes(), windows, query.language(), outlooks);
 
         return new WindowsResult(location, query.activity(), windows, narrate(narrativeRequest),
                 windowScorer.scoreDaylight(upcoming, query.activity()));

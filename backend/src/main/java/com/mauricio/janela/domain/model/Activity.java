@@ -11,6 +11,8 @@ public enum Activity {
     PICNIC(18, 28, 4, 20),
     GARDENING(15, 27, 5, 30);
 
+    private static final double WARM_MARGIN_C = 4;
+
     private final double minApparentTempC;
     private final double maxApparentTempC;
     private final double maxComfortableUv;
@@ -21,6 +23,19 @@ public enum Activity {
         this.maxApparentTempC = maxApparentTempC;
         this.maxComfortableUv = maxComfortableUv;
         this.maxWindKmh = maxWindKmh;
+    }
+
+    /**
+     * Below the range is cool, inside it pleasant, up to {@value #WARM_MARGIN_C} °C above it warm, beyond that hot.
+     */
+    public Comfort comfortOf(double apparentTempC) {
+        if (apparentTempC < minApparentTempC) {
+            return Comfort.COOL;
+        }
+        if (apparentTempC <= maxApparentTempC) {
+            return Comfort.PLEASANT;
+        }
+        return apparentTempC <= maxApparentTempC + WARM_MARGIN_C ? Comfort.WARM : Comfort.HOT;
     }
 
     public double minApparentTempC() {

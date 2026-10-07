@@ -1,6 +1,7 @@
 package com.mauricio.janela.infrastructure.ai;
 
 import com.mauricio.janela.domain.model.Activity;
+import com.mauricio.janela.domain.model.DayOutlook;
 import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.NarrativeRequest;
@@ -20,6 +21,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.core.io.ClassPathResource;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +40,12 @@ class OllamaNarrativeGeneratorTest {
             60,
             List.of(new OutdoorWindow(LocalDateTime.of(2026, 10, 6, 6, 0), LocalDateTime.of(2026, 10, 6, 7, 0),
                     91, 19.4, 1.2, 5, 8.0)),
-            Language.EN);
+            Language.EN,
+            List.of(
+                    new DayOutlook(LocalDate.of(2026, 10, 6), LocalDateTime.of(2026, 10, 6, 13, 0), 33.6,
+                            LocalDateTime.of(2026, 10, 6, 16, 0), 60, LocalDateTime.of(2026, 10, 6, 12, 0), 10.6),
+                    // A day with no window: left out of the payload.
+                    new DayOutlook(LocalDate.of(2026, 10, 7), null, null, null, null, null, null)));
 
     private final ChatModel chatModel = mock(ChatModel.class);
     private final OllamaNarrativeGenerator generator;
@@ -63,14 +70,17 @@ class OllamaNarrativeGeneratorTest {
         ArgumentCaptor<Prompt> prompt = ArgumentCaptor.forClass(Prompt.class);
         verify(chatModel).call(prompt.capture());
         assertThat(prompt.getValue().getSystemMessage().getText())
-                .contains("Write in the requested language (English)")
+                .contains("Write in English.")
                 .doesNotContain("{language}");
         assertThat(prompt.getValue().getUserMessage().getText())
                 .contains("\"city\":\"Campinas\"", "\"activity\":\"RUN\"", "\"rank\":1",
                         "\"day\":\"Tuesday, Oct 6\"", "\"start\":\"06:00\"", "\"end\":\"07:00\"",
-                        "\"temperatureUnit\":\"°F\"", "\"feelsLike\":67", "\"uvIndex\":1", "\"uvLevel\":\"low\"", "\"rainChancePercent\":5",
-                        "\"windUnit\":\"mph\"", "\"wind\":5")
-                .doesNotContain("score");
+                        "\"temperatureUnit\":\"°F\"", "\"temperature\":67", "\"comfort\":\"pleasant\"",
+                        "\"uvIndex\":1", "\"uvLevel\":\"low\"", "\"rainChancePercent\":5",
+                        "\"windUnit\":\"mph\"", "\"wind\":5",
+                        "\"reasons\":[\"before the day's heat peaks at 13:00\",\"before the likeliest rain, at 16:00\","
+                                + "\"before the strongest sun, at 12:00\"]", "\"challengeIdea\":\"")
+                .doesNotContain("score", "Wednesday", "hottest");
     }
 
     @ParameterizedTest
@@ -78,6 +88,17 @@ class OllamaNarrativeGeneratorTest {
             "10, very high", "11, extreme"})
     void classifiesUvWithWhoCategories(long uv, String level) {
         assertThat(OllamaNarrativeGenerator.WindowPayload.uvLevel(uv, Language.EN)).isEqualTo(level);
+    }
+
+    @Test
+    void reasonsOnlyCountPeaksOutsideTheWindow() {
+        OutdoorWindow afternoon = new OutdoorWindow(LocalDateTime.of(2026, 10, 6, 15, 0),
+                LocalDateTime.of(2026, 10, 6, 17, 0), 70, 30.0, 4.0, 40, 10.0);
+        DayOutlook outlook = new DayOutlook(LocalDate.of(2026, 10, 6), LocalDateTime.of(2026, 10, 6, 13, 0), 34.0,
+                LocalDateTime.of(2026, 10, 6, 16, 0), 70, LocalDateTime.of(2026, 10, 6, 12, 0), 11.0);
+
+        assertThat(OllamaNarrativeGenerator.WindowPayload.reasons(afternoon, outlook, Language.PT))
+                .containsExactly("depois do pico de calor do dia, às 13:00", "depois do sol mais forte, às 12:00");
     }
 
     @Test

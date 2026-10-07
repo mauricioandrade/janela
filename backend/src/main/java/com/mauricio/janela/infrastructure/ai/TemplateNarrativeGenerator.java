@@ -64,7 +64,7 @@ public class TemplateNarrativeGenerator implements NarrativeGenerator {
         appendConditions(text, conditions, " e ");
 
         appendAlternatives(text, request.windows(), " Outras opções: ", " e ", day);
-        return text.append("\n🌿 ").append(challenge(request.activity(), Language.PT)).toString();
+        return text.append("\n🌿 ").append(challenge(request, best, Language.PT)).toString();
     }
 
     private static String english(NarrativeRequest request) {
@@ -102,7 +102,7 @@ public class TemplateNarrativeGenerator implements NarrativeGenerator {
         appendConditions(text, conditions, " and ");
 
         appendAlternatives(text, request.windows(), " Other options: ", " and ", day);
-        return text.append("\n🌿 ").append(challenge(request.activity(), Language.EN)).toString();
+        return text.append("\n🌿 ").append(challenge(request, best, Language.EN)).toString();
     }
 
     private static void appendConditions(StringBuilder text, List<String> conditions, String lastSeparator) {
@@ -154,22 +154,9 @@ public class TemplateNarrativeGenerator implements NarrativeGenerator {
         };
     }
 
-    private static String challenge(Activity activity, Language language) {
-        return switch (language) {
-            case PT -> switch (activity) {
-                case RUN -> "No último minuto, desacelere e repare em três cantos de pássaros diferentes.";
-                case WALK -> "Encontre uma árvore no caminho e toque no tronco por dez segundos.";
-                case BIKE -> "Pare uma vez e olhe para o céu por trinta segundos, sem celular.";
-                case PICNIC -> "Tire os sapatos e pise na grama descalço por um minuto.";
-                case GARDENING -> "Afunde as mãos na terra e sinta a temperatura dela antes de começar.";
-            };
-            case EN -> switch (activity) {
-                case RUN -> "For the last minute, slow down and notice three different bird calls.";
-                case WALK -> "Find a tree on your route and touch its bark for ten seconds.";
-                case BIKE -> "Stop once and look at the sky for thirty seconds, phone in your pocket.";
-                case PICNIC -> "Take your shoes off and walk barefoot on the grass for one minute.";
-                case GARDENING -> "Push your hands into the soil and feel its temperature before you start.";
-            };
-        };
+    /** The same idea bank the model gets, written out as a sentence. */
+    private static String challenge(NarrativeRequest request, OutdoorWindow best, Language language) {
+        String idea = ChallengeIdeas.pick(request.activity(), best, request.location(), language);
+        return Character.toUpperCase(idea.charAt(0)) + idea.substring(1) + ".";
     }
 }

@@ -1,5 +1,8 @@
 package com.mauricio.janela.infrastructure.ai;
 
+import com.mauricio.janela.domain.model.Activity;
+import com.mauricio.janela.domain.model.Comfort;
+import com.mauricio.janela.domain.model.DayOutlook;
 import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Narrative;
 import com.mauricio.janela.domain.model.NarrativeRequest;
@@ -11,7 +14,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -53,64 +58,68 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
     }
 
     /**
-     * The JSON the model sees. Kept flat and explicit so the prompt does not depend on domain refactors.
+     * The JSON the model sees. Kept flat and explicit so the prompt does not depend on domain refactors. Field names
+     * are plain words because a small model sometimes echoes them.
      */
     record PromptPayload(
             String language,
-            String temperatureUnit,
-            String windUnit,
             String city,
             String activity,
             int durationMinutes,
-            List<WindowPayload> windows
+            String temperatureUnit,
+            String windUnit,
+            List<WindowPayload> windows,
+            String challengeIdea
     ) {
 
         static PromptPayload from(NarrativeRequest request) {
+            Language language = request.language();
+            List<OutdoorWindow> windows = request.windows();
             return new PromptPayload(
-                    request.language().code(),
-                    request.language().temperatureSymbol(),
-                    request.language().windSymbol(),
+                    language.code(),
                     request.location().name(),
                     request.activity().name(),
                     request.durationMinutes(),
-                    IntStream.range(0, request.windows().size())
-                            .mapToObj(i -> WindowPayload.from(i + 1, request.windows().get(i), request.language()))
-                            .toList());
+                    language.temperatureSymbol(),
+                    language.windSymbol(),
+                    IntStream.range(0, windows.size())
+                            .mapToObj(i -> WindowPayload.from(i + 1, windows.get(i), request, language))
+                            .toList(),
+                    windows.isEmpty() ? null
+                            : ChallengeIdeas.pick(request.activity(), windows.getFirst(), request.location(), language));
         }
     }
 
     /**
-     * Pre-digested so a small model copies instead of interpreting: day and times are formatted in the target
-     * language, numbers are rounded the way the UI shows them, and UV comes with its WHO category. The score is
-     * left out on purpose; rank already says which window is best and the model kept quoting the raw number.
+     * Pre-digested so a small model rewrites conclusions instead of drawing them: day and times are formatted in the
+     * target language, numbers are rounded and converted to the reader's units, temperature and UV come with words,
+     * and {@code reasons} are the window's advantages already worked out from the day's outlook. The score is left
+     * out on purpose; rank already says which window is best.
      */
     record WindowPayload(
             int rank,
             String day,
             String start,
             String end,
-            Long feelsLike,
+            Long temperature,
+            String comfort,
             Long uvIndex,
             String uvLevel,
             Integer rainChancePercent,
-            Long wind
+            Long wind,
+            List<String> reasons
     ) {
 
-        private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
-
-        static WindowPayload from(int rank, OutdoorWindow window, Language language) {
-            DateTimeFormatter day = DateTimeFormatter.ofPattern(
-                    language == Language.PT ? "EEEE, dd/MM" : "EEEE, MMM d", language.locale());
+        static WindowPayload from(int rank, OutdoorWindow window, NarrativeRequest request, Language language) {
             Long uv = round(window.maxUv());
-            return new WindowPayload(rank, window.start().format(day), window.start().format(TIME),
-                    window.end().format(TIME), round(window.apparentTempC() == null ? null
-                    : language.temperatureFromCelsius(window.apparentTempC())), uv,
-                    uv == null ? null : uvLevel(uv, language), window.maxRainProbability(),
-                    round(window.maxWindKmh() == null ? null : language.windFromKmh(window.maxWindKmh())));
-        }
-
-        private static Long round(Double value) {
-            return value == null ? null : Math.round(value);
+            Double feelsLike = window.apparentTempC();
+            return new WindowPayload(rank, dayName(window.start(), language), window.start().format(TIME),
+                    window.end().format(TIME),
+                    round(feelsLike == null ? null : language.temperatureFromCelsius(feelsLike)),
+                    feelsLike == null ? null : comfortWord(request.activity().comfortOf(feelsLike), language),
+                    uv, uv == null ? null : uvLevel(uv, language), window.maxRainProbability(),
+                    round(window.maxWindKmh() == null ? null : language.windFromKmh(window.maxWindKmh())),
+                    request.outlookFor(window).map(outlook -> reasons(window, outlook, language)).orElse(List.of()));
         }
 
         /** WHO UV index categories. */
@@ -120,5 +129,64 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
                     ? List.of("baixo", "moderado", "alto", "muito alto", "extremo")
                     : List.of("low", "moderate", "high", "very high", "extreme")).get(category);
         }
+
+        static String comfortWord(Comfort comfort, Language language) {
+            return switch (comfort) {
+                case COOL -> language == Language.PT ? "fresco" : "cool";
+                case PLEASANT -> language == Language.PT ? "agradável" : "pleasant";
+                case WARM -> language == Language.PT ? "quente" : "warm";
+                case HOT -> language == Language.PT ? "muito quente" : "hot";
+            };
+        }
+
+        private static final int RAIN_WORTH_MENTIONING = 30;
+        private static final double UV_WORTH_MENTIONING = 6;
+
+        /**
+         * Where the window sits against the day's heat, rain and strongest sun, as short phrases. Only peaks outside
+         * the window count: a window that contains the peak gets no reason about it.
+         */
+        static List<String> reasons(OutdoorWindow window, DayOutlook outlook, Language language) {
+            List<String> reasons = new ArrayList<>();
+            boolean pt = language == Language.PT;
+            if (outlook.hottestAt() != null) {
+                String at = outlook.hottestAt().format(TIME);
+                if (!outlook.hottestAt().isBefore(window.end())) {
+                    reasons.add(pt ? "antes do pico de calor do dia, às " + at : "before the day's heat peaks at " + at);
+                } else if (outlook.hottestAt().isBefore(window.start())) {
+                    reasons.add(pt ? "depois do pico de calor do dia, às " + at : "after the day's heat peaked at " + at);
+                }
+            }
+            if (outlook.maxRainProbability() != null && outlook.maxRainProbability() >= RAIN_WORTH_MENTIONING) {
+                String at = outlook.wettestAt().format(TIME);
+                if (!outlook.wettestAt().isBefore(window.end())) {
+                    reasons.add(pt ? "antes da hora mais provável de chuva, às " + at
+                            : "before the likeliest rain, at " + at);
+                } else if (outlook.wettestAt().isBefore(window.start())) {
+                    reasons.add(pt ? "depois da hora mais provável de chuva, às " + at
+                            : "after the likeliest rain, at " + at);
+                }
+            }
+            if (outlook.maxUv() != null && Math.round(outlook.maxUv()) >= UV_WORTH_MENTIONING) {
+                String at = outlook.strongestSunAt().format(TIME);
+                if (!outlook.strongestSunAt().isBefore(window.end())) {
+                    reasons.add(pt ? "antes do sol mais forte, às " + at : "before the strongest sun, at " + at);
+                } else if (outlook.strongestSunAt().isBefore(window.start())) {
+                    reasons.add(pt ? "depois do sol mais forte, às " + at : "after the strongest sun, at " + at);
+                }
+            }
+            return List.copyOf(reasons);
+        }
+    }
+
+    private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
+
+    private static String dayName(LocalDateTime time, Language language) {
+        return time.format(DateTimeFormatter.ofPattern(
+                language == Language.PT ? "EEEE, dd/MM" : "EEEE, MMM d", language.locale()));
+    }
+
+    private static Long round(Double value) {
+        return value == null ? null : Math.round(value);
     }
 }

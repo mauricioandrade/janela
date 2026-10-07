@@ -62,6 +62,6 @@ class TemplateNarrativeGeneratorTest {
     }
 
     private static NarrativeRequest request(List<OutdoorWindow> windows, Language language) {
-        return new NarrativeRequest(CAMPINAS, Activity.RUN, 60, windows, language);
+        return new NarrativeRequest(CAMPINAS, Activity.RUN, 60, windows, language, List.of());
     }
 }
