@@ -123,7 +123,7 @@ export function SearchForm({
   return (
     <Card>
       <CardContent>
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} noValidate aria-label={t.searchHeading}>
           <FieldGroup>
             <Field data-invalid={cityError ? true : undefined}>
               <FieldLabel htmlFor="city">{t.city}</FieldLabel>

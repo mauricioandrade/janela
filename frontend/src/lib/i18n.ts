@@ -55,7 +55,20 @@ export const messages = {
     uvLong: "Índice UV",
     rainLong: "Chance de chuva",
     windLong: "Vento",
-    alternatives: "Outras opções",
+    answerLead: (activity: Activity, day: string) => {
+      const verb = { RUN: "Correr", WALK: "Caminhar", BIKE: "Pedalar", PICNIC: "Piquenique", GARDENING: "Jardinagem" }[activity]
+      const preposition = /^(sábado|domingo)/i.test(day) ? "no" : "na"
+      return `${verb} ${preposition} ${day}`
+    },
+    inPlace: (place: string) => `em ${place}`,
+    tideHeading: "Conforto ao longo dos dias",
+    tideCaption: "Nota de cada hora com luz, de 0 a 100. As faixas são as janelas; abaixo da linha tracejada (40) nenhuma janela entra.",
+    tideHour: (time: string, score: number) => `${time}, nota ${score}`,
+    tideDaySummary: (day: string, best: number, bestTime: string) => `${day}: conforto máximo ${best} às ${bestTime}.`,
+    tableHeading: "Todas as janelas",
+    columns: { rank: "Ordem", day: "Dia", time: "Horário", score: "Nota", feelsLike: "Sensação", uv: "UV", rain: "Chuva", wind: "Vento" },
+    example: "Exemplo",
+    searchHeading: "Buscar",
     feelsLike: "Sensação",
     uv: "UV",
     rain: "Chuva",
@@ -115,7 +128,19 @@ export const messages = {
     uvLong: "UV index",
     rainLong: "Chance of rain",
     windLong: "Wind",
-    alternatives: "Other options",
+    answerLead: (activity: Activity, day: string) => {
+      const verb = { RUN: "Run", WALK: "Walk", BIKE: "Ride", PICNIC: "Picnic", GARDENING: "Garden" }[activity]
+      return `${verb} on ${day}`
+    },
+    inPlace: (place: string) => `in ${place}`,
+    tideHeading: "Comfort through the days",
+    tideCaption: "Each daylight hour scored 0 to 100. Bands are the windows; below the dashed line (40) no window qualifies.",
+    tideHour: (time: string, score: number) => `${time}, score ${score}`,
+    tideDaySummary: (day: string, best: number, bestTime: string) => `${day}: peak comfort ${best} at ${bestTime}.`,
+    tableHeading: "All windows",
+    columns: { rank: "Rank", day: "Day", time: "Time", score: "Score", feelsLike: "Feels like", uv: "UV", rain: "Rain", wind: "Wind" },
+    example: "Example",
+    searchHeading: "Search",
     feelsLike: "Feels like",
     uv: "UV",
     rain: "Rain",

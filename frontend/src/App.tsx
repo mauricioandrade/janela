@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { I18nProvider } from "@/components/i18n-provider"
 import { Results } from "@/components/results"
@@ -8,13 +8,7 @@ import { useWindowsSearch } from "@/hooks/use-windows-search"
 import type { Lang, SearchValues } from "@/lib/api"
 import { messages } from "@/lib/i18n"
 import { placeLabel } from "@/lib/place"
-import { skyFor } from "@/lib/sky"
-import {
-  completeSearch,
-  readSearchFromUrl,
-  writeLangToUrl,
-  writeSearchToUrl,
-} from "@/lib/url-state"
+import { completeSearch, readSearchFromUrl, writeLangToUrl, writeSearchToUrl } from "@/lib/url-state"
 
 const LANG_KEY = "janela.lang"
 
@@ -34,10 +28,9 @@ export function App() {
   const [fromUrl] = useState(() => readSearchFromUrl())
   const [lang, setLang] = useState<Lang>(() => initialLang(fromUrl.lang))
   // A shared link with a full search runs it right away.
-  const [search, setSearch] = useState<SearchValues | null>(() =>
-    completeSearch(fromUrl)
-  )
+  const [search, setSearch] = useState<SearchValues | null>(() => completeSearch(fromUrl))
   const windows = useWindowsSearch(search, lang)
+  const resultsRef = useRef<HTMLDivElement>(null)
   const t = messages[lang]
 
   useEffect(() => {
@@ -49,13 +42,13 @@ export function App() {
     }
   }, [lang])
 
-  // The page's sky takes the colour of the best window's time of day.
-  const best = windows.data?.windows[0]
-  const sky = best && !windows.isFetching ? skyFor(best.start) : null
+  // On a phone the form sits above the answer: bring the answer into view when it lands.
+  const answeredAt = windows.isFetching ? 0 : windows.dataUpdatedAt
   useEffect(() => {
-    if (sky) document.documentElement.dataset.sky = sky
-    else delete document.documentElement.dataset.sky
-  }, [sky])
+    if (!answeredAt || !search || window.matchMedia("(min-width: 1024px)").matches) return
+    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    resultsRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" })
+  }, [answeredAt, search])
 
   function handleSearch(values: SearchValues) {
     setSearch(values)
@@ -71,49 +64,45 @@ export function App() {
   const status = windows.isFetching
     ? t.loadingGemma
     : windows.data
-      ? t.resultsReady(
-          placeLabel(windows.data.location),
-          windows.data.windows.length
-        )
+      ? t.resultsReady(placeLabel(windows.data.location), windows.data.windows.length)
       : ""
 
   return (
     <I18nProvider lang={lang}>
-      <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-12 lg:max-w-6xl lg:px-8">
-        <header className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <h1
-              translate="no"
-              className="flex items-center gap-3 font-heading text-5xl font-bold tracking-tighter sm:text-6xl"
+      <div className="flex min-h-svh flex-col">
+        <header className="bg-shell text-shell-foreground">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+              <h1 translate="no" className="flex items-center gap-2.5 font-wide text-3xl font-extrabold tracking-tight">
+                <WindowMark />
+                janela
+              </h1>
+              <p className="hidden max-w-xs border-l border-shell-foreground/20 pl-4 text-sm leading-snug text-shell-muted md:block">
+                {t.tagline}
+              </p>
+            </div>
+            <ToggleGroup
+              variant="outline"
+              size="sm"
+              spacing={0}
+              aria-label={t.language}
+              value={[lang]}
+              onValueChange={(value) => value.length > 0 && handleLangChange(value[0] as Lang)}
+              className="[&>button]:border-shell-foreground/25 [&>button]:text-shell-foreground [&>button:hover]:bg-shell-foreground/10"
             >
-              <WindowMark />
-              janela
-            </h1>
-            <p className="max-w-md text-lg text-pretty text-muted-foreground">
-              {t.tagline}
-            </p>
+              <ToggleGroupItem value="pt" aria-label="Português">
+                PT
+              </ToggleGroupItem>
+              <ToggleGroupItem value="en" aria-label="English">
+                EN
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
-          <ToggleGroup
-            variant="outline"
-            size="sm"
-            spacing={0}
-            aria-label={t.language}
-            value={[lang]}
-            onValueChange={(value) =>
-              value.length > 0 && handleLangChange(value[0] as Lang)
-            }
-          >
-            <ToggleGroupItem value="pt" aria-label="Português">
-              PT
-            </ToggleGroupItem>
-            <ToggleGroupItem value="en" aria-label="English">
-              EN
-            </ToggleGroupItem>
-          </ToggleGroup>
         </header>
 
-        <main className="grid gap-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-12">
-          <div className="lg:sticky lg:top-8">
+        <main className="mx-auto grid w-full max-w-6xl flex-1 gap-8 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start lg:gap-12 lg:px-8 lg:py-10">
+          <div className="flex flex-col gap-3 lg:sticky lg:top-6">
+            <p className="text-sm text-muted-foreground md:hidden">{t.tagline}</p>
             <SearchForm
               initialValues={fromUrl}
               resolvedPlace={windows.data?.location ?? null}
@@ -125,7 +114,7 @@ export function App() {
           <p className="sr-only" aria-live="polite">
             {status}
           </p>
-          <div className="min-w-0">
+          <div ref={resultsRef} className="min-w-0 scroll-mt-4">
             <Results
               data={windows.data}
               error={windows.error}
@@ -136,23 +125,18 @@ export function App() {
           </div>
         </main>
 
-        <footer className="mt-auto border-t pt-6 text-sm text-muted-foreground">
-          {t.weatherBy}{" "}
-          <a
-            href="https://open-meteo.com"
-            className="underline underline-offset-4 hover:text-foreground"
-            translate="no"
-          >
-            Open-Meteo.com
-          </a>{" "}
-          (
-          <a
-            href="https://creativecommons.org/licenses/by/4.0/"
-            className="underline underline-offset-4 hover:text-foreground"
-          >
-            CC BY 4.0
-          </a>
-          ). {t.narrativeBy}
+        <footer className="border-t">
+          <p className="mx-auto w-full max-w-6xl px-4 py-6 text-sm text-muted-foreground sm:px-6 lg:px-8">
+            {t.weatherBy}{" "}
+            <a href="https://open-meteo.com" className="underline hover:text-foreground" translate="no">
+              Open-Meteo.com
+            </a>{" "}
+            (
+            <a href="https://creativecommons.org/licenses/by/4.0/" className="underline hover:text-foreground">
+              CC BY 4.0
+            </a>
+            ). {t.narrativeBy}
+          </p>
         </footer>
       </div>
     </I18nProvider>
@@ -162,32 +146,10 @@ export function App() {
 /** The favicon's window: four panes, one lit by the sun. */
 function WindowMark() {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      className="size-10 shrink-0 sm:size-12"
-      aria-hidden
-    >
-      <rect
-        x="3"
-        y="3"
-        width="26"
-        height="26"
-        rx="6"
-        className="fill-primary"
-      />
-      <path
-        d="M16 6v20M6 16h20"
-        className="stroke-primary-foreground"
-        strokeWidth="2.5"
-      />
-      <rect
-        x="5.5"
-        y="5.5"
-        width="9.25"
-        height="9.25"
-        rx="2"
-        className="fill-score-mid"
-      />
+    <svg viewBox="0 0 32 32" className="size-8 shrink-0" aria-hidden>
+      <rect x="3" y="3" width="26" height="26" rx="6" className="fill-tide" />
+      <path d="M16 6v20M6 16h20" className="stroke-shell" strokeWidth="2.5" />
+      <rect x="5.5" y="5.5" width="9.25" height="9.25" rx="2" className="fill-sun" />
     </svg>
   )
 }

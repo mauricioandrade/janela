@@ -36,6 +36,9 @@ export type OutdoorWindow = {
 /** A search as the form submits it; the language is added by the page. */
 export type SearchValues = Omit<WindowsParams, "lang">
 
+/** The comfort score (0–100) of one daylight hour, in the city's local time. */
+export type HourScore = { time: string; score: number }
+
 export type WindowsResponse = {
   location: City & { timezone: string }
   activity: Activity
@@ -43,6 +46,8 @@ export type WindowsResponse = {
   narrative: string
   aiGenerated: boolean
   model: string | null
+  /** Every daylight hour considered, in time order. */
+  hours: HourScore[]
 }
 
 export class ApiError extends Error {

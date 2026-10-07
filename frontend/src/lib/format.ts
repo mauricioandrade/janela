@@ -27,3 +27,19 @@ export function minutesOfDay(localDateTime: string, isEnd = false) {
   const total = hours * 60 + minutes
   return isEnd && total === 0 ? 24 * 60 : total
 }
+
+/** "qui." and "8 de out." (or "Thu" and "Oct 8"), for compact day labels. */
+export function formatDayParts(localDateTime: string, lang: Lang) {
+  const [year, month, day] = dayKey(localDateTime).split("-").map(Number)
+  const date = new Date(Date.UTC(year, month - 1, day))
+  const locale = LOCALES[lang]
+  return {
+    weekday: new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: "UTC" }).format(date),
+    date: new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" }).format(date),
+  }
+}
+
+/** The hour of a local "yyyy-MM-ddTHH:mm" timestamp, as a number. */
+export function hourOf(localDateTime: string) {
+  return Number(localDateTime.slice(11, 13))
+}
