@@ -46,9 +46,11 @@ so the scoring is plain, unit-tested Java. The model never picks times or does m
 ranked windows and only writes about them, so it can't hallucinate the forecast.
 
 The payload is pre-digested so a 4B model copies instead of interpreting: day names and times are already
-formatted in the target language, values are rounded the way the UI shows them, and UV comes with its
-WHO category (`low` … `extreme`). If Ollama is down or slow, a template writes the text instead and the
-UI labels it as such.
+formatted in the target language, values are rounded the way the UI shows them, and the window's rating,
+temperature, UV (WHO category) and rain chance come with words. Java then checks the reply against that
+payload — no time it wasn't given, no 12-hour clock, no invented beach, no "pleasant" for a hot hour, no
+"ideal" for a fair window — and asks once more, naming the mistake. If the second reply still breaks a rule,
+or Ollama is down or slow, a template writes the text instead and the UI labels it as such.
 
 ### Scoring
 
