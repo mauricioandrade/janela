@@ -1,5 +1,8 @@
+import { CalculatorIcon } from "lucide-react"
+
 import { PlaceFlags } from "@/components/place-flags"
 import { ScoreBadge } from "@/components/score"
+import { RainWarning, UvWarning } from "@/components/warnings"
 import { useI18n } from "@/hooks/use-i18n"
 import type { Activity, City, OutdoorWindow } from "@/lib/api"
 import { formatDay, formatTime } from "@/lib/format"
@@ -21,8 +24,13 @@ export function Answer({ window, activity, place }: AnswerProps) {
       label: t.uvLong,
       value: window.maxUv !== null ? String(Math.round(window.maxUv)) : null,
       note: window.maxUv !== null ? t.uvLevels[uvLevel(window.maxUv)] : undefined,
+      warning: <UvWarning uv={window.maxUv} />,
     },
-    { label: t.rainLong, value: window.maxRainProbability !== null ? `${window.maxRainProbability}%` : null },
+    {
+      label: t.rainLong,
+      value: window.maxRainProbability !== null ? `${window.maxRainProbability}%` : null,
+      warning: <RainWarning chance={window.maxRainProbability} />,
+    },
     { label: t.windLong, value: window.maxWindKmh !== null ? `${Math.round(window.maxWindKmh)} km/h` : null },
   ].filter((reading) => reading.value !== null)
 
@@ -50,16 +58,21 @@ export function Answer({ window, activity, place }: AnswerProps) {
             <ScoreBadge score={window.score} />
           </dd>
         </div>
-        {readings.map(({ label, value, note }, index) => (
+        {readings.map(({ label, value, note, warning }, index) => (
           <div key={label} className={index % 2 === 1 ? "border-l pl-4 sm:pl-4" : "sm:pl-4"}>
             <dt className="text-xs text-muted-foreground">{label}</dt>
             <dd className="flex items-baseline gap-1.5">
               <span className="font-condensed text-2xl font-semibold">{value}</span>
               {note && <span className="text-sm text-muted-foreground">{note}</span>}
+              {warning}
             </dd>
           </div>
         ))}
       </dl>
+      <p className="flex items-start gap-2 text-xs text-muted-foreground">
+        <CalculatorIcon className="mt-px size-3.5 shrink-0" aria-hidden />
+        {t.computedBy}
+      </p>
     </section>
   )
 }

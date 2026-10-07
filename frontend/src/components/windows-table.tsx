@@ -1,6 +1,7 @@
 import { cn } from "cn"
 
 import { ScoreBadge } from "@/components/score"
+import { RainWarning, UvWarning } from "@/components/warnings"
 import { useI18n } from "@/hooks/use-i18n"
 import type { OutdoorWindow } from "@/lib/api"
 import { formatDayParts, formatTime } from "@/lib/format"
@@ -40,19 +41,32 @@ export function WindowsTable({ windows }: { windows: OutdoorWindow[] }) {
         </thead>
         <tbody className="font-condensed text-base tabular-nums">
           {rows.map((row) => (
-            <tr key={row.window.start} className={cn("border-b [&>td]:py-2.5", row.rank === 1 && "bg-primary/6 font-semibold")}>
+            <tr
+              key={row.window.start}
+              className={cn("border-b [&>td]:py-2.5 [&>td]:align-baseline", row.rank === 1 && "bg-primary/6 font-semibold")}
+            >
               <td className="pl-2">{row.rank}</td>
               <td>
                 <span className="first-letter:uppercase">{row.day.weekday}</span>{" "}
                 <span className="text-muted-foreground">{row.day.date}</span>
               </td>
               <td className="text-lg">{row.time}</td>
-              <td className="font-sans text-sm font-normal">
-                <ScoreBadge score={row.window.score} />
+              <td className="font-normal">
+                <ScoreBadge score={row.window.score} className="[&_svg]:self-center" />
               </td>
               <td className="text-right">{row.feelsLike}</td>
-              <td className="text-right">{row.uv}</td>
-              <td className="text-right">{row.rain}</td>
+              <td className="text-right">
+                <span className="inline-flex items-center justify-end gap-1">
+                  <UvWarning uv={row.window.maxUv} />
+                  {row.uv}
+                </span>
+              </td>
+              <td className="text-right">
+                <span className="inline-flex items-center justify-end gap-1">
+                  <RainWarning chance={row.window.maxRainProbability} />
+                  {row.rain}
+                </span>
+              </td>
               <td className="pr-2 text-right">{row.wind}</td>
             </tr>
           ))}
@@ -73,9 +87,10 @@ export function WindowsTable({ windows }: { windows: OutdoorWindow[] }) {
               <span className="first-letter:uppercase">{row.day.weekday}</span>{" "}
               <span className="text-muted-foreground">{row.day.date}</span>
             </p>
-            <p className="font-condensed text-sm text-muted-foreground tabular-nums">
-              {t.columns.feelsLike} {row.feelsLike}, {t.columns.uv} {row.uv}, {t.columns.rain} {row.rain},{" "}
-              {t.columns.wind} {row.wind}
+            <p className="flex flex-wrap items-center gap-x-1 font-condensed text-sm text-muted-foreground tabular-nums">
+              {t.columns.feelsLike} {row.feelsLike}, <UvWarning uv={row.window.maxUv} />
+              {t.columns.uv} {row.uv}, <RainWarning chance={row.window.maxRainProbability} />
+              {t.columns.rain} {row.rain}, {t.columns.wind} {row.wind}
             </p>
           </li>
         ))}

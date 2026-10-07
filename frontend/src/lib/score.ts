@@ -50,3 +50,13 @@ export function uvLevel(uv: number): UvLevel {
   if (rounded <= 10) return "veryHigh"
   return "extreme"
 }
+
+/** UV worth a warning: WHO "high" and above. */
+export function isHighUv(uv: number | null) {
+  return uv !== null && ["high", "veryHigh", "extreme"].includes(uvLevel(uv))
+}
+
+/** Rain chance worth a warning in the tropics, where afternoon storms are the norm. */
+export function isLikelyRain(chance: number | null) {
+  return chance !== null && chance >= 40
+}

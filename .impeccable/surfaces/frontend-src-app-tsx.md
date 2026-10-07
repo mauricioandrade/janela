@@ -18,7 +18,7 @@ OWN-WORLD: Marine navy shell bar, cool sea-mist ground (never cream), tide teal 
 
 STORY: The visitor sees when to go first, then why (Gemma, labelled as local), then how comfort rises and falls across each day, then the other options in a timetable; changes the search in the side panel.
 
-FIRST VIEWPORT: Navy top bar with mark, lowercase wordmark and PT/EN. Desktop: search panel left (~360px); right, the best window — day, huge condensed time, score and four readings — with the narrative beside it; below, one tide row per day. Mobile: bar, search, then the answer.
+FIRST VIEWPORT: Navy top bar with mark, lowercase wordmark and PT/EN. Desktop: search panel left (~360px); right, the best window — day, huge condensed time, score and four readings — then the narrative directly below it (the time needs the column's full width, so the narrative moved from beside to below), then one tide row per day. Mobile: bar, search, then the answer.
 
 FORM: Tábua de marés, position 4 on the ordered list, seed key 2cccc6f0.
 

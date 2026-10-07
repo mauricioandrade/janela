@@ -61,6 +61,9 @@ export const messages = {
       return `${verb} ${preposition} ${day}`
     },
     inPlace: (place: string) => `em ${place}`,
+    computedBy: "Horários, notas e curvas calculados em Java a partir da previsão do Open-Meteo. Só o texto é do modelo.",
+    highUv: "UV alto: proteja-se do sol",
+    likelyRain: "Chance relevante de chuva",
     tideHeading: "Conforto ao longo dos dias",
     tideCaption: "Nota de cada hora com luz, de 0 a 100. As faixas são as janelas; abaixo da linha tracejada (40) nenhuma janela entra.",
     tideHour: (time: string, score: number) => `${time}, nota ${score}`,
@@ -133,6 +136,9 @@ export const messages = {
       return `${verb} on ${day}`
     },
     inPlace: (place: string) => `in ${place}`,
+    computedBy: "Times, scores and curves computed in Java from the Open-Meteo forecast. Only the text comes from the model.",
+    highUv: "High UV: cover up",
+    likelyRain: "Real chance of rain",
     tideHeading: "Comfort through the days",
     tideCaption: "Each daylight hour scored 0 to 100. Bands are the windows; below the dashed line (40) no window qualifies.",
     tideHour: (time: string, score: number) => `${time}, score ${score}`,

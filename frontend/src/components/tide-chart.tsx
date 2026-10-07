@@ -31,7 +31,8 @@ export function TideChart({ hours, windows }: TideChartProps) {
   const first = Math.min(...hours.map((hour) => hourOf(hour.time)))
   const last = Math.max(...hours.map((hour) => hourOf(hour.time))) + 1
   const scale = { first, last }
-  const ticks = range(first + 1, last - 1).filter((hour) => hour % TICK_EVERY_HOURS === 0)
+  // Edge hours get their own labels; ticks too close to them would collide on a phone.
+  const ticks = range(first + 2, last - 2).filter((hour) => hour % TICK_EVERY_HOURS === 0)
 
   return (
     <section aria-labelledby="tide-heading" className="flex flex-col gap-4">
@@ -116,7 +117,7 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
       <div
         role="img"
         aria-label={t.tideDaySummary(`${parts.weekday} ${parts.date}`, peak.score, formatTime(peak.time))}
-        className="relative h-20 touch-pan-y rounded-md border bg-card sm:h-24"
+        className="relative h-24 touch-pan-y rounded-md border bg-card sm:h-28"
         onPointerMove={handlePointer}
         onPointerDown={handlePointer}
         onPointerLeave={() => setHovered(null)}
@@ -211,9 +212,9 @@ function xPercent(hour: number, scale: { first: number; last: number }) {
   return (x(hour, scale) / W) * 100
 }
 
-/** Score 0–100 to the SVG's y, with headroom for the window labels. */
+/** Score 0–100 to the SVG's y, with just enough headroom for the window labels. */
 function y(score: number) {
-  return H - 4 - (score / 100) * (H - 34)
+  return H - 3 - (score / 100) * (H - 24)
 }
 
 function range(from: number, to: number) {
