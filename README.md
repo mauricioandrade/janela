@@ -12,11 +12,11 @@ and a tiny "touch grass" challenge. No API keys, no per-query costs, and it stil
 Built for the [Hacktoberfest 2026 Open-Source AI Challenge: Week 1 — "Touch Grass"](https://dev.to/challenges/hacktoberfest-week1-2026-10-05).
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Demo: typing Recife, picking Run and 2 days, then the answer — Thursday 06:00–07:00 — with Gemma's explanation, each day's comfort tide and the table of windows" width="94%">
+  <img src="docs/demo.gif" alt="Demo: typing Recife, picking Run and 3 days, then the answer — Thursday 06:00–07:00 — with Gemma's explanation, each day's comfort tide and the table of windows" width="94%">
 </p>
 
 <p align="center">
-  <img src="docs/screenshot-light.png" alt="Janela in English on desktop: Gemma recommends Wednesday 17:00–18:00 for a run in Recife, with a day strip and three ranked windows" width="62%">
+  <img src="docs/screenshot-light.png" alt="Janela in English on desktop: a run in Recife on Thursday 06:00–07:00, score 72 Great, 83°F feels-like, with Gemma's explanation below" width="62%">
   &nbsp;
   <img src="docs/screenshot-dark-mobile.png" alt="Janela in Portuguese on mobile, dark theme: picnic windows in Rio de Janeiro" width="30%">
 </p>
