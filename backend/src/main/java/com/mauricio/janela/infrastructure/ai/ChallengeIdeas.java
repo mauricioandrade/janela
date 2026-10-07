@@ -21,6 +21,15 @@ final class ChallengeIdeas {
     }
 
     private static final Map<Activity, List<Idea>> BY_ACTIVITY = Map.of(
+            Activity.WORKOUT, List.of(
+                    new Idea("termine com dois minutos de alongamento na grama",
+                            "finish with two minutes of stretching on the grass"),
+                    new Idea("faça a última série descalço, sentindo o chão",
+                            "do your last set barefoot, feeling the ground"),
+                    new Idea("entre as séries, ache três tons de verde diferentes à sua volta",
+                            "between sets, find three different shades of green around you"),
+                    new Idea("descanse um minuto à sombra de uma árvore antes de ir embora",
+                            "rest for a minute in a tree's shade before you leave")),
             Activity.RUN, List.of(
                     new Idea("no último trecho, conte três cantos de pássaros diferentes",
                             "on the last stretch, count three different bird calls"),

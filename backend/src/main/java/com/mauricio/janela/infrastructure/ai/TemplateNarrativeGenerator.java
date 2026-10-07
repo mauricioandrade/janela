@@ -71,7 +71,7 @@ public class TemplateNarrativeGenerator implements NarrativeGenerator {
         String activity = activityName(request.activity(), Language.EN);
         String city = request.location().name();
         if (request.windows().isEmpty()) {
-            return "I couldn't find a good window for a " + activity + " in " + city + " in this period. "
+            return "I couldn't find a good window for " + activity + " in " + city + " in this period. "
                     + "How about five minutes on a balcony or by the window, just watching the sky?\n"
                     + "🌿 Open the window and count three different sounds outside.";
         }
@@ -79,7 +79,7 @@ public class TemplateNarrativeGenerator implements NarrativeGenerator {
         OutdoorWindow best = request.windows().getFirst();
         DateTimeFormatter day = DateTimeFormatter.ofPattern("EEEE, MMM d", Locale.ENGLISH);
         StringBuilder text = new StringBuilder()
-                .append("The best window for a ").append(activity).append(" in ").append(city)
+                .append("The best window for ").append(activity).append(" in ").append(city)
                 .append(" is ").append(best.start().format(day))
                 .append(", ").append(best.start().format(TIME)).append("–").append(best.end().format(TIME))
                 .append(" (score ").append(best.score()).append("/100)");
@@ -143,13 +143,15 @@ public class TemplateNarrativeGenerator implements NarrativeGenerator {
                 case BIKE -> "pedalar";
                 case PICNIC -> "um piquenique";
                 case GARDENING -> "jardinagem";
+                case WORKOUT -> "treinar ao ar livre";
             };
             case EN -> switch (activity) {
-                case RUN -> "run";
-                case WALK -> "walk";
-                case BIKE -> "bike ride";
-                case PICNIC -> "picnic";
-                case GARDENING -> "gardening session";
+                case RUN -> "a run";
+                case WALK -> "a walk";
+                case BIKE -> "a bike ride";
+                case PICNIC -> "a picnic";
+                case GARDENING -> "a gardening session";
+                case WORKOUT -> "an outdoor workout";
             };
         };
     }
