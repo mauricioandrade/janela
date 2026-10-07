@@ -48,3 +48,8 @@ export function hourOf(localDateTime: string) {
 export function formatTemperature(celsius: number, lang: Lang) {
   return lang === "en" ? `${Math.round((celsius * 9) / 5 + 32)}°F` : `${Math.round(celsius)}°C`
 }
+
+/** Wind for the reader: miles per hour in English, km/h in Portuguese (the API sends km/h). */
+export function formatWind(kmh: number, lang: Lang) {
+  return lang === "en" ? `${Math.round(kmh / 1.609344)} mph` : `${Math.round(kmh)} km/h`
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { dayKey, formatDay, formatTemperature, formatTime, minutesOfDay } from "@/lib/format"
+import { dayKey, formatDay, formatTemperature, formatTime, formatWind, minutesOfDay } from "@/lib/format"
 
 describe("format", () => {
   it("formats the local day without shifting it to the browser's time zone", () => {
@@ -18,6 +18,11 @@ describe("format", () => {
     expect(formatTemperature(23.2, "pt")).toBe("23°C")
     expect(formatTemperature(23.2, "en")).toBe("74°F")
     expect(formatTemperature(-40, "en")).toBe("-40°F")
+  })
+
+  it("shows mph in English and km/h in Portuguese", () => {
+    expect(formatWind(16, "pt")).toBe("16 km/h")
+    expect(formatWind(16, "en")).toBe("10 mph")
   })
 
   it("counts a window ending at midnight as 24:00", () => {

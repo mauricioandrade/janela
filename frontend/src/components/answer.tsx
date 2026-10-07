@@ -5,7 +5,7 @@ import { ScoreBadge } from "@/components/score"
 import { RainWarning, UvWarning } from "@/components/warnings"
 import { useI18n } from "@/hooks/use-i18n"
 import type { Activity, City, OutdoorWindow } from "@/lib/api"
-import { formatDay, formatTemperature, formatTime } from "@/lib/format"
+import { formatDay, formatTemperature, formatTime, formatWind } from "@/lib/format"
 import { placeLabel } from "@/lib/place"
 import { uvLevel } from "@/lib/score"
 
@@ -31,7 +31,7 @@ export function Answer({ window, activity, place }: AnswerProps) {
       value: window.maxRainProbability !== null ? `${window.maxRainProbability}%` : null,
       warning: <RainWarning chance={window.maxRainProbability} />,
     },
-    { label: t.windLong, value: window.maxWindKmh !== null ? `${Math.round(window.maxWindKmh)} km/h` : null },
+    { label: t.windLong, value: window.maxWindKmh !== null ? formatWind(window.maxWindKmh, lang) : null },
   ].filter((reading) => reading.value !== null)
 
   return (
