@@ -68,7 +68,7 @@ class OllamaNarrativeGeneratorTest {
         assertThat(prompt.getValue().getUserMessage().getText())
                 .contains("\"city\":\"Campinas\"", "\"activity\":\"RUN\"", "\"rank\":1",
                         "\"day\":\"Tuesday, Oct 6\"", "\"start\":\"06:00\"", "\"end\":\"07:00\"",
-                        "\"feelsLikeC\":19", "\"uvIndex\":1", "\"uvLevel\":\"low\"", "\"rainChancePercent\":5",
+                        "\"temperatureUnit\":\"°F\"", "\"feelsLike\":67", "\"uvIndex\":1", "\"uvLevel\":\"low\"", "\"rainChancePercent\":5",
                         "\"windKmh\":8")
                 .doesNotContain("score");
     }

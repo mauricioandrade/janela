@@ -38,6 +38,13 @@ class TemplateNarrativeGeneratorTest {
     }
 
     @Test
+    void givesEnglishReadersFahrenheit() {
+        Narrative narrative = generator.generate(request(List.of(MORNING), Language.EN));
+
+        assertThat(narrative.text()).contains("feels like 66.9 °F").doesNotContain("°C");
+    }
+
+    @Test
     void describesBestWindowInEnglishAndSkipsMissingValues() {
         Narrative narrative = generator.generate(request(List.of(EVENING), Language.EN));
 

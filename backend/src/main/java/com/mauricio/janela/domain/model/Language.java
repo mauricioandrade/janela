@@ -33,6 +33,15 @@ public enum Language {
         return locale;
     }
 
+    /** English readers get Fahrenheit, Portuguese readers Celsius; the forecast itself stays in Celsius. */
+    public double temperatureFromCelsius(double celsius) {
+        return this == EN ? celsius * 9 / 5 + 32 : celsius;
+    }
+
+    public String temperatureSymbol() {
+        return this == EN ? "°F" : "°C";
+    }
+
     public static Language fromCode(String code) {
         return Arrays.stream(values())
                 .filter(language -> language.code.equalsIgnoreCase(code))

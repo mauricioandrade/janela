@@ -86,7 +86,8 @@ public class TemplateNarrativeGenerator implements NarrativeGenerator {
 
         List<String> conditions = new ArrayList<>();
         if (best.apparentTempC() != null) {
-            conditions.add("feels like " + decimal(best.apparentTempC(), Locale.ENGLISH) + " °C");
+            conditions.add("feels like " + decimal(Language.EN.temperatureFromCelsius(best.apparentTempC()),
+                    Locale.ENGLISH) + " " + Language.EN.temperatureSymbol());
         }
         if (best.maxUv() != null) {
             conditions.add("UV up to " + decimal(best.maxUv(), Locale.ENGLISH));
