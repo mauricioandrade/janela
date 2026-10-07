@@ -1,4 +1,4 @@
-import { useState, type PointerEvent } from "react"
+import { useLayoutEffect, useRef, useState, type PointerEvent } from "react"
 import { cn } from "cn"
 
 import { useI18n } from "@/hooks/use-i18n"
@@ -10,6 +10,7 @@ import {
   hourOf,
   minutesOfDay,
 } from "@/lib/format"
+import { labelRows } from "@/lib/label-rows"
 
 /** Below this hour score the scorer discards any window containing the hour. */
 const WINDOW_FLOOR = 40
@@ -105,10 +106,39 @@ type DayTideProps = {
 function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
   const { t, lang } = useI18n()
   const [hovered, setHovered] = useState<HourScore | null>(null)
+  const chartRef = useRef<HTMLDivElement>(null)
+  const labelRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const [labelLayout, setLabelLayout] = useState({ rows: [] as number[], step: 0 })
   const parts = formatDayParts(day, lang)
   const dayWindows = windows
     .map((window, index) => ({ window, rank: index + 1 }))
     .filter(({ window }) => dayKey(window.start) === day)
+  const windowsKey = dayWindows.map(({ window }) => window.start).join()
+
+  // Labels of neighbouring windows (16:00–17:00 next to 17:00–18:00) are wider than their bands, so measure
+  // them where they render and drop any that would cover another to a row below.
+  useLayoutEffect(() => {
+    const chart = chartRef.current
+    if (!chart) return
+    function place() {
+      const labels = labelRefs.current.slice(0, windowsKey.split(",").length)
+      const spans = labels.map((label) => {
+        const box = label?.getBoundingClientRect()
+        return { left: box?.left ?? 0, right: box?.right ?? 0 }
+      })
+      if (spans.every((span) => span.right === span.left)) return
+      const rows = labelRows(spans)
+      const step = (labels[0]?.offsetHeight ?? 0) + 2
+      setLabelLayout((current) =>
+        current.step === step && current.rows.join() === rows.join() ? current : { rows, step }
+      )
+    }
+    place()
+    const observer = new ResizeObserver(place)
+    observer.observe(chart)
+    return () => observer.disconnect()
+  }, [windowsKey])
+
   const peak = hours.reduce(
     (best, hour) => (hour.score > best.score ? hour : best),
     hours[0]
@@ -161,6 +191,7 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
           peak.score,
           formatTime(peak.time)
         )}
+        ref={chartRef}
         className="relative h-24 touch-pan-y rounded-md border bg-card sm:h-28"
         onPointerMove={handlePointer}
         onPointerDown={handlePointer}
@@ -221,7 +252,8 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
           />
         </svg>
 
-        {dayWindows.map(({ window, rank }) => {
+        {dayWindows.map(({ window, rank }, index) => {
+          const row = labelLayout.rows[index] ?? 0
           const middle = xPercent(
             (minutesOfDay(window.start) + minutesOfDay(window.end, true)) / 120,
             scale
@@ -231,6 +263,9 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
           return (
             <span
               key={window.start}
+              ref={(label) => {
+                labelRefs.current[index] = label
+              }}
               aria-hidden
               className={cn(
                 "absolute top-1.5 flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold whitespace-nowrap font-condensed tabular-nums",
@@ -239,8 +274,9 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
                   ? "bg-primary text-primary-foreground"
                   : "bg-card/90 text-foreground ring-1 ring-border"
               )}
-              style={
-                anchor === "start"
+              style={{
+                ...(row > 0 && { top: `calc(0.375rem + ${row * labelLayout.step}px)` }),
+                ...(anchor === "start"
                   ? {
                       left: `${xPercent(minutesOfDay(window.start) / 60, scale)}%`,
                       marginLeft: 4,
@@ -250,8 +286,8 @@ function DayTide({ day, hours, windows, scale, ticks, delayMs }: DayTideProps) {
                         right: `${100 - xPercent(minutesOfDay(window.end, true) / 60, scale)}%`,
                         marginRight: 4,
                       }
-                    : { left: `${middle}%` }
-              }
+                    : { left: `${middle}%` }),
+              }}
             >
               <span className="opacity-70">{rank}</span>
               {formatTime(window.start)}–{formatTime(window.end)}
