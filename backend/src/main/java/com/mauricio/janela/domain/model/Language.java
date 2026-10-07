@@ -42,6 +42,15 @@ public enum Language {
         return this == EN ? "°F" : "°C";
     }
 
+    /** English readers get miles per hour, Portuguese readers km/h; the forecast itself stays in km/h. */
+    public double windFromKmh(double kmh) {
+        return this == EN ? kmh / 1.609344 : kmh;
+    }
+
+    public String windSymbol() {
+        return this == EN ? "mph" : "km/h";
+    }
+
     public static Language fromCode(String code) {
         return Arrays.stream(values())
                 .filter(language -> language.code.equalsIgnoreCase(code))

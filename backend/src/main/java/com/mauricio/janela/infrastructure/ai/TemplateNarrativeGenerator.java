@@ -96,7 +96,8 @@ public class TemplateNarrativeGenerator implements NarrativeGenerator {
             conditions.add("rain chance up to " + best.maxRainProbability() + "%");
         }
         if (best.maxWindKmh() != null) {
-            conditions.add("wind up to " + decimal(best.maxWindKmh(), Locale.ENGLISH) + " km/h");
+            conditions.add("wind up to " + decimal(Language.EN.windFromKmh(best.maxWindKmh()), Locale.ENGLISH) + " "
+                    + Language.EN.windSymbol());
         }
         appendConditions(text, conditions, " and ");
 

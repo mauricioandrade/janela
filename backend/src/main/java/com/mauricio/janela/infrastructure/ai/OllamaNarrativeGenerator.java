@@ -58,6 +58,7 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
     record PromptPayload(
             String language,
             String temperatureUnit,
+            String windUnit,
             String city,
             String activity,
             int durationMinutes,
@@ -68,6 +69,7 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
             return new PromptPayload(
                     request.language().code(),
                     request.language().temperatureSymbol(),
+                    request.language().windSymbol(),
                     request.location().name(),
                     request.activity().name(),
                     request.durationMinutes(),
@@ -91,7 +93,7 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
             Long uvIndex,
             String uvLevel,
             Integer rainChancePercent,
-            Long windKmh
+            Long wind
     ) {
 
         private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm");
@@ -104,7 +106,7 @@ public class OllamaNarrativeGenerator implements NarrativeGenerator {
                     window.end().format(TIME), round(window.apparentTempC() == null ? null
                     : language.temperatureFromCelsius(window.apparentTempC())), uv,
                     uv == null ? null : uvLevel(uv, language), window.maxRainProbability(),
-                    round(window.maxWindKmh()));
+                    round(window.maxWindKmh() == null ? null : language.windFromKmh(window.maxWindKmh())));
         }
 
         private static Long round(Double value) {
