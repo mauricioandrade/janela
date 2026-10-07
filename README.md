@@ -173,8 +173,8 @@ Times are local to the city and `end` is exclusive. Errors, including Spring's o
 
 ```
 backend/    Spring Boot API — domain (scorer, model), use case, Open-Meteo clients, Gemma + template narrators
-frontend/   React + Vite single page — search form, Gemma narrative, day strip, ranked windows
-docs/       Screenshots
+frontend/   React + Vite single page — search form, Gemma narrative, each day's comfort tide, ranked windows
+docs/       Demo GIF, screenshots, OpenAPI document
 ```
 
 ## Stack
@@ -189,7 +189,7 @@ docs/       Screenshots
 - Weather data by [Open-Meteo](https://open-meteo.com) (CC BY 4.0)
 - [Gemma](https://ai.google.dev/gemma) open-weight models by Google
 - [Spring AI](https://spring.io/projects/spring-ai) and [Ollama](https://ollama.com)
-- Typefaces: [Inter](https://rsms.me/inter/) and [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque)
+- Typeface: [Archivo](https://fonts.google.com/specimen/Archivo) by Omnibus-Type (OFL)
 - Country flags: [country-flag-icons](https://gitlab.com/catamphetamine/country-flag-icons) (MIT);
   Brazilian state flags: [Wikimedia Commons](https://commons.wikimedia.org) (public domain)
 
