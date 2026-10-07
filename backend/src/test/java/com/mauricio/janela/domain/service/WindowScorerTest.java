@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
 
@@ -210,6 +211,18 @@ class WindowScorerTest {
 
             assertThat(scorer.findBestWindows(forecast, Activity.RUN, 120)).extracting(OutdoorWindow::start)
                     .containsExactly(at(6), at(8), at(10));
+        }
+
+        @Test
+        void scoresEachDaylightHourAndLeavesTheNightOut() {
+            List<HourlyForecast> forecast = List.of(
+                    hour(19, 18.0, 0.0, 0, 5.0, false),
+                    hour(7, 18.0, 1.0, 0, 5.0, true),
+                    hour(8, 18.0, 1.0, 50, 5.0, true));
+
+            assertThat(scorer.scoreDaylight(forecast, Activity.RUN))
+                    .extracting(scored -> scored.time(), scored -> scored.score())
+                    .containsExactly(tuple(at(7), 100), tuple(at(8), 70));
         }
 
         @Test

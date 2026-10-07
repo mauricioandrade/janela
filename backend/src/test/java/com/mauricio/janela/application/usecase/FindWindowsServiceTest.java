@@ -49,6 +49,8 @@ class FindWindowsServiceTest {
 
         assertThat(result.windows()).isNotEmpty()
                 .allSatisfy(window -> assertThat(window.start()).isAfterOrEqualTo(TODAY.atTime(11, 0)));
+        assertThat(result.hours()).extracting(hour -> hour.time().getHour())
+                .containsExactly(11, 12, 13, 14, 15, 16, 17);
     }
 
     @Test

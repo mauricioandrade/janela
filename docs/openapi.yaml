@@ -239,6 +239,20 @@ components:
           description: Invalid parameters; only on 400
           items:
             type: string
+    HourScoreResponse:
+      type: object
+      properties:
+        time:
+          type: string
+          description: Local start of the hour
+          example: 2026-10-08T06:00
+        score:
+          type: integer
+          format: int32
+          description: "Comfort score of this hour, 0–100"
+          example: 97
+          maximum: 100
+          minimum: 0
     LocationResponse:
       type: object
       properties:
@@ -361,6 +375,11 @@ components:
           - "null"
           description: Model that wrote the narrative; null for the template
           example: gemma3:4b
+        hours:
+          type: array
+          description: "Comfort score of every daylight hour considered, in time order"
+          items:
+            $ref: "#/components/schemas/HourScoreResponse"
     CityResponse:
       type: object
       properties:

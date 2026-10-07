@@ -18,7 +18,9 @@ public record WindowsResponse(
         boolean aiGenerated,
         @Schema(description = "Model that wrote the narrative; null for the template", example = "gemma3:4b",
                 nullable = true)
-        String model
+        String model,
+        @Schema(description = "Comfort score of every daylight hour considered, in time order")
+        List<HourScoreResponse> hours
 ) {
 
     public static WindowsResponse from(WindowsResult result) {
@@ -28,6 +30,7 @@ public record WindowsResponse(
                 result.windows().stream().map(WindowResponse::from).toList(),
                 result.narrative().text(),
                 result.narrative().aiGenerated(),
-                result.narrative().model());
+                result.narrative().model(),
+                result.hours().stream().map(HourScoreResponse::from).toList());
     }
 }

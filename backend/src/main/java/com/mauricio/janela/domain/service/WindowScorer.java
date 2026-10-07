@@ -1,6 +1,7 @@
 package com.mauricio.janela.domain.service;
 
 import com.mauricio.janela.domain.model.Activity;
+import com.mauricio.janela.domain.model.HourScore;
 import com.mauricio.janela.domain.model.HourlyForecast;
 import com.mauricio.janela.domain.model.OutdoorWindow;
 
@@ -68,6 +69,17 @@ public class WindowScorer {
         }
         // Back to rank order: best first, earliest first on ties.
         return candidates.stream().map(Candidate::window).filter(selected::contains).toList();
+    }
+
+    /**
+     * The rounded score of every daylight hour, in time order; night hours are left out.
+     */
+    public List<HourScore> scoreDaylight(List<HourlyForecast> forecast, Activity activity) {
+        return forecast.stream()
+                .filter(hour -> hour.time() != null && !Boolean.FALSE.equals(hour.isDay()))
+                .sorted(Comparator.comparing(HourlyForecast::time))
+                .map(hour -> new HourScore(hour.time(), (int) Math.round(scoreHour(hour, activity))))
+                .toList();
     }
 
     /**

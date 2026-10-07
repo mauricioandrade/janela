@@ -3,6 +3,7 @@ package com.mauricio.janela.infrastructure.web.controller;
 import com.mauricio.janela.domain.exception.ExternalServiceUnavailableException;
 import com.mauricio.janela.domain.exception.LocationNotFoundException;
 import com.mauricio.janela.domain.model.Activity;
+import com.mauricio.janela.domain.model.HourScore;
 import com.mauricio.janela.domain.model.Language;
 import com.mauricio.janela.domain.model.Location;
 import com.mauricio.janela.domain.model.Narrative;
@@ -50,7 +51,8 @@ class WindowsControllerTest {
         OutdoorWindow window = new OutdoorWindow(
                 LocalDateTime.of(2026, 10, 6, 6, 0), LocalDateTime.of(2026, 10, 6, 7, 0), 91, 19.4, 1.2, 5, 8.0);
         when(findWindowsUseCase.findWindows(any())).thenReturn(new WindowsResult(
-                CAMPINAS, Activity.RUN, List.of(window), Narrative.fromModel("Go early.", "gemma3:4b")));
+                CAMPINAS, Activity.RUN, List.of(window), Narrative.fromModel("Go early.", "gemma3:4b"),
+                List.of(new HourScore(LocalDateTime.of(2026, 10, 6, 6, 0), 91))));
 
         mockMvc.perform(get("/api/v1/windows")
                         .param("city", " Campinas ")
@@ -68,7 +70,9 @@ class WindowsControllerTest {
                 .andExpect(jsonPath("$.windows[0].maxRainProbability").value(5))
                 .andExpect(jsonPath("$.narrative").value("Go early."))
                 .andExpect(jsonPath("$.aiGenerated").value(true))
-                .andExpect(jsonPath("$.model").value("gemma3:4b"));
+                .andExpect(jsonPath("$.model").value("gemma3:4b"))
+                .andExpect(jsonPath("$.hours[0].time").value("2026-10-06T06:00"))
+                .andExpect(jsonPath("$.hours[0].score").value(91));
 
         verify(findWindowsUseCase).findWindows(new FindWindowsQuery("Campinas", null, Activity.RUN, 60, 2, Language.EN));
     }
@@ -78,7 +82,7 @@ class WindowsControllerTest {
         Location itobi = new Location(3460543L, "Itobi", "São Paulo", "Brasil", "BR", -21.73694, -46.975,
                 "America/Sao_Paulo");
         when(findWindowsUseCase.findWindows(any())).thenReturn(new WindowsResult(
-                itobi, Activity.BIKE, List.of(), Narrative.fromTemplate("Sem janelas.")));
+                itobi, Activity.BIKE, List.of(), Narrative.fromTemplate("Sem janelas."), List.of()));
 
         mockMvc.perform(get("/api/v1/windows")
                         .param("city", "Itobi")
@@ -114,7 +118,7 @@ class WindowsControllerTest {
     @Test
     void defaultsToOneDayInPortuguese() throws Exception {
         when(findWindowsUseCase.findWindows(any())).thenReturn(new WindowsResult(
-                CAMPINAS, Activity.WALK, List.of(), Narrative.fromTemplate("Sem janelas.")));
+                CAMPINAS, Activity.WALK, List.of(), Narrative.fromTemplate("Sem janelas."), List.of()));
 
         mockMvc.perform(get("/api/v1/windows")
                         .param("city", "Campinas")

@@ -68,7 +68,8 @@ public class FindWindowsService implements FindWindowsUseCase {
         NarrativeRequest narrativeRequest = new NarrativeRequest(
                 location, query.activity(), query.durationMinutes(), windows, query.language());
 
-        return new WindowsResult(location, query.activity(), windows, narrate(narrativeRequest));
+        return new WindowsResult(location, query.activity(), windows, narrate(narrativeRequest),
+                windowScorer.scoreDaylight(upcoming, query.activity()));
     }
 
     /**
