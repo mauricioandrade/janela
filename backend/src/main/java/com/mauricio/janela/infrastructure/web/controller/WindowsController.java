@@ -31,8 +31,9 @@ public class WindowsController {
     @Operation(
             summary = "Find the best windows for an activity",
             description = """
-                    Scores the hourly forecast in deterministic Java and returns up to 3 non-overlapping daytime \
-                    windows, best first, plus a short recommendation. The narrative is written by the local \
+                    Scores the hourly forecast in deterministic Java and returns the best non-overlapping daytime \
+                    windows, best first and the same number per day (3 for one day, 2 a day for two, 1 a day for \
+                    three), plus a short recommendation. The narrative is written by the local \
                     model (aiGenerated=true) or, if it is unavailable, by a template (aiGenerated=false).""")
     @ApiResponse(responseCode = "200", description = "Windows found (the list may be empty)")
     @ApiResponse(responseCode = "400", description = "Invalid parameters; `fields` lists the offending ones",

@@ -8,11 +8,11 @@ import com.mauricio.janela.domain.model.OutdoorWindow;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -20,7 +20,7 @@ import java.util.function.Function;
  */
 public class WindowScorer {
 
-    public static final int MAX_WINDOWS = 3;
+    public static final int WINDOWS_TO_OFFER = 3;
     public static final double MIN_HOUR_SCORE = 40;
 
     private static final double RAIN_PENALTY_PER_PERCENT = 0.6;
@@ -29,10 +29,10 @@ public class WindowScorer {
     private static final double WIND_PENALTY_PER_KMH = 2;
 
     /**
-     * Top {@value #MAX_WINDOWS} non-overlapping daytime windows covering {@code durationMinutes}
-     * (rounded up to whole hours), best first. Windows containing any hour scoring below
-     * {@value #MIN_HOUR_SCORE} are discarded. Across several days, each day's best window is picked before
-     * a second window from the same day, so the options are spread out rather than stacked on one morning.
+     * The best non-overlapping daytime windows covering {@code durationMinutes} (rounded up to whole hours),
+     * best first. Windows containing any hour scoring below {@value #MIN_HOUR_SCORE} are discarded. Every day
+     * in the forecast gets the same share of about {@value #WINDOWS_TO_OFFER} options — three on one day, two
+     * a day over two days, one a day over three — so no day shows up more often than another.
      */
     public List<OutdoorWindow> findBestWindows(List<HourlyForecast> forecast, Activity activity, int durationMinutes) {
         Objects.requireNonNull(activity, "activity");
@@ -57,18 +57,24 @@ public class WindowScorer {
         candidates.sort(Comparator.comparingDouble(Candidate::averageScore).reversed()
                 .thenComparing(candidate -> candidate.window().start()));
 
+        long days = sorted.stream()
+                .filter(hour -> !Boolean.FALSE.equals(hour.isDay()))
+                .map(hour -> hour.time().toLocalDate())
+                .distinct()
+                .count();
+        int perDay = (int) Math.ceilDiv(WINDOWS_TO_OFFER, Math.max(days, 1));
+
         List<OutdoorWindow> selected = new ArrayList<>();
-        Set<LocalDate> daysWithAWindow = new HashSet<>();
+        Map<LocalDate, Integer> windowsPerDay = new HashMap<>();
         for (Candidate candidate : candidates) {
-            if (daysWithAWindow.add(candidate.window().start().toLocalDate())) {
-                select(candidate, selected);
+            LocalDate day = candidate.window().start().toLocalDate();
+            if (windowsPerDay.getOrDefault(day, 0) < perDay
+                    && selected.stream().noneMatch(chosen -> chosen.overlaps(candidate.window()))) {
+                selected.add(candidate.window());
+                windowsPerDay.merge(day, 1, Integer::sum);
             }
         }
-        for (Candidate candidate : candidates) {
-            select(candidate, selected);
-        }
-        // Back to rank order: best first, earliest first on ties.
-        return candidates.stream().map(Candidate::window).filter(selected::contains).toList();
+        return List.copyOf(selected);
     }
 
     /**
@@ -106,13 +112,6 @@ public class WindowScorer {
         }
 
         return Math.clamp(score, 0, 100);
-    }
-
-    private static void select(Candidate candidate, List<OutdoorWindow> selected) {
-        if (selected.size() < MAX_WINDOWS
-                && selected.stream().noneMatch(chosen -> chosen.overlaps(candidate.window()))) {
-            selected.add(candidate.window());
-        }
     }
 
     private boolean isConsecutiveDaytime(List<HourlyForecast> block) {

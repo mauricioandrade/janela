@@ -78,7 +78,7 @@ class WindowScorerTest {
 
         List<OutdoorWindow> windows = scorer.findBestWindows(forecast, Activity.WALK, 120);
 
-        assertThat(windows).hasSize(WindowScorer.MAX_WINDOWS);
+        assertThat(windows).hasSize(WindowScorer.WINDOWS_TO_OFFER);
         for (int i = 0; i < windows.size(); i++) {
             for (int j = i + 1; j < windows.size(); j++) {
                 assertThat(windows.get(i).overlaps(windows.get(j)))
@@ -187,19 +187,46 @@ class WindowScorerTest {
         }
 
         @Test
-        void spreadsOptionsAcrossDaysBeforeRepeatingOne() {
-            // Day 1: room for three perfect windows (06–12). Day 2: only 06–08 is good, and a little worse.
+        void givesEachOfTwoDaysTwoWindows() {
+            // Day 1: room for three perfect windows (06–12). Day 2: room for three slightly worse ones.
             List<HourlyForecast> forecast = new ArrayList<>();
             for (int h = 6; h < 12; h++) {
                 forecast.add(hour(h, 18.0, 1.0, 0, 5.0, true));
+                forecast.add(new HourlyForecast(DAY.plusDays(1).atTime(h, 0), 18.0, 18.0, 20, 1.0, 5.0, true));
             }
-            forecast.add(new HourlyForecast(DAY.plusDays(1).atTime(6, 0), 18.0, 18.0, 20, 1.0, 5.0, true));
-            forecast.add(new HourlyForecast(DAY.plusDays(1).atTime(7, 0), 18.0, 18.0, 20, 1.0, 5.0, true));
 
             List<OutdoorWindow> windows = scorer.findBestWindows(forecast, Activity.RUN, 120);
 
             assertThat(windows).extracting(OutdoorWindow::start)
-                    .containsExactly(at(6), at(8), DAY.plusDays(1).atTime(6, 0));
+                    .containsExactly(at(6), at(8), DAY.plusDays(1).atTime(6, 0), DAY.plusDays(1).atTime(8, 0));
+        }
+
+        @Test
+        void givesEachOfThreeDaysOneWindow() {
+            List<HourlyForecast> forecast = new ArrayList<>();
+            for (int day = 0; day < 3; day++) {
+                for (int h = 6; h < 12; h++) {
+                    forecast.add(new HourlyForecast(DAY.plusDays(day).atTime(h, 0), 18.0, 18.0, day * 10, 1.0, 5.0, true));
+                }
+            }
+
+            List<OutdoorWindow> windows = scorer.findBestWindows(forecast, Activity.RUN, 120);
+
+            assertThat(windows).extracting(OutdoorWindow::start)
+                    .containsExactly(at(6), DAY.plusDays(1).atTime(6, 0), DAY.plusDays(2).atTime(6, 0));
+        }
+
+        @Test
+        void doesNotHandADayWithoutGoodHoursToAnotherDay() {
+            // Day 2 is far too hot all day: day 1 still gets only its share of two.
+            List<HourlyForecast> forecast = new ArrayList<>();
+            for (int h = 6; h < 12; h++) {
+                forecast.add(hour(h, 18.0, 1.0, 0, 5.0, true));
+                forecast.add(new HourlyForecast(DAY.plusDays(1).atTime(h, 0), 40.0, 45.0, 0, 1.0, 5.0, true));
+            }
+
+            assertThat(scorer.findBestWindows(forecast, Activity.RUN, 120)).extracting(OutdoorWindow::start)
+                    .containsExactly(at(6), at(8));
         }
 
         @Test

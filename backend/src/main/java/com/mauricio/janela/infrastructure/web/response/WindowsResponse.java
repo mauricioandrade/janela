@@ -9,7 +9,7 @@ import java.util.List;
 public record WindowsResponse(
         LocationResponse location,
         @Schema(example = "BIKE") Activity activity,
-        @Schema(description = "Up to 3 non-overlapping windows, best first; empty when no hour is good enough")
+        @Schema(description = "Non-overlapping windows, best first, the same number per day (3, 2 or 1 a day for 1, 2 or 3 days); empty when no hour is good enough")
         List<WindowResponse> windows,
         @Schema(description = "Short recommendation ending with a \"🌿\" touch-grass challenge",
                 example = "A melhor opção para pedalar é quarta-feira, 07/10, das 07:00 às 08:00…")
