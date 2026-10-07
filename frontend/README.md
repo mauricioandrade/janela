@@ -31,8 +31,7 @@ module).
 |--------|------|
 | `lib/api.ts` | Types mirroring the backend (`WindowsResponse`, `SearchValues`, `City`, `Place`), `fetchWindows` and `fetchCities` against `/api/v1`, `ApiError` (status + `fields` from problem details) |
 | `lib/format.ts` | Day and time formatting from the API's local `yyyy-MM-ddTHH:mm` strings (never shifted to the browser's time zone) |
-| `lib/score.ts` | Score tiers, their `score-*` fill/track/icon classes, WHO UV categories |
-| `lib/sky.ts` | Dawn / day / dusk for a window's start — sets `<html data-sky>`, which tints the page's sky |
+| `lib/score.ts` | Score tiers and their colour classes, WHO UV categories, when UV and rain deserve a warning |
 | `lib/place.ts` | "Itobi – SP" labels, Brazilian state codes, flag URLs (country flags lazy-loaded from `country-flag-icons`, state flags in `public/flags/br`) |
 | `lib/i18n.ts` | All interface copy in `pt` and `en`; the narrative's language comes from the backend |
 | `I18nProvider` / `useI18n()` | The current `lang` and its copy `t`, for any component — no `t`/`lang` props |
@@ -45,13 +44,13 @@ module).
 |-----------|------|
 | `SearchForm` | Form state (city text, picked place, activity, duration, days), client-side validation, field problems turned into copy; calls `onSearch` |
 | `CityCombobox` | City field with debounced suggestions (`["cities", term, lang]` query); picking one pins its id |
-| `Results` | Chooses the state to show: loading, error, empty, no windows, or results — in the order answer, why, context, alternatives |
-| `BestWindow` | The answer: day, the time as the page's one hero number, score, and four `StatTile`s in a `dl` |
-| `Narrative` | The model's recommendation and its "written by Gemma / template" badge |
-| `DayStrip` | Visual band of daylight hours with the windows cut out — decorative, `aria-hidden` |
-| `Alternatives` | The runner-up windows as an ordered list of quieter cards |
-| `ScoreBadge` / `ScoreMeter` | A score as status (icon + word + number, never colour alone) and as a meter whose track is a lighter step of its fill |
-| `StatTile` | One labelled weather number (`dt`/`dd`), with an optional qualifier such as the UV category |
+| `Results` | Chooses the state: loading, error, empty (an example tide), no windows, or results — answer, why, each day's comfort, every option |
+| `Answer` | The answer as one heading: activity, day and place, then the time at high-water size; one timetable row of readings and the "computed in Java" line |
+| `Narrative` | The model's recommendation under its byline badge (Gemma, or the offline template) |
+| `TideChart` | The signature: each day's hourly comfort as a tide curve, windows as labelled high-tide bands, the 40 cut-off dashed; hover/tap reads an hour |
+| `WindowsTable` | Every window as a timetable (`table` from `sm`, stacked list on phones) |
+| `ScoreBadge` | A score as status: icon, number and word — never colour alone |
+| `UvWarning` / `RainWarning` | Sun-amber and storm-violet icons with labels for WHO-high UV and rain ≥ 40 % |
 | `PlaceFlags` | Country and state flags next to a place name (decorative) |
 
 ## State
@@ -67,15 +66,17 @@ module).
 
 - **shadcn first.** Compose existing components (`Field`, `ToggleGroup`, `Empty`, `Alert`, `Badge`, `Skeleton`)
   before writing markup. Base UI uses `render`, not `asChild`; toggle-group values are string arrays.
+- **Design system.** The visual world (tide table) is recorded in [`../DESIGN.md`](../DESIGN.md); product truth in
+  [`../PRODUCT.md`](../PRODUCT.md). Read them before visual work.
 - **Tokens, not colors.** Use semantic classes (`bg-primary`, `text-muted-foreground`) and the Janela tokens in
-  `src/index.css`: `score-high`, `score-mid`, `score-low`, `night`. Dark mode comes from the `.dark` tokens — no
+  `src/index.css`: `shell`, `tide`, `sun`, `storm`, `score-high|mid|low`. Dark mode comes from the `.dark` tokens — no
   `dark:` color overrides.
 - **Spacing** with `flex`/`grid` + `gap-*`, never `space-y-*`. Equal sizes with `size-*`.
-- **Type:** Inter Variable for text (optical sizing on), Bricolage Grotesque (`font-heading`) for the wordmark
-  and window titles only. Times use `tabular-nums`.
+- **Type:** Archivo Variable everywhere; `font-condensed` for times and numbers, `font-wide` for the wordmark.
+  Columns of numbers use `tabular-nums`.
 - **Copy** goes in `lib/i18n.ts` for both languages, in sentence case. Errors say what happened and what to do.
-- **Motion:** windows "open" in the day strip, and the sky eases to its new colour; nothing else moves.
-  Both respect `prefers-reduced-motion`.
+- **Motion:** one authored moment — each day's tide draws in and its windows fill when results land; nothing
+  else moves. It is off under `prefers-reduced-motion`.
 - **Layout:** one column on phones and tablets; from `lg` the form is a sticky sidebar and results take the
   rest. Check 390, 820 and 1440 px.
 
@@ -87,7 +88,8 @@ module).
   errors announce themselves (`Alert` and `FieldError` are `role="alert"`).
 - Every control has a visible label (`FieldLabel` or `FieldLegend`); errors use `data-invalid` + `aria-invalid`
   and focus moves to the city field when it is the problem.
-- Decorative visuals (`DayStrip`, flags, icons) are `aria-hidden`; the same information is in text nearby.
+- Each tide row is `role="img"` with a one-line summary; the timetable carries the same data. Flags and icons
+  are `aria-hidden` unless they are the only carrier (warnings have `aria-label`).
 - Brand and model names carry `translate="no"`.
 
 ## Adding a component
