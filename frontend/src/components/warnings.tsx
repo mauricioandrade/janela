@@ -7,11 +7,15 @@ import { isHighUv, isLikelyRain } from "@/lib/score"
 export function UvWarning({ uv }: { uv: number | null }) {
   const { t } = useI18n()
   if (!isHighUv(uv)) return null
-  return <SunIcon className="inline size-4 shrink-0 text-sun" role="img" aria-label={t.highUv} />
+  return <SunIcon className="inline size-4 shrink-0 self-center align-[-0.125em] text-sun" role="img" aria-label={t.highUv} />
 }
 
 export function RainWarning({ chance }: { chance: number | null }) {
   const { t } = useI18n()
   if (!isLikelyRain(chance)) return null
-  return <CloudRainIcon className="inline size-4 shrink-0 text-storm" role="img" aria-label={t.likelyRain} />
+  return <CloudRainIcon
+      className="inline size-4 shrink-0 self-center align-[-0.125em] text-storm"
+      role="img"
+      aria-label={t.likelyRain}
+    />
 }

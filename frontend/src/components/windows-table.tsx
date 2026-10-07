@@ -52,17 +52,17 @@ export function WindowsTable({ windows }: { windows: OutdoorWindow[] }) {
               </td>
               <td className="text-lg">{row.time}</td>
               <td className="font-normal">
-                <ScoreBadge score={row.window.score} className="[&_svg]:self-center" />
+                <ScoreBadge score={row.window.score} />
               </td>
               <td className="text-right">{row.feelsLike}</td>
               <td className="text-right">
-                <span className="inline-flex items-center justify-end gap-1">
+                <span className="inline-flex items-baseline justify-end gap-1">
                   <UvWarning uv={row.window.maxUv} />
                   {row.uv}
                 </span>
               </td>
               <td className="text-right">
-                <span className="inline-flex items-center justify-end gap-1">
+                <span className="inline-flex items-baseline justify-end gap-1">
                   <RainWarning chance={row.window.maxRainProbability} />
                   {row.rain}
                 </span>
@@ -87,7 +87,7 @@ export function WindowsTable({ windows }: { windows: OutdoorWindow[] }) {
               <span className="first-letter:uppercase">{row.day.weekday}</span>{" "}
               <span className="text-muted-foreground">{row.day.date}</span>
             </p>
-            <p className="flex flex-wrap items-center gap-x-1 font-condensed text-sm text-muted-foreground tabular-nums">
+            <p className="flex flex-wrap items-baseline gap-x-1 font-condensed text-sm text-muted-foreground tabular-nums">
               {t.columns.feelsLike} {row.feelsLike}, <UvWarning uv={row.window.maxUv} />
               {t.columns.uv} {row.uv}, <RainWarning chance={row.window.maxRainProbability} />
               {t.columns.rain} {row.rain}, {t.columns.wind} {row.wind}

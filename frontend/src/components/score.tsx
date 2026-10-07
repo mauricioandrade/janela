@@ -12,8 +12,8 @@ export function ScoreBadge({ score, className }: { score: number; className?: st
   const tier = scoreTier(score)
   const Icon = TIER_ICONS[tier]
   return (
-    <span className={cn("inline-flex items-center gap-1.5", className)} title={t.scoreOf(score)}>
-      <Icon className={cn("size-4 shrink-0", scoreIconColor(score))} aria-hidden />
+    <span className={cn("inline-flex items-baseline gap-1.5", className)} title={t.scoreOf(score)}>
+      <Icon className={cn("size-4 shrink-0 self-center", scoreIconColor(score))} aria-hidden />
       <span className="font-condensed font-semibold tabular-nums">{score}</span>
       <span className="text-muted-foreground">{t.tiers[tier]}</span>
     </span>
