@@ -55,6 +55,9 @@ export function CityCombobox({
     staleTime: 24 * 60 * 60 * 1000,
   })
   const items: Place[] = suggestions.data ?? (selected ? [selected] : [])
+  // "No matches" only once a real search for what is typed has come back empty; never while typing or loading.
+  const searchedEmpty =
+    term === inputValue.trim() && term.length >= MIN_QUERY_LENGTH && suggestions.isSuccess && !suggestions.isFetching
 
   return (
     <Combobox<Place>
@@ -93,9 +96,7 @@ export function CityCombobox({
             {t.citySearching}
           </p>
         )}
-        {!suggestions.isFetching && (
-          <ComboboxEmpty>{t.cityNoMatches}</ComboboxEmpty>
-        )}
+        {searchedEmpty && <ComboboxEmpty>{t.cityNoMatches}</ComboboxEmpty>}
         <ComboboxList>
           {(city: Place) => (
             <ComboboxItem key={city.id} value={city} className="gap-2.5 py-1.5">
