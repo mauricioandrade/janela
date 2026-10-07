@@ -37,7 +37,7 @@ flowchart LR
     S --> N{Ollama available?}
     N -- yes --> M[Gemma writes the recommendation]
     N -- no --> T[Template fallback]
-    M --> R[Top 3 windows + narrative]
+    M --> R[Best windows per day + narrative]
     T --> R
 ```
 
@@ -56,8 +56,8 @@ or Ollama is down or slow, a template writes the text instead and the UI labels 
 
 Every daytime hour starts at 100 and loses points for rain chance, feels-like temperature outside the
 activity's range, and UV or wind above its limits. A window is the best run of consecutive daytime hours
-covering the requested duration; any hour below 40 rules the whole window out. The top 3 non-overlapping
-windows are returned.
+covering the requested duration; any hour below 40 rules the whole window out. Every day gets the same number of
+non-overlapping windows: three for today only, two a day over two days, one a day over three.
 
 | Activity  | Feels-like range | Max comfortable UV | Max wind |
 |-----------|------------------|--------------------|----------|
